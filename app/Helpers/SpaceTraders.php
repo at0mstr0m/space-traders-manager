@@ -8,11 +8,11 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Redis;
 
 class SpaceTraders
 {
-    private const CACHE_KEY = 'REQUEST_COUNT';
+    private const LIMITER_ONE = 'REQUEST_COUNT_1';
+    private const LIMITER_TWO = 'REQUEST_COUNT_2';
 
     public function __construct(
         private string $token,
@@ -23,14 +23,13 @@ class SpaceTraders
     // only allow 2 requests per second
     private function avoidRateLimit(): void
     {
-        if (Cache::has(static::CACHE_KEY)) {
-            if (Cache::get(static::CACHE_KEY) < 3) {
-                Cache::increment(static::CACHE_KEY);
-            } else {
-                sleep(1);
-            }
-        } else {
-            Cache::add('key', 1, now()->addSecond());
+        if (!Cache::get(static::LIMITER_ONE) && !Cache::get(static::LIMITER_TWO)) {
+            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn() => true);
+        } elseif (Cache::get(static::LIMITER_ONE) && Cache::get(static::LIMITER_TWO)) {
+            sleep(1);
+            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn() => true);
+        } elseif (Cache::get(static::LIMITER_ONE)) {
+            Cache::remember(static::LIMITER_TWO, now()->addSecond(), fn() => true);
         }
     }
 
