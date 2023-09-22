@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Agent extends Model
+{
+    protected $casts = [
+        'account_id' => 'string',
+        'symbol' => 'string',
+        'headquarters' => 'string',
+        'credits' => 'integer',
+        'starting_faction' => 'string',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}

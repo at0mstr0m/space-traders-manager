@@ -44,18 +44,23 @@ class SpaceTraders
         return $this->baseRequest()->get($this->url . $path);
     }
 
-    public function agent()
+    public function getAgent()
     {
         return $this->get('my/agent')->collect('data');
     }
 
-    public function agents()
+    public function listAgents()
     {
         return $this->get('agents')->collect('data');
     }
 
-    public function agentDetails(string $agentSymbol)
+    public function getAgentDetails(string $agentSymbol)
     {
         return $this->get('agents/' . $agentSymbol)->collect('data');
+    }
+
+    public function listShips()
+    {
+        return $this->get('my/ships')->collect('data');
     }
 }
