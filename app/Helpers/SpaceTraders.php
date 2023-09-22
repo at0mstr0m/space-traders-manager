@@ -39,9 +39,9 @@ class SpaceTraders
         return HTTP::withToken($this->token);
     }
 
-    private function get(string $path): Response
+    private function get(string $path,  $query = null): Response
     {
-        return $this->baseRequest()->get($this->url . $path);
+        return $this->baseRequest()->get($this->url . $path, $query);
     }
 
     public function getAgent()
@@ -57,6 +57,11 @@ class SpaceTraders
     public function getAgentDetails(string $agentSymbol)
     {
         return $this->get('agents/' . $agentSymbol)->collect('data');
+    }
+
+    public function listFactions()
+    {
+        return $this->get('factions', ['limit' => 20])->collect('data');
     }
 
     public function listShips()
