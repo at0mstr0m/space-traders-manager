@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Helpers\SpaceTraders;
-use Illuminate\Contracts\Foundation\Application;
+use App\Macros\ArrayMacros;
+use App\Macros\CollectionMacros;
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Arr;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Collection::mixin(new CollectionMacros());
+        Arr::mixin(new ArrayMacros());
     }
 }
