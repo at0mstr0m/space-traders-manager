@@ -12,6 +12,7 @@ use App\Enums\EngineSymbols;
 use App\Enums\ModuleSymbols;
 use App\Enums\ShipNavStatus;
 use App\Enums\DepositSymbols;
+use App\Enums\FactionSymbols;
 use App\Enums\ReactorSymbols;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -28,9 +29,10 @@ return new class extends Migration
         Schema::create('factions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->tinyText('symbol');
+            $table->enum('symbol', FactionSymbols::values());
             $table->tinyText('name');
-            $table->string('description');
+            $table->text('description');
+            $table->tinyText('headquarters'); // nav.waypointSymbol
             $table->boolean('is_recruiting');
         });
 
@@ -39,7 +41,7 @@ return new class extends Migration
             $table->timestamps();
             $table->enum('symbol', FrameSymbols::values());
             $table->tinyText('name');
-            $table->string('description');
+            $table->text('description');
             $table->smallInteger('module_slots');
             $table->smallInteger('mounting_points');
             $table->integer('fuel_capacity');
@@ -52,7 +54,7 @@ return new class extends Migration
             $table->timestamps();
             $table->enum('symbol', ReactorSymbols::values());
             $table->tinyText('name');
-            $table->string('description');
+            $table->text('description');
             $table->integer('power_output');
             $table->smallInteger('required_crew');      // requirements.crew
         });
@@ -62,7 +64,7 @@ return new class extends Migration
             $table->timestamps();
             $table->enum('symbol', EngineSymbols::values());
             $table->tinyText('name');
-            $table->string('description');
+            $table->text('description');
             $table->integer('speed');
             $table->smallInteger('required_power');     // requirements.power
             $table->smallInteger('required_crew');      // requirements.crew
@@ -73,7 +75,7 @@ return new class extends Migration
             $table->timestamps();
             $table->enum('symbol', ModuleSymbols::values());
             $table->tinyText('name');
-            $table->string('description');
+            $table->text('description');
             $table->smallInteger('capacity')->default(0);
             $table->smallInteger('range')->default(0);
             $table->smallInteger('required_power');     // requirements.power
@@ -86,7 +88,7 @@ return new class extends Migration
             $table->timestamps();
             $table->enum('symbol', MountSymbols::values());
             $table->tinyText('name');
-            $table->string('description');
+            $table->text('description');
             $table->smallInteger('strength')->default(0);
             $table->smallInteger('required_power');     // requirements.power
             $table->smallInteger('required_crew');      // requirements.crew
@@ -106,7 +108,7 @@ return new class extends Migration
             $table->string('symbol');
             $table->enum('role', ShipRoles::values()); // nav.status
             // nav
-            $table->string('location'); // nav.waypointSymbol
+            $table->tinyText('location'); // nav.waypointSymbol
             $table->enum('status', ShipNavStatus::values()); // nav.status
             $table->enum('flight_mode', FlightModes::values()); // nav.flightMode
             // crew
@@ -150,7 +152,7 @@ return new class extends Migration
             $table->timestamps();
             $table->tinyText('symbol');
             $table->tinyText('name');
-            $table->string('description');
+            $table->text('description');
             $table->foreignId('ship_id')->constrained();
             $table->integer('units');
         });
