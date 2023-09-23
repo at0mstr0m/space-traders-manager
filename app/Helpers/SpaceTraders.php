@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
+use Illuminate\Support\Collection;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -24,12 +25,12 @@ class SpaceTraders
     private function avoidRateLimit(): void
     {
         if (!Cache::get(static::LIMITER_ONE) && !Cache::get(static::LIMITER_TWO)) {
-            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn() => true);
+            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
         } elseif (Cache::get(static::LIMITER_ONE) && Cache::get(static::LIMITER_TWO)) {
             sleep(1);
-            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn() => true);
+            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
         } elseif (Cache::get(static::LIMITER_ONE)) {
-            Cache::remember(static::LIMITER_TWO, now()->addSecond(), fn() => true);
+            Cache::remember(static::LIMITER_TWO, now()->addSecond(), fn () => true);
         }
     }
 
@@ -42,6 +43,22 @@ class SpaceTraders
     private function get(string $path,  $query = null): Response
     {
         return $this->baseRequest()->get($this->url . $path, $query);
+    }
+
+    private function getAllPages(Response $response, string $methodName, int $page): Collection
+    {
+
+        $data = $response->collect('data');
+        $meta = $response->collect('meta');
+        $totalNumber = data_get($meta, 'total');
+        $perPage = data_get($meta, 'limit');
+        $totalPages = (int) ceil($totalNumber / $perPage);
+
+        for ($currentPage = $page + 1; $currentPage <= $totalPages; $currentPage++) {
+            $data = $data->concat($this->{$methodName}($perPage, $currentPage));
+        }
+
+        return $data;
     }
 
     public function getAgent()
@@ -59,13 +76,21 @@ class SpaceTraders
         return $this->get('agents/' . $agentSymbol)->collect('data');
     }
 
-    public function listFactions()
+    public function listFactions($perPage = 10, $page = 1, $all = false): Collection
     {
-        return $this->get('factions', ['limit' => 20])->collect('data');
+        $response =  $this->get('factions', ['limit' => $perPage, 'page' => $page]);
+
+        return $all
+            ? $this->getAllPages($response,  __FUNCTION__, $page)
+            : $response->collect('data');
     }
 
-    public function listShips()
+    public function listShips($perPage = 10, $page = 1, $all = false)
     {
-        return $this->get('my/ships')->collect('data');
+        $response = $this->get('my/ships', ['limit' => $perPage, 'page' => $page]);
+
+        return $all
+            ? $this->getAllPages($response,  __FUNCTION__, $page)
+            : $response->collect('data');
     }
 }
