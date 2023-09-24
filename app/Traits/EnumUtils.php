@@ -24,7 +24,7 @@ trait EnumUtils
         return array_combine(self::names(), self::values());
     }
 
-    public function isValid(string $needle): bool
+    public static function isValid(string $needle): bool
     {
         return in_array($needle, self::values(), true);
     }
