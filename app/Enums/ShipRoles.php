@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum ShipRoles: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case FABRICATOR = 'FABRICATOR';
     case HARVESTER = 'HARVESTER';

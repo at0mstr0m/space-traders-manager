@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
+use App\Data\AgentData;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -80,9 +81,9 @@ class SpaceTraders
         return $this->get()->collect('data');
     }
 
-    public function getAgent()
+    public function getAgent(): AgentData
     {
-        return $this->get('my/agent')->collect('data');
+        return AgentData::from($this->get('my/agent')->collect('data'));
     }
 
     public function listAgents()

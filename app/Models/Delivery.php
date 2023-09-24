@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\TradeSymbols;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Delivery extends Model
 {

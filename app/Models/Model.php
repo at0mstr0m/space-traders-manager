@@ -35,4 +35,11 @@ class Model extends EloquentModel
 
         return $this;
     }
+
+    public function pipeSave(array $options = []): self
+    {
+        $this->save($options);
+
+        return $this;
+    }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('headquarters');
             $table->integer('credits');
             $table->string('starting_faction');
+            $table->integer('ship_count');
             $table->foreignId('user_id')->constrained();
         });
     }
