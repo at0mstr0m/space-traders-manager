@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum ModuleSymbols: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case MODULE_MINERAL_PROCESSOR_I = 'MODULE_MINERAL_PROCESSOR_I';
     case MODULE_CARGO_HOLD_I = 'MODULE_CARGO_HOLD_I';

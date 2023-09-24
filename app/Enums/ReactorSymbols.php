@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum ReactorSymbols: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case REACTOR_SOLAR_I = 'REACTOR_SOLAR_I';
     case REACTOR_FUSION_I = 'REACTOR_FUSION_I';

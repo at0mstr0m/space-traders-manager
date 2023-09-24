@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum FrameSymbols: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case FRAME_PROBE = 'FRAME_PROBE';
     case FRAME_DRONE = 'FRAME_DRONE';

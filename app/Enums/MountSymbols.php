@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum MountSymbols: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case MOUNT_GAS_SIPHON_I = 'MOUNT_GAS_SIPHON_I';
     case MOUNT_GAS_SIPHON_II = 'MOUNT_GAS_SIPHON_II';

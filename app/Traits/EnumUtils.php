@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Traits;
 
 // https://stackoverflow.com/a/71680007/13128152
-trait EnumToArray
+trait EnumUtils
 {
 
     public static function names(): array
@@ -21,5 +21,10 @@ trait EnumToArray
     public static function toArray(): array
     {
         return array_combine(self::names(), self::values());
+    }
+
+    public function isValid(string $needle): bool
+    {
+        return in_array($needle, self::values(), true);
     }
 }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum CrewRotations: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case STRICT = 'STRICT';
     case RELAXED = 'RELAXED';

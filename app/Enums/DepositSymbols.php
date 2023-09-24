@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum DepositSymbols: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case QUARTZ_SAND = 'QUARTZ_SAND';
     case SILICON_CRYSTALS = 'SILICON_CRYSTALS';

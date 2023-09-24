@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Traits\EnumToArray;
+use App\Traits\EnumUtils;
 
 enum TradeSymbols: string
 {
-    use EnumToArray;
+    use EnumUtils;
 
     case PRECIOUS_STONES = 'PRECIOUS_STONES';
     case QUARTZ_SAND = 'QUARTZ_SAND';
