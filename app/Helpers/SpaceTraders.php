@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Helpers;
 
 use App\Data\AgentData;
+use App\Data\FactionData;
 use App\Data\ContractData;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Client\Response;
@@ -145,10 +146,11 @@ class SpaceTraders
     public function listFactions(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
         $response = $this->get('factions', ['limit' => $perPage, 'page' => $page]);
+        $data = FactionData::collection($response->collect('data'))->toCollection();
 
         return $all
-            ? $this->getAllPages($response, __FUNCTION__, $page)
-            : $response->collect('data');
+            ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
+            : $data;
     }
 
     public function listShips(int $perPage = 10, int $page = 1, bool $all = false): Collection

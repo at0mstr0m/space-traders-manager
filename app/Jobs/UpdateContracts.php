@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Agent;
-use App\Models\Contract;
 use App\Data\ContractData;
+use App\Data\DeliveryData;
 use App\Helpers\SpaceTraders;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -24,8 +24,9 @@ class UpdateContracts implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private Agent $agent)
+    public function __construct(private ?Agent $agent = null)
     {
+        $this->agent ??= Agent::first();
         $this->api = app(SpaceTraders::class);
     }
 
@@ -50,7 +51,7 @@ class UpdateContracts implements ShouldQueue
             );
 
             // update its deliveries
-            $contractData->deliveries->each(function ($deliveryData) use ($contract) {
+            $contractData->deliveries->each(function (DeliveryData $deliveryData) use ($contract) {
                 $contract->deliveries()->updateOrCreate(
                     [
                         'trade_symbol' => $deliveryData->tradeSymbol,

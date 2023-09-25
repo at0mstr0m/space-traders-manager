@@ -24,4 +24,9 @@ class Faction extends Model
     {
         return $this->belongsToMany(Ship::class);
     }
+
+    public function traits(): BelongsToMany
+    {
+        return $this->belongsToMany(FactionTrait::class);
+    }
 }

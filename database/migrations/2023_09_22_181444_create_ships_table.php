@@ -9,6 +9,7 @@ use App\Enums\FrameSymbols;
 use App\Enums\MountSymbols;
 use App\Enums\CrewRotations;
 use App\Enums\EngineSymbols;
+use App\Enums\FactionTraits;
 use App\Enums\ModuleSymbols;
 use App\Enums\ShipNavStatus;
 use App\Enums\DepositSymbols;
@@ -34,6 +35,19 @@ return new class extends Migration
             $table->text('description');
             $table->tinyText('headquarters'); // nav.waypointSymbol
             $table->boolean('is_recruiting');
+        });
+
+        Schema::create('faction_traits', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->enum('symbol', FactionTraits::values());
+            $table->tinyText('name');
+            $table->text('description');
+        });
+
+        Schema::create('faction_faction_trait', function (Blueprint $table) {
+            $table->foreignId('faction_id')->constrained();
+            $table->foreignId('faction_trait_id')->constrained();
         });
 
         Schema::create('frames', function (Blueprint $table) {
