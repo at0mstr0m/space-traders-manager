@@ -2,7 +2,8 @@
 
 namespace App\Console;
 
-use App\Jobs\FetchAgent;
+use App\Models\User;
+use App\Jobs\UpdateContracts;
 use App\Jobs\FetchExistingFactions;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -16,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->job(new FetchExistingFactions())->dailyAt('00:05');
+        $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
     }
 
     /**

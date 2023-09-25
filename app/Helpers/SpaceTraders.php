@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Helpers;
 
 use App\Data\AgentData;
+use App\Data\ContractData;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -76,6 +77,31 @@ class SpaceTraders
         return $data;
     }
 
+    private function getAllPagesData(
+        Collection $data,
+        Response $response,
+        string $methodName,
+        int $page,
+        array $arguments = []
+    ): Collection {
+        $meta = $response->collect('meta');
+        $totalNumber = data_get($meta, 'total');
+        $perPage = data_get($meta, 'limit');
+        $totalPages = (int) ceil($totalNumber / $perPage);
+
+        for ($currentPage = $page + 1; $currentPage <= $totalPages; $currentPage++) {
+            $data = $data->concat($this->{$methodName}(
+                ...[
+                    'perPage' => $perPage,
+                    'page' => $currentPage,
+                    ...$arguments,
+                ]
+            ));
+        }
+
+        return $data;
+    }
+
     public function getStatus()
     {
         return $this->get()->collect('data');
@@ -96,13 +122,14 @@ class SpaceTraders
         return $this->get('agents/' . $agentSymbol)->collect('data');
     }
 
-    public function listContracts(int $perPage = 10, int $page = 1, bool $all = false)
+    public function listContracts(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
         $response = $this->get('my/contracts', ['limit' => $perPage, 'page' => $page]);
+        $data = ContractData::collection($response->collect('data'))->toCollection();
 
         return $all
-            ? $this->getAllPages($response, __FUNCTION__, $page)
-            : $response->collect('data');
+            ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
+            : $data;
     }
 
     public function getContract(string $contractId)
