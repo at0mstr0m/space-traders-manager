@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Faction extends Model
 {
+    use FindableBySymbol;
+
     protected $fillable = [
         'symbol',
         'name',

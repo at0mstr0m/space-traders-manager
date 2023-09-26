@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Traits\HasModel;
 use App\Data\DeliveryData;
+use App\Enums\FactionSymbols;
 use Illuminate\Support\Arr;
 use Spatie\LaravelData\Data;
 use Illuminate\Support\Carbon;
@@ -26,6 +26,9 @@ class ContractData extends Data implements GeneratableFromResponse
         #[DataCollectionOf(DeliveryData::class)]
         public ?DataCollection $deliveries = null,
     ) {
+        if (!FactionSymbols::isValid($factionSymbol)) {
+            throw new InvalidArgumentException("Invalid faction symbol: {$factionSymbol}");
+        }
     }
 
     public static function fromResponse(array $response): static

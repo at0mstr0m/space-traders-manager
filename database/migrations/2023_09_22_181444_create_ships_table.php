@@ -90,8 +90,8 @@ return new class extends Migration
             $table->enum('symbol', ModuleSymbols::values());
             $table->tinyText('name');
             $table->text('description');
-            $table->smallInteger('capacity')->default(0);
-            $table->smallInteger('range')->default(0);
+            $table->smallInteger('capacity')->nullable();
+            $table->smallInteger('range')->nullable();
             $table->smallInteger('required_power');     // requirements.power
             $table->smallInteger('required_crew');      // requirements.crew
             $table->smallInteger('required_slots');      // requirements.slots
@@ -103,7 +103,7 @@ return new class extends Migration
             $table->enum('symbol', MountSymbols::values());
             $table->tinyText('name');
             $table->text('description');
-            $table->smallInteger('strength')->default(0);
+            $table->smallInteger('strength')->nullable();
             $table->smallInteger('required_power');     // requirements.power
             $table->smallInteger('required_crew');      // requirements.crew
         });
@@ -114,28 +114,35 @@ return new class extends Migration
             $table->enum('symbol', DepositSymbols::values());
         });
 
+        Schema::create('deposit_mount', function (Blueprint $table) {
+            $table->foreignId('deposit_id')->constrained();
+            $table->foreignId('mount_id')->constrained();
+        });
+
         Schema::create('ships', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->foreignId('agent_id')->constrained();
+            // registration
             $table->foreignId('faction_id')->constrained();
             $table->string('symbol');
-            $table->enum('role', ShipRoles::values()); // nav.status
+            $table->enum('role', ShipRoles::values()); // registration.role
             // nav
-            $table->tinyText('location'); // nav.waypointSymbol
-            $table->enum('status', ShipNavStatus::values()); // nav.status
+            $table->tinyText('waypointSymbol');                 // nav.waypointSymbol
+            $table->enum('status', ShipNavStatus::values());    // nav.status
             $table->enum('flight_mode', FlightModes::values()); // nav.flightMode
             // crew
-            $table->smallInteger('crew_current');   // crew.current
-            $table->smallInteger('crew_capacity');  // crew.capacity
-            $table->smallInteger('crew_required');  // crew.required
+            $table->smallInteger('crew_current');       // crew.current
+            $table->smallInteger('crew_capacity');      // crew.capacity
+            $table->smallInteger('crew_required');      // crew.required
             $table->enum('crew_rotation', CrewRotations::values()); // crew.rotation
-            $table->tinyInteger('crew_morale');     // crew.morale
+            $table->tinyInteger('crew_morale');         // crew.morale
+            $table->integer('crew_wages');              // crew.wages
             // fuel
-            $table->integer('fuel_current');        // fuel.current
-            $table->integer('fuel_capacity');       // fuel.capacity
-            $table->integer('fuel_consumed');       // fuel.consumed
-            $table->integer('cooldown');            // cooldown.remainingSeconds
+            $table->integer('fuel_current');            // fuel.current
+            $table->integer('fuel_capacity');           // fuel.capacity
+            $table->integer('fuel_consumed');           // fuel.consumed
+            $table->integer('cooldown');                // cooldown.remainingSeconds
             $table->foreignId('frame_id')->constrained();
             $table->tinyInteger('frame_condition');     // frame.condition
             $table->foreignId('reactor_id')->constrained();
@@ -181,12 +188,15 @@ return new class extends Migration
         Schema::dropIfExists('module_ship');
         Schema::dropIfExists('cargos');
         Schema::dropIfExists('ships');
+        Schema::dropIfExists('deposit_mount');
         Schema::dropIfExists('deposits');
         Schema::dropIfExists('mounts');
         Schema::dropIfExists('modules');
         Schema::dropIfExists('engines');
         Schema::dropIfExists('reactors');
         Schema::dropIfExists('frames');
+        Schema::dropIfExists('faction_faction_trait');
+        Schema::dropIfExists('faction_traits');
         Schema::dropIfExists('factions');
     }
 };

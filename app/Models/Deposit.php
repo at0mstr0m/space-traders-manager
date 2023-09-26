@@ -12,4 +12,9 @@ class Deposit extends Model
     {
         return $this->belongsToMany(Module::class);
     }
+
+    public function mounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Mount::class);
+    }
 }
