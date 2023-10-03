@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
+use App\Data\ShipData;
 use App\Data\AgentData;
 use App\Data\FactionData;
 use App\Data\ContractData;
-use App\Data\ShipData;
+use App\Data\ShipyardData;
 use App\Data\WaypointData;
+use App\Data\WaypointTraitData;
 use Illuminate\Support\Collection;
+use App\Enums\WaypointTraitSymbols;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -195,6 +198,19 @@ class SpaceTraders
             : $data;
     }
 
+    public function listWaypointsInSystemHavingTrait(string $systemSymbol, WaypointTraitSymbols $traitSymbol): Collection
+    {
+        return $this->listWaypointsInSystem($systemSymbol, all: true)
+            ->filter(
+                fn (WaypointData $waypoint) => $waypoint->traits
+                    ->toCollection()
+                    ->filter(
+                        fn (WaypointTraitData $trait) => $trait->symbol === $traitSymbol->value
+                    )
+                    ->isNotEmpty()
+            );
+    }
+
     public function getWaypoint(string $symbol): Collection
     {
         [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
@@ -209,11 +225,14 @@ class SpaceTraders
             ->collect('data');
     }
 
-    public function getShipyard(string $symbol): Collection
+    public function getShipyard(string $symbol): ShipyardData
     {
         [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
-        return $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/shipyard')
-            ->collect('data');
+
+        return ShipyardData::fromResponse(
+            $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/shipyard')
+                ->json('data')
+        );
     }
 
     public function getJumpGate(string $symbol): Collection

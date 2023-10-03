@@ -16,7 +16,7 @@ class MountData extends Data implements GeneratableFromResponse
         public string $symbol,
         public string $name,
         public string $description,
-        public int $strength,
+        public ?int $strength = null,
         #[DataCollectionOf(DepositData::class)]
         public ?DataCollection $deposits = null,
         public int $requiredPower,
@@ -33,7 +33,7 @@ class MountData extends Data implements GeneratableFromResponse
             symbol: $response['symbol'],
             name: $response['name'],
             description: $response['description'],
-            strength: $response['strength'],
+            strength: data_get($response, 'strength'),
             deposits: DepositData::collection(
                 Arr::map($response['deposits'] ?? [],
                 fn (string $deposit) => DepositData::from(['symbol' => $deposit]))
