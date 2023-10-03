@@ -17,6 +17,8 @@ use Spatie\LaravelData\Data;
 use InvalidArgumentException;
 use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
+use App\Models\Engine;
+use App\Models\Reactor;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 
 class ShipData extends Data implements GeneratableFromResponse
@@ -25,7 +27,6 @@ class ShipData extends Data implements GeneratableFromResponse
 
     public function __construct(
         public string $symbol,
-        public ?FactionData $faction = null,
         public ?int $factionId = null,
         public string $role,
         public string $waypointSymbol,
@@ -42,7 +43,7 @@ class ShipData extends Data implements GeneratableFromResponse
         public int $fuelConsumed,
         public int $cooldown,
         public ?FrameData $frame = null,
-        public ?int $frameID = null,
+        public ?int $frameId = null,
         public int $frameCondition,
         public ?ReactorData $reactor = null,
         public ?int $reactorId = null,
@@ -72,22 +73,18 @@ class ShipData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        $faction = Faction::findBySymbol($response['registration']['factionSymbol']);
-        $factionData = $faction ? null : FactionData::from($faction);
-
         $frame = Frame::findBySymbol($response['frame']['symbol']);
         $frameData = $frame ? null : FrameData::fromResponse($response['frame']);
 
-        $reactor = Frame::findBySymbol($response['reactor']['symbol']);
+        $reactor = Reactor::findBySymbol($response['reactor']['symbol']);
         $reactorData = $reactor ? null : ReactorData::fromResponse($response['reactor']);
 
-        $engine = Frame::findBySymbol($response['reactor']['symbol']);
+        $engine = Engine::findBySymbol($response['engine']['symbol']);
         $engineData = $engine ? null : EngineData::fromResponse($response['engine']);
 
         return new self(
             symbol: $response['symbol'],
-            faction: $factionData,
-            factionId: $faction?->id,
+            factionId: Faction::findBySymbol($response['registration']['factionSymbol'])->id,
             role: $response['registration']['role'],
             waypointSymbol: $response['nav']['waypointSymbol'],
             status: $response['nav']['status'],
@@ -103,7 +100,7 @@ class ShipData extends Data implements GeneratableFromResponse
             fuelConsumed: $response['fuel']['consumed']['amount'],
             cooldown: $response['cooldown']['remainingSeconds'],
             frame: $frameData,
-            frameID: $frame?->id,
+            frameId: $frame?->id,
             frameCondition: $response['frame']['condition'],
             reactor: $reactorData,
             reactorId: $reactor?->id,

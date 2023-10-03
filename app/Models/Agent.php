@@ -35,6 +35,11 @@ class Agent extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function ships(): HasMany
+    {
+        return $this->hasMany(Ship::class);
+    }
+
     public function contracts(): HasMany
     {
         return $this->hasMany(Contract::class);
