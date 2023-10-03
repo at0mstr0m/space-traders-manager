@@ -40,18 +40,8 @@ class WaypointData extends Data implements GeneratableFromResponse
             x: $response['x'],
             y: $response['y'],
             faction: $response['faction']['symbol'],
-            orbitals: WaypointOrbitalData::collection(
-                Arr::map(
-                    $response['orbitals'],
-                    fn (array $orbital) => WaypointOrbitalData::from($orbital)
-                )
-            ),
-            traits: WaypointTraitData::collection(
-                Arr::map(
-                    $response['traits'],
-                    fn (array $trait) => WaypointTraitData::from($trait)
-                )
-            ),
+            orbitals: WaypointOrbitalData::collectionFromResponse($response['orbitals']),
+            traits: WaypointTraitData::collectionFromResponse($response['traits']),
             orbits: data_get($response, 'orbits'),
         );
     }

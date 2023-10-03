@@ -7,11 +7,14 @@ use Illuminate\Support\Arr;
 use Spatie\LaravelData\Data;
 use InvalidArgumentException;
 use Spatie\LaravelData\DataCollection;
+use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 
 class MountData extends Data implements GeneratableFromResponse
 {
+    use HasCollectionFromResponse;
+
     public function __construct(
         public string $symbol,
         public string $name,
@@ -34,10 +37,7 @@ class MountData extends Data implements GeneratableFromResponse
             name: $response['name'],
             description: $response['description'],
             strength: data_get($response, 'strength'),
-            deposits: DepositData::collection(
-                Arr::map($response['deposits'] ?? [],
-                fn (string $deposit) => DepositData::from(['symbol' => $deposit]))
-            ),
+            deposits: DepositData::collectionFromResponse(data_get($response, 'deposits', [])),
             requiredPower: $response['requirements']['power'],
             requiredCrew: $response['requirements']['crew'],
         );

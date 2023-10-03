@@ -26,10 +26,6 @@ class FrameData extends Data implements GeneratableFromResponse
     }
 
     public static function fromResponse(array $response): static {
-        $frame = Frame::findBySymbol($response['symbol']);
-        if ($frame) {
-            return self::from($frame);
-        }
         return new self(
             symbol: $response['symbol'],
             name: $response['name'],

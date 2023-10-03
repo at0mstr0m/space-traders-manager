@@ -7,10 +7,13 @@ namespace App\Data;
 use App\Enums\TradeSymbols;
 use Spatie\LaravelData\Data;
 use InvalidArgumentException;
+use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
 
 class DeliveryData extends Data implements GeneratableFromResponse
 {
+    use HasCollectionFromResponse;
+
     public function __construct(
         public string $tradeSymbol,
         public string $destinationSymbol,

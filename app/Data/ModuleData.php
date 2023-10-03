@@ -5,10 +5,13 @@ namespace App\Data;
 use App\Enums\ModuleSymbols;
 use Spatie\LaravelData\Data;
 use InvalidArgumentException;
+use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
 
 class ModuleData extends Data implements GeneratableFromResponse
 {
+    use HasCollectionFromResponse;
+
     public function __construct(
         public string $symbol,
         public string $name,

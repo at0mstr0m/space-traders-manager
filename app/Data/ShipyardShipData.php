@@ -39,21 +39,6 @@ class ShipyardShipData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        /** @var DataCollection */
-        $modules = ModuleData::collection(
-            Arr::map(
-                $response['modules'],
-                fn (array $module) => ModuleData::fromResponse($module)
-            )
-        );
-        /** @var DataCollection */
-        $mounts = MountData::collection(
-            Arr::map(
-                $response['mounts'],
-                fn (array $mount) => MountData::fromResponse($mount)
-            )
-        );
-
         return new self(
             type: $response['type'],
             name: $response['name'],
@@ -62,8 +47,8 @@ class ShipyardShipData extends Data implements GeneratableFromResponse
             frame: FrameData::fromResponse($response['frame']),
             reactor: ReactorData::fromResponse($response['reactor']),
             engine: EngineData::fromResponse($response['engine']),
-            modules: $modules,
-            mounts: $mounts,
+            modules: ModuleData::collectionFromResponse($response['modules']),
+            mounts: MountData::collectionFromResponse($response['mounts']),
             crewCapacity: $response['crew']['capacity'],
             crewRequired: $response['crew']['required'],
         );

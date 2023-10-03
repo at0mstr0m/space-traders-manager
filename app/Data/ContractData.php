@@ -42,12 +42,7 @@ class ContractData extends Data implements GeneratableFromResponse
             deadline: Carbon::parse($response['terms']['deadline']),
             paymentOnAccepted: $response['terms']['payment']['onAccepted'],
             paymentOnFulfilled: $response['terms']['payment']['onFulfilled'],
-            deliveries: DeliveryData::collection(
-                Arr::map(
-                    $response['terms']['deliver'],
-                    fn (array $delivery) => DeliveryData::from($delivery)
-                )
-            ),
+            deliveries: DeliveryData::collectionFromResponse($response['terms']['deliver']),
         );
     }
 }

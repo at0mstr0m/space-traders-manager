@@ -108,26 +108,11 @@ class ShipData extends Data implements GeneratableFromResponse
             engine: $engineData,
             engineId: $engine?->id,
             engineCondition: $response['engine']['condition'],
-            modules: ModuleData::collection(
-                Arr::map(
-                    $response['modules'],
-                    fn (array $module) => ModuleData::fromResponse($module)
-                )
-            ),
-            mounts: MountData::collection(
-                Arr::map(
-                    $response['mounts'],
-                    fn (array $mount) => MountData::fromResponse($mount)
-                )
-            ),
+            modules: ModuleData::collectionFromResponse($response['modules']),
+            mounts: MountData::collectionFromResponse($response['mounts']),
             cargoCapacity: $response['cargo']['capacity'],
             cargoUnits: $response['cargo']['units'],
-            inventory: CargoData::collection(
-                Arr::map(
-                    $response['cargo']['inventory'],
-                    fn (array $cargo) => CargoData::from($cargo)
-                )
-            ),
+            inventory: CargoData::collectionFromResponse($response['cargo']['inventory']),
         );
     }
 }
