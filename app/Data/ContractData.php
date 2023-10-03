@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Data\DeliveryData;
-use App\Enums\FactionSymbols;
 use Illuminate\Support\Arr;
 use Spatie\LaravelData\Data;
+use App\Enums\FactionSymbols;
+use InvalidArgumentException;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
@@ -41,7 +42,12 @@ class ContractData extends Data implements GeneratableFromResponse
             deadline: Carbon::parse($response['terms']['deadline']),
             paymentOnAccepted: $response['terms']['payment']['onAccepted'],
             paymentOnFulfilled: $response['terms']['payment']['onFulfilled'],
-            deliveries: DeliveryData::collection(Arr::map($response['terms']['deliver'], fn (array $delivery) => DeliveryData::from($delivery))),
+            deliveries: DeliveryData::collection(
+                Arr::map(
+                    $response['terms']['deliver'],
+                    fn (array $delivery) => DeliveryData::from($delivery)
+                )
+            ),
         );
     }
 }
