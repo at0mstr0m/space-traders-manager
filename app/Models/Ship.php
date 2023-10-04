@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\CrewRotations;
-use App\Enums\FlightModes;
-use App\Enums\ShipNavStatus;
 use App\Enums\ShipRoles;
+use App\Enums\FlightModes;
+use App\Data\ExtractionData;
+use App\Data\NavigationData;
+use App\Enums\CrewRotations;
+use App\Enums\ShipNavStatus;
+use App\Helpers\SpaceTraders;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ship extends Model
 {
@@ -110,5 +114,45 @@ class Ship extends Model
     public function cargos(): HasMany
     {
         return $this->hasMany(Cargo::class);
+    }
+
+    public function moveIntoOrbit(): NavigationData
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return $api->orbitShip($this->symbol);
+    }
+
+    public function navigateTo(string $waypointSymbol): Collection
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return $api->navigateShip($this->symbol, $waypointSymbol);
+    }
+
+    public function dock(): NavigationData
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return $api->dockShip($this->symbol);
+    }
+
+    public function refuel(): Collection
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return $api->refuelShip($this->symbol);
+    }
+
+    public function extractResources(): ExtractionData
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return $api->extractResources($this->symbol);
     }
 }

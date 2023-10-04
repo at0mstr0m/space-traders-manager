@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\ShipTypes;
-use Illuminate\Support\Arr;
 use Spatie\LaravelData\Data;
 use InvalidArgumentException;
 use Spatie\LaravelData\DataCollection;

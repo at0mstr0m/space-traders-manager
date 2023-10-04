@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
-use Illuminate\Support\Arr;
 use App\Enums\WaypointTypes;
 use Spatie\LaravelData\Data;
 use App\Enums\FactionSymbols;

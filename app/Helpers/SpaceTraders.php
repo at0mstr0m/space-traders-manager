@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
+use App\Data\FuelData;
 use App\Data\ShipData;
 use App\Data\AgentData;
+use App\Enums\ShipTypes;
 use App\Data\FactionData;
 use App\Data\ContractData;
 use App\Data\ShipyardData;
 use App\Data\WaypointData;
+use App\Data\ExtractionData;
+use App\Data\NavigationData;
+use App\Enums\WaypointTypes;
+use App\Data\TransactionData;
 use App\Data\WaypointTraitData;
+use App\Data\MarketTransactionData;
 use Illuminate\Support\Collection;
 use App\Enums\WaypointTraitSymbols;
 use Illuminate\Http\Client\Response;
@@ -58,7 +65,9 @@ class SpaceTraders
 
     private function post(string $path = '', array $query = []): Response
     {
-        return $this->baseRequest()->post($this->url . $path, $query);
+        return $this->baseRequest()
+            ->post($this->url . $path, $query)
+            ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
     private function getAllPages(Response $response, string $methodName, int $page, array $arguments = []): Collection
@@ -168,6 +177,69 @@ class SpaceTraders
             : $data;
     }
 
+    public function purchaseShip(ShipTypes $shipType, string $waypointSymbol): Collection
+    {
+        return $this->post(
+            'my/ships',
+            [
+                'shipType' => $shipType->value,
+                'waypointSymbol' => $waypointSymbol,
+            ]
+        )->collect('data')
+            ->pipe(
+                fn (Collection $data) => collect([
+                    'agent' => AgentData::fromResponse($data['agent']),
+                    'ship' => ShipData::fromResponse($data['ship']),
+                    'transaction' => TransactionData::fromResponse($data['transaction']),
+                ])
+            );
+    }
+
+    public function orbitShip(string $shipSymbol): NavigationData
+    {
+        return $this->post('my/ships/' . $shipSymbol . '/orbit')
+            ->collect('data')
+            ->pipe(fn (Collection $data) => NavigationData::fromResponse($data['nav']));
+    }
+
+    public function dockShip(string $shipSymbol): NavigationData
+    {
+        return $this->post('my/ships/' . $shipSymbol . '/dock')
+            ->collect('data')
+            ->pipe(fn (Collection $data) => NavigationData::fromResponse($data['nav']));
+    }
+
+    public function extractResources(string $shipSymbol): ExtractionData
+    {
+        return ExtractionData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/extract')
+                ->json('data')
+        );
+    }
+
+    public function navigateShip(string $shipSymbol, string $waypointSymbol): Collection
+    {
+        return $this->post(
+            'my/ships/' . $shipSymbol . '/navigate',
+            ['waypointSymbol' => $waypointSymbol]
+        )->collect('data')
+            ->pipe(fn (Collection $data) => collect([
+                'fuel' => FuelData::fromResponse($data['fuel']),
+                'nav' => NavigationData::fromResponse($data['nav']),
+            ]));
+    }
+
+    public function refuelShip(string $shipSymbol): Collection
+    {
+        return $this->post('my/ships/' . $shipSymbol . '/refuel')
+            ->collect('data')
+            ->pipe(fn (Collection $data) => collect([
+                'agent' => AgentData::fromResponse($data['agent']),
+                'fuel' => FuelData::fromResponse($data['fuel']),
+                'transaction' => MarketTransactionData::fromResponse($data['transaction']),
+            ]));
+    }
+
     public function listSystems(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
         $response = $this->get('systems', ['limit' => $perPage, 'page' => $page]);
@@ -209,6 +281,12 @@ class SpaceTraders
                     )
                     ->isNotEmpty()
             );
+    }
+
+    public function listWaypointsInSystemOfType(string $systemSymbol, WaypointTypes $waypointType): Collection
+    {
+        return $this->listWaypointsInSystem($systemSymbol, all: true)
+            ->filter(fn (WaypointData $waypoint) => $waypoint->type === $waypointType->value);
     }
 
     public function getWaypoint(string $symbol): Collection

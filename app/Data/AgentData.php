@@ -8,8 +8,9 @@ use App\Models\Model;
 use App\Traits\HasModel;
 use Spatie\LaravelData\Data;
 use App\Interfaces\WithModelInstance;
+use App\Interfaces\GeneratableFromResponse;
 
-class AgentData extends Data implements WithModelInstance
+class AgentData extends Data implements WithModelInstance, GeneratableFromResponse
 {
     use HasModel;
 
@@ -21,6 +22,18 @@ class AgentData extends Data implements WithModelInstance
         public string $startingFaction,
         public ?int $shipCount = null,
     ) {
+    }
+
+    public static function fromResponse(array $response): static
+    {
+        return new static(
+            accountId: $response['accountId'],
+            symbol: $response['symbol'],
+            headquarters: $response['headquarters'],
+            credits: $response['credits'],
+            startingFaction: $response['startingFaction'],
+            shipCount: $response['shipCount'],
+        );
     }
 
     public function makeModelInstance(): Model
