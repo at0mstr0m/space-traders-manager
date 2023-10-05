@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Data;
+
+use App\Enums\TradeSymbols;
+use Spatie\LaravelData\Data;
+use InvalidArgumentException;
+use App\Traits\HasCollectionFromResponse;
+
+class ImportExportExchangeGoodData extends Data
+{
+    use HasCollectionFromResponse;
+
+    public function __construct(
+        public string $symbol,
+        public string $name,
+        public string $description,
+    ) {
+        match (true) {
+            !TradeSymbols::isValid($symbol) => throw new InvalidArgumentException("Invalid trade symbol: {$symbol}"),
+            default => null,
+        };
+    }
+
+    public static function fromResponse(array $response): static
+    {
+        return new self(
+            symbol: $response['symbol'],
+            name: $response['name'],
+            description: $response['description'],
+        );
+    }
+}

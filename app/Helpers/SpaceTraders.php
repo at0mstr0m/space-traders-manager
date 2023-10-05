@@ -13,6 +13,7 @@ use App\Data\ContractData;
 use App\Data\ShipyardData;
 use App\Data\WaypointData;
 use App\Data\ExtractionData;
+use App\Data\MarketData;
 use App\Data\NavigationData;
 use App\Enums\WaypointTypes;
 use App\Data\TransactionData;
@@ -292,15 +293,19 @@ class SpaceTraders
     public function getWaypoint(string $symbol): Collection
     {
         [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
+
         return $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol)
             ->collect('data');
     }
 
-    public function getMarket(string $symbol): Collection
+    public function getMarket(string $symbol): MarketData
     {
         [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
-        return $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/market')
-            ->collect('data');
+
+        return MarketData::fromResponse(
+            $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/market')
+                ->json('data')
+        );
     }
 
     public function getShipyard(string $symbol): ShipyardData
@@ -316,6 +321,7 @@ class SpaceTraders
     public function getJumpGate(string $symbol): Collection
     {
         [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
+
         return $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/jump-gate')
             ->collect('data');
     }
