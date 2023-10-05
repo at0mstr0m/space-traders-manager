@@ -13,12 +13,16 @@ use App\Data\FactionData;
 use App\Data\ContractData;
 use App\Data\ShipyardData;
 use App\Data\WaypointData;
+use App\Data\SellCargoData;
+use App\Data\ShipCargoData;
 use App\Enums\TradeSymbols;
 use App\Data\ExtractionData;
 use App\Data\NavigationData;
+use App\Data\RefuelShipData;
 use App\Data\TradeGoodsData;
 use App\Enums\WaypointTypes;
 use App\Data\TransactionData;
+use App\Data\NavigateShipData;
 use App\Data\WaypointTraitData;
 use Illuminate\Support\Collection;
 use App\Data\MarketTransactionData;
@@ -66,10 +70,10 @@ class SpaceTraders
             ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
-    private function post(string $path = '', array $query = []): Response
+    private function post(string $path = '', array $payload = []): Response
     {
         return $this->baseRequest()
-            ->post($this->url . $path, $query)
+            ->post($this->url . $path, $payload)
             ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
@@ -182,13 +186,12 @@ class SpaceTraders
 
     public function purchaseShip(ShipTypes $shipType, string $waypointSymbol): Collection
     {
-        return $this->post(
-            'my/ships',
-            [
-                'shipType' => $shipType->value,
-                'waypointSymbol' => $waypointSymbol,
-            ]
-        )->collect('data')
+        $payload = [
+            'shipType' => $shipType->value,
+            'waypointSymbol' => $waypointSymbol,
+        ];
+        return $this->post('my/ships', $payload)
+            ->collect('data')
             ->pipe(
                 fn (Collection $data) => collect([
                     'agent' => AgentData::fromResponse($data['agent']),
@@ -196,6 +199,14 @@ class SpaceTraders
                     'transaction' => TransactionData::fromResponse($data['transaction']),
                 ])
             );
+    }
+
+    public function getShipCargo(string $shipSymbol): ShipCargoData
+    {
+        return ShipCargoData::fromResponse(
+            $this->get('my/ships/' . $shipSymbol . '/cargo')
+                ->json('data')
+        );
     }
 
     public function orbitShip(string $shipSymbol): NavigationData
@@ -220,27 +231,35 @@ class SpaceTraders
         );
     }
 
-    public function navigateShip(string $shipSymbol, string $waypointSymbol): Collection
+    public function sellCargo(string $shipSymbol, TradeSymbols $tradeSymbol, int $units): SellCargoData
     {
-        return $this->post(
-            'my/ships/' . $shipSymbol . '/navigate',
-            ['waypointSymbol' => $waypointSymbol]
-        )->collect('data')
-            ->pipe(fn (Collection $data) => collect([
-                'fuel' => FuelData::fromResponse($data['fuel']),
-                'nav' => NavigationData::fromResponse($data['nav']),
-            ]));
+        $payload =                 [
+            'symbol' => $tradeSymbol->value,
+            'units' => $units,
+        ];
+
+        return SellCargoData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/sell', $payload)
+                ->json('data')
+        );
     }
 
-    public function refuelShip(string $shipSymbol): Collection
+    public function navigateShip(string $shipSymbol, string $waypointSymbol): NavigateShipData
     {
-        return $this->post('my/ships/' . $shipSymbol . '/refuel')
-            ->collect('data')
-            ->pipe(fn (Collection $data) => collect([
-                'agent' => AgentData::fromResponse($data['agent']),
-                'fuel' => FuelData::fromResponse($data['fuel']),
-                'transaction' => MarketTransactionData::fromResponse($data['transaction']),
-            ]));
+        $payload = ['waypointSymbol' => $waypointSymbol];
+
+        return NavigateShipData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/navigate', $payload)
+                ->json('data')
+        );
+    }
+
+    public function refuelShip(string $shipSymbol): RefuelShipData
+    {
+        return RefuelShipData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/refuel')
+                ->json('data')
+        );
     }
 
     public function listSystems(int $perPage = 10, int $page = 1, bool $all = false): Collection

@@ -8,7 +8,6 @@ use App\Enums\TradeSymbols;
 use Spatie\LaravelData\Data;
 use InvalidArgumentException;
 use Illuminate\Support\Carbon;
-use App\Enums\TransactionTypes;
 use Spatie\LaravelData\DataCollection;
 use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
