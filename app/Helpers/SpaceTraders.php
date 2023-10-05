@@ -7,19 +7,21 @@ namespace App\Helpers;
 use App\Data\FuelData;
 use App\Data\ShipData;
 use App\Data\AgentData;
+use App\Data\MarketData;
 use App\Enums\ShipTypes;
 use App\Data\FactionData;
 use App\Data\ContractData;
 use App\Data\ShipyardData;
 use App\Data\WaypointData;
+use App\Enums\TradeSymbols;
 use App\Data\ExtractionData;
-use App\Data\MarketData;
 use App\Data\NavigationData;
+use App\Data\TradeGoodsData;
 use App\Enums\WaypointTypes;
 use App\Data\TransactionData;
 use App\Data\WaypointTraitData;
-use App\Data\MarketTransactionData;
 use Illuminate\Support\Collection;
+use App\Data\MarketTransactionData;
 use App\Enums\WaypointTraitSymbols;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -306,6 +308,19 @@ class SpaceTraders
             $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/market')
                 ->json('data')
         );
+    }
+
+    public function listMarketplacesInSystemTrading(string $waypointSymbol, TradeSymbols $tradeSymbol): Collection
+    {
+        $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
+
+        return $this->listWaypointsInSystemHavingTrait($systemSymbol, WaypointTraitSymbols::MARKETPLACE)
+            ->map(fn (WaypointData $waypoint) => $this->getMarket($waypoint->symbol))
+            ->filter(
+                fn (MarketData $marketData) => $marketData->tradeGoods->toCollection()->filter(
+                    fn (TradeGoodsData $tradeGoodsData) => $tradeGoodsData->symbol === $tradeSymbol->value
+                )->isNotEmpty()
+            );
     }
 
     public function getShipyard(string $symbol): ShipyardData

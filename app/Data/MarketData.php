@@ -32,8 +32,8 @@ class MarketData extends Data
             exports: ImportExportExchangeGoodData::collectionFromResponse($response['exports']),
             imports: ImportExportExchangeGoodData::collectionFromResponse($response['imports']),
             exchange: ImportExportExchangeGoodData::collectionFromResponse($response['exchange']),
-            transactions: MarketTransactionData::collectionFromResponse($response['transactions']),
-            tradeGoods: TradeGoodsData::collectionFromResponse($response['tradeGoods']),
+            transactions: MarketTransactionData::collectionFromResponse(data_get($response, 'transactions', [])),
+            tradeGoods: TradeGoodsData::collectionFromResponse(data_get($response, 'tradeGoods', [])),
         );
     }
 }
