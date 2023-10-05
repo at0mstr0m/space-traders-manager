@@ -17,8 +17,8 @@ class WaypointData extends Data implements GeneratableFromResponse
     public function __construct(
         public string $symbol,
         public string $type,
-        public string $x,
-        public string $y,
+        public int $x,
+        public int $y,
         public string $faction,
         #[DataCollectionOf(WaypointOrbitalData::class)]
         public ?DataCollection $orbitals = null,
