@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Data\DeliveryData;
-use Illuminate\Support\Arr;
+use App\Enums\ContractTypes;
 use Spatie\LaravelData\Data;
 use App\Enums\FactionSymbols;
 use InvalidArgumentException;
@@ -22,14 +22,17 @@ class ContractData extends Data implements GeneratableFromResponse
         public string $type,
         public bool $fulfilled,
         public Carbon $deadline,
+        public Carbon $deadlineToAccept,
         public int $paymentOnAccepted,
         public int $paymentOnFulfilled,
         #[DataCollectionOf(DeliveryData::class)]
         public ?DataCollection $deliveries = null,
     ) {
-        if (!FactionSymbols::isValid($factionSymbol)) {
-            throw new InvalidArgumentException("Invalid faction symbol: {$factionSymbol}");
-        }
+        match (true) {
+            !FactionSymbols::isValid($factionSymbol) => throw new InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
+            !ContractTypes::isValid($type) => throw new InvalidArgumentException("Invalid contract type: {$type}"),
+            default => null,
+        };
     }
 
     public static function fromResponse(array $response): static
@@ -40,6 +43,7 @@ class ContractData extends Data implements GeneratableFromResponse
             type: $response['type'],
             fulfilled: $response['fulfilled'],
             deadline: Carbon::parse($response['terms']['deadline']),
+            deadlineToAccept: Carbon::parse($response['deadlineToAccept']),
             paymentOnAccepted: $response['terms']['payment']['onAccepted'],
             paymentOnFulfilled: $response['terms']['payment']['onFulfilled'],
             deliveries: DeliveryData::collectionFromResponse($response['terms']['deliver']),

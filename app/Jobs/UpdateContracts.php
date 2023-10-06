@@ -45,6 +45,7 @@ class UpdateContracts implements ShouldQueue
                     'type' => $contractData->type,
                     'fulfilled' => $contractData->fulfilled,
                     'deadline' => $contractData->deadline,
+                    'deadline_to_accept' => $contractData->deadlineToAccept,
                     'payment_on_accepted' => $contractData->paymentOnAccepted,
                     'payment_on_fulfilled' => $contractData->paymentOnFulfilled,
                 ]

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Data\FuelData;
 use App\Data\ShipData;
 use App\Data\AgentData;
 use App\Data\MarketData;
@@ -25,7 +24,6 @@ use App\Data\TransactionData;
 use App\Data\NavigateShipData;
 use App\Data\WaypointTraitData;
 use Illuminate\Support\Collection;
-use App\Data\MarketTransactionData;
 use App\Enums\WaypointTraitSymbols;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -162,6 +160,22 @@ class SpaceTraders
     public function acceptContract(string $contractId)
     {
         return $this->post('my/contracts/' . $contractId . '/accept')->collect('data');
+    }
+
+    public function deliverCargoToContract(
+        string $contractId,
+        string $shipSymbol,
+        TradeSymbols $tradeSymbol,
+        int $units
+    ) {
+        $payload = [
+            'shipSymbol' => $shipSymbol,
+            'tradeSymbol' => $tradeSymbol->value,
+            'units' => $units,
+        ];
+
+        return $this->post('my/contracts/' . $contractId . '/deliver', $payload)
+            ->collect('data');
     }
 
     public function listFactions(int $perPage = 10, int $page = 1, bool $all = false): Collection

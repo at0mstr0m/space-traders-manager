@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('type', ContractTypes::values());
             $table->boolean('fulfilled');
             $table->dateTime('deadline');
+            $table->dateTime('deadline_to_accept');
             $table->integer('payment_on_accepted');
             $table->integer('payment_on_fulfilled');
         });
