@@ -9,7 +9,6 @@ use App\Models\Frame;
 use App\Models\Faction;
 use App\Enums\ShipRoles;
 use App\Enums\FlightModes;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Enums\CrewRotations;
 use App\Enums\ShipNavStatus;

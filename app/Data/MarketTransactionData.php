@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\TradeSymbols;
-use App\Enums\TransactionTypes;
 use Spatie\LaravelData\Data;
 use InvalidArgumentException;
 use Illuminate\Support\Carbon;
+use App\Enums\TransactionTypes;
 use App\Traits\HasCollectionFromResponse;
+use App\Interfaces\GeneratableFromResponse;
 
-class MarketTransactionData extends Data
+class MarketTransactionData extends Data implements GeneratableFromResponse
 {
     use HasCollectionFromResponse;
 

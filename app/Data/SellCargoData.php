@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Data;
 
 use Spatie\LaravelData\Data;
+use App\Interfaces\GeneratableFromResponse;
 
-class SellCargoData extends Data
+class SellCargoData extends Data implements GeneratableFromResponse
 {
     public function __construct(
         public AgentData $agent,

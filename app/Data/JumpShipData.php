@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Data;
 
 use Spatie\LaravelData\Data;
+use Illuminate\Support\Carbon;
 use App\Interfaces\GeneratableFromResponse;
 
-class NavigateShipData extends Data implements GeneratableFromResponse
+class JumpShipData extends Data implements GeneratableFromResponse
 {
     public function __construct(
-        public FuelData $fuel,
+        public Carbon $cooldown,
         public NavigationData $nav,
     ) {
     }
@@ -18,8 +19,8 @@ class NavigateShipData extends Data implements GeneratableFromResponse
     public static function fromResponse(array $response): static
     {
         return new self(
-            fuel: FuelData::fromResponse($response['fuel']),
-            nav: NavigationData::fromResponse($response['fuel']),
+            cooldown: Carbon::parse($response['cooldown']['expiration']),
+            nav: NavigationData::fromResponse($response['nav']),
         );
     }
 }

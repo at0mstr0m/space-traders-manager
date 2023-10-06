@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Enums\Supplies;
 use Spatie\LaravelData\Data;
+use App\Enums\SystemTypes;
 use InvalidArgumentException;
 use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
 
-class TradeGoodsData extends Data implements GeneratableFromResponse
+class ScannedSystemData extends Data implements GeneratableFromResponse
 {
     use HasCollectionFromResponse;
 
     public function __construct(
         public string $symbol,
-        public int $tradeVolume,
-        public string $supply,
-        public int $purchasePrice,
-        public int $sellPrice,
+        public string $type,
+        public int $x,
+        public int $y,
+        public int $distance,
     ) {
         match (true) {
-            !Supplies::isValid($supply) => throw new InvalidArgumentException("Invalid supply: {$supply}"),
+            !SystemTypes::isValid($type) => throw new InvalidArgumentException("Invalid system type: {$type}"),
             default => null,
         };
     }
@@ -31,10 +31,10 @@ class TradeGoodsData extends Data implements GeneratableFromResponse
     {
         return new self(
             symbol: $response['symbol'],
-            tradeVolume: $response['tradeVolume'],
-            supply: $response['supply'],
-            purchasePrice: $response['purchasePrice'],
-            sellPrice: $response['sellPrice'],
+            type: $response['type'],
+            x: $response['x'],
+            y: $response['y'],
+            distance: $response['distance'],
         );
     }
 }

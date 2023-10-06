@@ -10,9 +10,10 @@ use InvalidArgumentException;
 use Illuminate\Support\Carbon;
 use Spatie\LaravelData\DataCollection;
 use App\Traits\HasCollectionFromResponse;
+use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 
-class ExtractionData extends Data
+class ExtractionData extends Data implements GeneratableFromResponse
 {
     use HasCollectionFromResponse;
 

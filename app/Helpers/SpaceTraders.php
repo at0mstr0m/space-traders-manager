@@ -7,32 +7,41 @@ namespace App\Helpers;
 use App\Data\ShipData;
 use App\Data\AgentData;
 use App\Data\MarketData;
+use App\Data\SystemData;
 use App\Enums\ShipTypes;
 use App\Data\FactionData;
 use App\Data\ContractData;
+use App\Data\JumpGateData;
+use App\Data\JumpShipData;
 use App\Data\ShipyardData;
 use App\Data\WaypointData;
+use App\Enums\FlightModes;
+use App\Data\ScanShipsData;
 use App\Data\SellCargoData;
 use App\Data\ShipCargoData;
 use App\Enums\TradeSymbols;
 use App\Data\ExtractionData;
 use App\Data\NavigationData;
 use App\Data\RefuelShipData;
+use App\Data\ShipRefineData;
 use App\Data\TradeGoodsData;
 use App\Enums\WaypointTypes;
+use App\Data\CreateChartData;
+use App\Data\ScanSystemsData;
 use App\Data\TransactionData;
+use App\Enums\FactionSymbols;
+use App\Enums\RefinementGood;
 use App\Data\NavigateShipData;
+use Illuminate\Support\Carbon;
+use App\Data\ScanWaypointsData;
 use App\Data\WaypointTraitData;
-use App\Data\AcceptOrFulfillContractData;
 use Illuminate\Support\Collection;
 use App\Enums\WaypointTraitSymbols;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Data\DeliverCargoToContractData;
-use App\Data\JumpGateData;
-use App\Data\SystemData;
-use App\Enums\FactionSymbols;
+use App\Data\AcceptOrFulfillContractData;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Response as HttpResponse;
 
@@ -80,26 +89,11 @@ class SpaceTraders
             ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
-    private function getAllPages(Response $response, string $methodName, int $page, array $arguments = []): Collection
+    private function patch(string $path = '', array $payload = []): Response
     {
-
-        $data = $response->collect('data');
-        $meta = $response->collect('meta');
-        $totalNumber = data_get($meta, 'total');
-        $perPage = data_get($meta, 'limit');
-        $totalPages = (int) ceil($totalNumber / $perPage);
-
-        for ($currentPage = $page + 1; $currentPage <= $totalPages; $currentPage++) {
-            $data = $data->concat($this->{$methodName}(
-                ...[
-                    'perPage' => $perPage,
-                    'page' => $currentPage,
-                    ...$arguments,
-                ]
-            ));
-        }
-
-        return $data;
+        return $this->baseRequest()
+            ->patch($this->url . $path, $payload)
+            ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
     private function getAllPagesData(
@@ -273,6 +267,32 @@ class SpaceTraders
         );
     }
 
+    public function shipRefine(string $shipSymbol, RefinementGood $refinementGood): ShipRefineData
+    {
+        $payload = ['produce' => $refinementGood->value];
+
+        return ShipRefineData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/refine', $payload)
+                ->json('data')
+        );
+    }
+
+    public function createChart(string $shipSymbol): CreateChartData
+    {
+        return CreateChartData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/chart')
+                ->json('data')
+        );
+    }
+
+    public function getShipCooldown(string $shipSymbol): Carbon
+    {
+        return Carbon::parse(
+            $this->get('my/ships/' . $shipSymbol . '/cooldown')
+                ->json('data')['expiration']
+        );
+    }
+
     public function dockShip(string $shipSymbol): NavigationData
     {
         return NavigationData::fromResponse(
@@ -289,15 +309,25 @@ class SpaceTraders
         );
     }
 
-    public function sellCargo(string $shipSymbol, TradeSymbols $tradeSymbol, int $units): SellCargoData
+    public function jettisonCargo(string $shipSymbol, TradeSymbols $tradeSymbol, int $units): ShipCargoData
     {
-        $payload =                 [
+        $payload = [
             'symbol' => $tradeSymbol->value,
             'units' => $units,
         ];
 
-        return SellCargoData::fromResponse(
-            $this->post('my/ships/' . $shipSymbol . '/sell', $payload)
+        return ShipCargoData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/jettison', $payload)
+                ->json('data')['cargo']
+        );
+    }
+
+    public function jumpShip(string $shipSymbol, string $systemSymbol): JumpShipData
+    {
+        $payload = ['systemSymbol' => $systemSymbol];
+
+        return JumpShipData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/jump', $payload)
                 ->json('data')
         );
     }
@@ -308,6 +338,71 @@ class SpaceTraders
 
         return NavigateShipData::fromResponse(
             $this->post('my/ships/' . $shipSymbol . '/navigate', $payload)
+                ->json('data')
+        );
+    }
+
+    public function patchShipNav(string $shipSymbol, FlightModes $flightMode): NavigationData
+    {
+        $payload = ['flightMode' => $flightMode];
+
+        return NavigationData::fromResponse(
+            $this->patch('my/ships/' . $shipSymbol . '/nav', $payload)
+                ->json('data')
+        );
+    }
+
+    public function getShipNav(string $shipSymbol): NavigationData
+    {
+        return NavigationData::fromResponse(
+            $this->get('my/ships/' . $shipSymbol . '/nav')
+                ->json('data')
+        );
+    }
+
+    public function warpShip(string $shipSymbol, string $waypointSymbol): NavigateShipData
+    {
+        $payload = ['waypointSymbol' => $waypointSymbol];
+
+        return NavigateShipData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/warp', $payload)
+                ->json('data')
+        );
+    }
+
+    public function sellCargo(string $shipSymbol, TradeSymbols $tradeSymbol, int $units): SellCargoData
+    {
+        $payload = [
+            'symbol' => $tradeSymbol->value,
+            'units' => $units,
+        ];
+
+        return SellCargoData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/sell', $payload)
+                ->json('data')
+        );
+    }
+
+    public function scanSystems(string $shipSymbol): ScanSystemsData
+    {
+        return ScanSystemsData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/scan/systems')
+                ->json('data')
+        );
+    }
+
+    public function scanWaypoints(string $shipSymbol): ScanWaypointsData
+    {
+        return ScanWaypointsData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/scan/waypoints')
+                ->json('data')
+        );
+    }
+
+    public function scanShips(string $shipSymbol): ScanShipsData
+    {
+        return ScanShipsData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/scan/ships')
                 ->json('data')
         );
     }

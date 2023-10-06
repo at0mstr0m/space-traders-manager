@@ -8,8 +8,9 @@ use App\Enums\TradeSymbols;
 use Spatie\LaravelData\Data;
 use InvalidArgumentException;
 use App\Traits\HasCollectionFromResponse;
+use App\Interfaces\GeneratableFromResponse;
 
-class ImportExportExchangeGoodData extends Data
+class ImportExportExchangeGoodData extends Data implements GeneratableFromResponse
 {
     use HasCollectionFromResponse;
 
