@@ -249,6 +249,14 @@ class SpaceTraders
             );
     }
 
+    public function getShip(string $shipSymbol): ShipData
+    {
+        return ShipData::fromResponse(
+            $this->get('my/ships/' . $shipSymbol)
+                ->json('data')
+        );
+    }
+
     public function getShipCargo(string $shipSymbol): ShipCargoData
     {
         return ShipCargoData::fromResponse(
