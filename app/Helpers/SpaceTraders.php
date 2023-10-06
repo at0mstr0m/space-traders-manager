@@ -30,6 +30,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Data\DeliverCargoToContractData;
+use App\Data\JumpGateData;
 use App\Data\SystemData;
 use App\Enums\FactionSymbols;
 use Illuminate\Http\Client\PendingRequest;
@@ -364,20 +365,22 @@ class SpaceTraders
             ->filter(fn (WaypointData $waypoint) => $waypoint->type === $waypointType->value);
     }
 
-    public function getWaypoint(string $symbol): Collection
+    public function getWaypoint(string $waypointSymbol): WaypointData
     {
-        [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
+        $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol)
-            ->collect('data');
+        return WaypointData::fromResponse(
+            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol)
+                ->json('data')
+        );
     }
 
-    public function getMarket(string $symbol): MarketData
+    public function getMarket(string $waypointSymbol): MarketData
     {
-        [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
+        $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
         return MarketData::fromResponse(
-            $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/market')
+            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/market')
                 ->json('data')
         );
     }
@@ -395,21 +398,23 @@ class SpaceTraders
             );
     }
 
-    public function getShipyard(string $symbol): ShipyardData
+    public function getShipyard(string $waypointSymbol): ShipyardData
     {
-        [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
+        $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
         return ShipyardData::fromResponse(
-            $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/shipyard')
+            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/shipyard')
                 ->json('data')
         );
     }
 
-    public function getJumpGate(string $symbol): Collection
+    public function getJumpGate(string $waypointSymbol): JumpGateData
     {
-        [$sector, $system, $waypoint] = LocationHelper::parseLocation($symbol);
+        $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return $this->get('systems/' . $sector . '-' . $system . '/waypoints/' . $symbol . '/jump-gate')
-            ->collect('data');
+        return JumpGateData::fromResponse(
+            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/jump-gate')
+                ->json('data')
+        );
     }
 }
