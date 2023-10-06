@@ -23,11 +23,13 @@ use App\Enums\WaypointTypes;
 use App\Data\TransactionData;
 use App\Data\NavigateShipData;
 use App\Data\WaypointTraitData;
+use App\Data\AcceptOrFulfillContractData;
 use Illuminate\Support\Collection;
 use App\Enums\WaypointTraitSymbols;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use App\Data\DeliverCargoToContractData;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Response as HttpResponse;
 
@@ -152,14 +154,20 @@ class SpaceTraders
             : $data;
     }
 
-    public function getContract(string $contractId)
+    public function getContract(string $contractId): ContractData
     {
-        return $this->get('my/contracts/' . $contractId)->collect('data');
+        return ContractData::fromResponse(
+            $this->get('my/contracts/' . $contractId)
+                ->json('data')
+        );
     }
 
-    public function acceptContract(string $contractId)
+    public function acceptContract(string $contractId): AcceptOrFulfillContractData
     {
-        return $this->post('my/contracts/' . $contractId . '/accept')->collect('data');
+        return AcceptOrFulfillContractData::fromResponse(
+            $this->post('my/contracts/' . $contractId . '/accept')
+                ->json('data')
+        );
     }
 
     public function deliverCargoToContract(
@@ -167,15 +175,25 @@ class SpaceTraders
         string $shipSymbol,
         TradeSymbols $tradeSymbol,
         int $units
-    ) {
+    ): DeliverCargoToContractData {
         $payload = [
             'shipSymbol' => $shipSymbol,
             'tradeSymbol' => $tradeSymbol->value,
             'units' => $units,
         ];
 
-        return $this->post('my/contracts/' . $contractId . '/deliver', $payload)
-            ->collect('data');
+        return DeliverCargoToContractData::fromResponse(
+            $this->post('my/contracts/' . $contractId . '/deliver', $payload)
+                ->json('data')
+        );
+    }
+
+    public function fulfillContract(string $contractId): AcceptOrFulfillContractData
+    {
+        return AcceptOrFulfillContractData::fromResponse(
+            $this->post('my/contracts/' . $contractId . '/accept')
+                ->json('data')
+        );
     }
 
     public function listFactions(int $perPage = 10, int $page = 1, bool $all = false): Collection
