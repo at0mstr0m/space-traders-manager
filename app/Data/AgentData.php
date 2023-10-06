@@ -9,13 +9,15 @@ use App\Traits\HasModel;
 use Spatie\LaravelData\Data;
 use App\Interfaces\WithModelInstance;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
 
 class AgentData extends Data implements WithModelInstance, GeneratableFromResponse
 {
     use HasModel;
+    use HasCollectionFromResponse;
 
     public function __construct(
-        public string $accountId,
+        public ?string $accountId = null,
         public string $symbol,
         public string $headquarters,
         public int $credits,
@@ -27,7 +29,7 @@ class AgentData extends Data implements WithModelInstance, GeneratableFromRespon
     public static function fromResponse(array $response): static
     {
         return new static(
-            accountId: $response['accountId'],
+            accountId: data_get($response, 'accountId'),
             symbol: $response['symbol'],
             headquarters: $response['headquarters'],
             credits: $response['credits'],
@@ -38,6 +40,9 @@ class AgentData extends Data implements WithModelInstance, GeneratableFromRespon
 
     public function makeModelInstance(): Model
     {
+        if (!$this->accountId) {
+            throw new \Exception('Cannot create an Agent Model without an accountId');
+        }
         return $this->makeModel()->setAttributes([
             'account_id' => $this->accountId,
             'symbol' => $this->symbol,

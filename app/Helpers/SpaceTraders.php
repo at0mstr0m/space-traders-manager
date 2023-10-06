@@ -30,6 +30,8 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Data\DeliverCargoToContractData;
+use App\Data\SystemData;
+use App\Enums\FactionSymbols;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Response as HttpResponse;
 
@@ -134,9 +136,14 @@ class SpaceTraders
         return AgentData::from($this->get('my/agent')->collect('data'));
     }
 
-    public function listAgents()
+    public function listAgents(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
-        return $this->get('agents')->collect('data');
+        $response = $this->get('agents', ['limit' => $perPage, 'page' => $page]);
+        $data = AgentData::collection($response->json('data'))->toCollection();
+
+        return $all
+            ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
+            : $data;
     }
 
     public function getPublicAgent(string $agentSymbol)
@@ -147,7 +154,7 @@ class SpaceTraders
     public function listContracts(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
         $response = $this->get('my/contracts', ['limit' => $perPage, 'page' => $page]);
-        $data = ContractData::collection($response->collect('data'))->toCollection();
+        $data = ContractData::collection($response->json('data'))->toCollection();
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
@@ -199,17 +206,25 @@ class SpaceTraders
     public function listFactions(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
         $response = $this->get('factions', ['limit' => $perPage, 'page' => $page]);
-        $data = FactionData::collection($response->collect('data'))->toCollection();
+        $data = FactionData::collection($response->json('data'))->toCollection();
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
             : $data;
     }
 
+    public function getFaction(FactionSymbols $factionSymbol): FactionData
+    {
+        return FactionData::fromResponse(
+            $this->get('factions/' . $factionSymbol->value)
+                ->json('data')
+        );
+    }
+
     public function listShips(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
         $response = $this->get('my/ships', ['limit' => $perPage, 'page' => $page]);
-        $data = ShipData::collection($response->collect('data'))->toCollection();
+        $data = ShipData::collection($response->json('data'))->toCollection();
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
@@ -243,16 +258,18 @@ class SpaceTraders
 
     public function orbitShip(string $shipSymbol): NavigationData
     {
-        return $this->post('my/ships/' . $shipSymbol . '/orbit')
-            ->collect('data')
-            ->pipe(fn (Collection $data) => NavigationData::fromResponse($data['nav']));
+        return NavigationData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/orbit')
+                ->json('data')
+        );
     }
 
     public function dockShip(string $shipSymbol): NavigationData
     {
-        return $this->post('my/ships/' . $shipSymbol . '/dock')
-            ->collect('data')
-            ->pipe(fn (Collection $data) => NavigationData::fromResponse($data['nav']));
+        return NavigationData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/dock')
+                ->json('data')
+        );
     }
 
     public function extractResources(string $shipSymbol): ExtractionData
@@ -297,15 +314,19 @@ class SpaceTraders
     public function listSystems(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
         $response = $this->get('systems', ['limit' => $perPage, 'page' => $page]);
+        $data = SystemData::collection($response->json('data'))->toCollection();
 
         return $all
-            ? $this->getAllPages($response, __FUNCTION__, $page)
-            : $response->collect('data');
+            ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
+            : $data;
     }
 
-    public function getSystem(string $systemSymbol): Collection
+    public function getSystem(string $systemSymbol): SystemData
     {
-        return $this->get('systems/' . $systemSymbol)->collect('data');
+        return SystemData::fromResponse(
+            $this->get('systems/' . $systemSymbol)
+                ->json('data')
+        );
     }
 
     public function listWaypointsInSystem(string $systemSymbol, int $perPage = 10, int $page = 1, bool $all = false): Collection
@@ -317,7 +338,7 @@ class SpaceTraders
                 'page' => $page,
             ]
         );
-        $data = WaypointData::collection($response->collect('data'))->toCollection();
+        $data = WaypointData::collection($response->json('data'))->toCollection();
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
