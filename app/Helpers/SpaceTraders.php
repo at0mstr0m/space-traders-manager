@@ -6,6 +6,7 @@ namespace App\Helpers;
 
 use App\Data\ShipData;
 use App\Data\AgentData;
+use App\Data\MountData;
 use App\Data\MarketData;
 use App\Data\SystemData;
 use App\Enums\ShipTypes;
@@ -17,8 +18,8 @@ use App\Data\ShipyardData;
 use App\Data\WaypointData;
 use App\Enums\FlightModes;
 use App\Data\ScanShipsData;
-use App\Data\SellCargoData;
 use App\Data\ShipCargoData;
+use App\Enums\MountSymbols;
 use App\Enums\TradeSymbols;
 use App\Data\ExtractionData;
 use App\Data\NavigationData;
@@ -36,10 +37,13 @@ use Illuminate\Support\Carbon;
 use App\Data\ScanWaypointsData;
 use App\Data\WaypointTraitData;
 use Illuminate\Support\Collection;
+use App\Data\PurchaseSellCargoData;
 use App\Enums\WaypointTraitSymbols;
+use App\Data\InstallRemoveMountData;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Spatie\LaravelData\DataCollection;
 use App\Data\DeliverCargoToContractData;
 use App\Data\AcceptOrFulfillContractData;
 use Illuminate\Http\Client\PendingRequest;
@@ -370,14 +374,14 @@ class SpaceTraders
         );
     }
 
-    public function sellCargo(string $shipSymbol, TradeSymbols $tradeSymbol, int $units): SellCargoData
+    public function sellCargo(string $shipSymbol, TradeSymbols $tradeSymbol, int $units): PurchaseSellCargoData
     {
         $payload = [
             'symbol' => $tradeSymbol->value,
             'units' => $units,
         ];
 
-        return SellCargoData::fromResponse(
+        return PurchaseSellCargoData::fromResponse(
             $this->post('my/ships/' . $shipSymbol . '/sell', $payload)
                 ->json('data')
         );
@@ -411,6 +415,73 @@ class SpaceTraders
     {
         return RefuelShipData::fromResponse(
             $this->post('my/ships/' . $shipSymbol . '/refuel')
+                ->json('data')
+        );
+    }
+
+    public function purchaseCargo(string $shipSymbol, TradeSymbols $tradeSymbol, int $units): PurchaseSellCargoData
+    {
+        $payload = [
+            'symbol' => $tradeSymbol->value,
+            'units' => $units,
+        ];
+
+        return PurchaseSellCargoData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/purchase', $payload)
+                ->json('data')
+        );
+    }
+
+    public function transferCargo(
+        string $transferringShipSymbol,
+        string $receivingShipSymbol,
+        TradeSymbols $tradeSymbol,
+        int $units
+    ): ShipCargoData {
+        $payload = [
+            'symbol' => $tradeSymbol->value,
+            'units' => $units,
+            'shipSymbol' => $receivingShipSymbol,
+        ];
+
+        return ShipCargoData::fromResponse(
+            $this->post('my/ships/' . $transferringShipSymbol . '/transfer', $payload)
+                ->json('data')['cargo']
+        );
+    }
+
+    public function negotiateContract(string $shipSymbol): ContractData
+    {
+        return ContractData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/negotiate/contract')
+                ->json('data')
+        );
+    }
+
+    public function getMounts(string $shipSymbol): Collection
+    {
+        return MountData::collectionFromResponse(
+            $this->get('my/ships/' . $shipSymbol . '/mounts')
+                ->json('data')
+        )->toCollection();
+    }
+
+    public function installMount(string $shipSymbol, MountSymbols $mountSymbol): InstallRemoveMountData
+    {
+        $payload = ['symbol' => $mountSymbol->value];
+
+        return InstallRemoveMountData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/mounts/install', $payload)
+                ->json('data')
+        );
+    }
+
+    public function removeMount(string $shipSymbol, MountSymbols $mountSymbol): InstallRemoveMountData
+    {
+        $payload = ['symbol' => $mountSymbol->value];
+
+        return InstallRemoveMountData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/mounts/remove', $payload)
                 ->json('data')
         );
     }

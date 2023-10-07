@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Enums\ShipRoles;
 use App\Enums\FlightModes;
-use App\Data\SellCargoData;
+use App\Data\PurchaseSellCargoData;
 use App\Data\ShipCargoData;
 use App\Enums\TradeSymbols;
 use App\Data\ExtractionData;
@@ -160,7 +160,7 @@ class Ship extends Model
         return $api->extractResources($this->symbol);
     }
 
-    public function sellCargo(TradeSymbols $tradeSymbol, int $units): SellCargoData
+    public function sellCargo(TradeSymbols $tradeSymbol, int $units): PurchaseSellCargoData
     {
         /** @var SpaceTraders */
         $api = app(SpaceTraders::class);
