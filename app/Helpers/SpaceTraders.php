@@ -454,7 +454,7 @@ class SpaceTraders
     {
         return ContractData::fromResponse(
             $this->post('my/ships/' . $shipSymbol . '/negotiate/contract')
-                ->json('data')
+                ->json('data')['contract']
         );
     }
 
