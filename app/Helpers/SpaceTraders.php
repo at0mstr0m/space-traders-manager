@@ -267,7 +267,7 @@ class SpaceTraders
     {
         return NavigationData::fromResponse(
             $this->post('my/ships/' . $shipSymbol . '/orbit')
-                ->json('data')
+                ->json('data')['nav']
         );
     }
 
@@ -301,7 +301,7 @@ class SpaceTraders
     {
         return NavigationData::fromResponse(
             $this->post('my/ships/' . $shipSymbol . '/dock')
-                ->json('data')
+                ->json('data')['nav']
         );
     }
 
