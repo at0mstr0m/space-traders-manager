@@ -4,126 +4,60 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Data\ShipData;
+use App\Data\AcceptOrFulfillContractData;
 use App\Data\AgentData;
-use App\Data\MountData;
-use App\Data\MarketData;
-use App\Data\SystemData;
-use App\Enums\ShipTypes;
-use App\Data\FactionData;
 use App\Data\ContractData;
+use App\Data\CreateChartData;
+use App\Data\DeliverCargoToContractData;
+use App\Data\ExtractionData;
+use App\Data\FactionData;
+use App\Data\InstallRemoveMountData;
 use App\Data\JumpGateData;
 use App\Data\JumpShipData;
-use App\Data\ShipyardData;
-use App\Data\WaypointData;
-use App\Enums\FlightModes;
-use App\Data\ScanShipsData;
-use App\Data\ShipCargoData;
-use App\Enums\MountSymbols;
-use App\Enums\TradeSymbols;
-use App\Data\ExtractionData;
-use App\Data\NavigationData;
-use App\Data\RefuelShipData;
-use App\Data\ShipRefineData;
-use App\Data\TradeGoodsData;
-use App\Enums\WaypointTypes;
-use App\Data\CreateChartData;
-use App\Data\ScanSystemsData;
-use App\Data\TransactionData;
-use App\Enums\FactionSymbols;
-use App\Enums\RefinementGood;
+use App\Data\MarketData;
+use App\Data\MountData;
 use App\Data\NavigateShipData;
-use Illuminate\Support\Carbon;
-use App\Data\ScanWaypointsData;
-use App\Data\WaypointTraitData;
-use Illuminate\Support\Collection;
+use App\Data\NavigationData;
 use App\Data\PurchaseSellCargoData;
+use App\Data\RefuelShipData;
+use App\Data\ScanShipsData;
+use App\Data\ScanSystemsData;
+use App\Data\ScanWaypointsData;
+use App\Data\ShipCargoData;
+use App\Data\ShipData;
+use App\Data\ShipRefineData;
+use App\Data\ShipyardData;
+use App\Data\SystemData;
+use App\Data\TradeGoodsData;
+use App\Data\TransactionData;
+use App\Data\WaypointData;
+use App\Data\WaypointTraitData;
+use App\Enums\FactionSymbols;
+use App\Enums\FlightModes;
+use App\Enums\MountSymbols;
+use App\Enums\RefinementGood;
+use App\Enums\ShipTypes;
+use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
-use App\Data\InstallRemoveMountData;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
-use Spatie\LaravelData\DataCollection;
-use App\Data\DeliverCargoToContractData;
-use App\Data\AcceptOrFulfillContractData;
+use App\Enums\WaypointTypes;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class SpaceTraders
 {
     private const LIMITER_ONE = 'REQUEST_COUNT_1';
+
     private const LIMITER_TWO = 'REQUEST_COUNT_2';
 
     public function __construct(
         private string $token,
         private string $url = 'https://api.spacetraders.io/v2/',
-    ) {
-    }
-
-    // only allow 2 requests per second
-    private function avoidRateLimit(): void
-    {
-        if (!Cache::get(static::LIMITER_ONE) && !Cache::get(static::LIMITER_TWO)) {
-            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
-        } elseif (Cache::get(static::LIMITER_ONE) && Cache::get(static::LIMITER_TWO)) {
-            sleep(1);
-            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
-        } elseif (Cache::get(static::LIMITER_ONE)) {
-            Cache::remember(static::LIMITER_TWO, now()->addSecond(), fn () => true);
-        }
-    }
-
-    private function baseRequest(): PendingRequest
-    {
-        $this->avoidRateLimit();
-        return HTTP::withToken($this->token);
-    }
-
-    private function get(string $path = '', array $query = []): Response
-    {
-        return $this->baseRequest()
-            ->get($this->url . $path, $query)
-            ->throwUnlessStatus(HttpResponse::HTTP_OK);
-    }
-
-    private function post(string $path = '', array $payload = []): Response
-    {
-        return $this->baseRequest()
-            ->post($this->url . $path, $payload)
-            ->throwUnlessStatus(HttpResponse::HTTP_OK);
-    }
-
-    private function patch(string $path = '', array $payload = []): Response
-    {
-        return $this->baseRequest()
-            ->patch($this->url . $path, $payload)
-            ->throwUnlessStatus(HttpResponse::HTTP_OK);
-    }
-
-    private function getAllPagesData(
-        Collection $data,
-        Response $response,
-        string $methodName,
-        int $page,
-        array $arguments = []
-    ): Collection {
-        $meta = $response->collect('meta');
-        $totalNumber = data_get($meta, 'total');
-        $perPage = data_get($meta, 'limit');
-        $totalPages = (int) ceil($totalNumber / $perPage);
-
-        for ($currentPage = $page + 1; $currentPage <= $totalPages; $currentPage++) {
-            $data = $data->concat($this->{$methodName}(
-                ...[
-                    'perPage' => $perPage,
-                    'page' => $currentPage,
-                    ...$arguments,
-                ]
-            ));
-        }
-
-        return $data;
-    }
+    ) {}
 
     public function getStatus()
     {
@@ -236,6 +170,7 @@ class SpaceTraders
             'shipType' => $shipType->value,
             'waypointSymbol' => $waypointSymbol,
         ];
+
         return $this->post('my/ships', $payload)
             ->collect('data')
             ->pipe(
@@ -594,7 +529,7 @@ class SpaceTraders
 
         return collect($tradeSymbols)->unique()
             ->mapWithKeys(fn (TradeSymbols $tradeSymbol) => [
-                $tradeSymbol->value => self::filterMarketsByTradeSymbol($marketplaces, $tradeSymbol)
+                $tradeSymbol->value => self::filterMarketsByTradeSymbol($marketplaces, $tradeSymbol),
             ])
             ->map(fn (Collection $marketplaces) => $marketplaces->first());
     }
@@ -617,6 +552,72 @@ class SpaceTraders
             $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/jump-gate')
                 ->json('data')
         );
+    }
+
+    // only allow 2 requests per second
+    private function avoidRateLimit(): void
+    {
+        if (!Cache::get(static::LIMITER_ONE) && !Cache::get(static::LIMITER_TWO)) {
+            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
+        } elseif (Cache::get(static::LIMITER_ONE) && Cache::get(static::LIMITER_TWO)) {
+            sleep(1);
+            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
+        } elseif (Cache::get(static::LIMITER_ONE)) {
+            Cache::remember(static::LIMITER_TWO, now()->addSecond(), fn () => true);
+        }
+    }
+
+    private function baseRequest(): PendingRequest
+    {
+        $this->avoidRateLimit();
+
+        return HTTP::withToken($this->token);
+    }
+
+    private function get(string $path = '', array $query = []): Response
+    {
+        return $this->baseRequest()
+            ->get($this->url . $path, $query)
+            ->throwUnlessStatus(HttpResponse::HTTP_OK);
+    }
+
+    private function post(string $path = '', array $payload = []): Response
+    {
+        return $this->baseRequest()
+            ->post($this->url . $path, $payload)
+            ->throwUnlessStatus(HttpResponse::HTTP_OK);
+    }
+
+    private function patch(string $path = '', array $payload = []): Response
+    {
+        return $this->baseRequest()
+            ->patch($this->url . $path, $payload)
+            ->throwUnlessStatus(HttpResponse::HTTP_OK);
+    }
+
+    private function getAllPagesData(
+        Collection $data,
+        Response $response,
+        string $methodName,
+        int $page,
+        array $arguments = []
+    ): Collection {
+        $meta = $response->collect('meta');
+        $totalNumber = data_get($meta, 'total');
+        $perPage = data_get($meta, 'limit');
+        $totalPages = (int) ceil($totalNumber / $perPage);
+
+        for ($currentPage = $page + 1; $currentPage <= $totalPages; ++$currentPage) {
+            $data = $data->concat($this->{$methodName}(
+                ...[
+                    'perPage' => $perPage,
+                    'page' => $currentPage,
+                    ...$arguments,
+                ]
+            ));
+        }
+
+        return $data;
     }
 
     private static function filterMarketsByTradeSymbol(Collection $marketplaces, TradeSymbols $tradeSymbol): Collection
