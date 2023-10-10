@@ -24,7 +24,7 @@ class WaypointData extends Data implements GeneratableFromResponse
         public ?DataCollection $orbitals = null,
         #[DataCollectionOf(WaypointTraitData::class)]
         public ?DataCollection $traits = null,
-        public ?string $orbits,
+        public ?string $orbits = null,
     ) {
         match (true) {
             !WaypointTypes::isValid($type) => throw new InvalidArgumentException("Invalid waypoint type: {$type}"),

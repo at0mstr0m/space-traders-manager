@@ -18,11 +18,11 @@ class ModuleData extends Data implements GeneratableFromResponse
         public string $symbol,
         public string $name,
         public string $description,
-        public ?int $capacity = null,
-        public ?int $range = null,
         public int $requiredPower,
         public int $requiredCrew,
         public int $requiredSlots,
+        public ?int $capacity = null,
+        public ?int $range = null,
     ) {
         if (!ModuleSymbols::isValid($symbol)) {
             throw new InvalidArgumentException("Invalid module symbol: {$symbol}");

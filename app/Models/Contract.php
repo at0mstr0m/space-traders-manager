@@ -6,6 +6,8 @@ namespace App\Models;
 
 use App\Enums\ContractTypes;
 use App\Enums\FactionSymbols;
+use App\Helpers\SpaceTraders;
+use App\Actions\UpdateContractAction;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,6 +17,7 @@ class Contract extends Model
         'identification',
         'faction_symbol',
         'type',
+        'accepted',
         'fulfilled',
         'deadline',
         'payment_on_accepted',
@@ -25,6 +28,7 @@ class Contract extends Model
         'identification' => 'string',
         'faction_symbol' => FactionSymbols::class,
         'type' => ContractTypes::class,
+        'accepted' => 'boolean',
         'fulfilled' => 'boolean',
         'deadline' => 'datetime',
         'payment_on_accepted' => 'integer',
@@ -39,5 +43,28 @@ class Contract extends Model
     public function deliveries(): HasMany
     {
         return $this->hasMany(Delivery::class);
+    }
+
+    public function refetch(): self
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return UpdateContractAction::run(
+            $api->getContract($this->identification),
+            $this->agent
+        );
+    }
+
+    public function fulfill(): bool
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        $api->fulfillContract($this->identification);
+
+        //todo: add agent update
+
+        return $this->delete();
     }
 }

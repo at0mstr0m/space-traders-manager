@@ -9,8 +9,12 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class Model extends EloquentModel
 {
-    public function fillAndSave(array $attributes): bool
+    public function fillAndSave(Arrayable|array $attributes): bool
     {
+        if (!is_array($attributes)) {
+            $attributes = $attributes->toArray();
+        }
+
         return $this->fill($attributes)->save();
     }
 

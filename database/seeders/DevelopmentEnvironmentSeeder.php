@@ -6,6 +6,7 @@ use App\Jobs\UpdateContracts;
 use Illuminate\Database\Seeder;
 use App\Actions\RelateAgentToUser;
 use App\Jobs\UpdateExistingFactions;
+use App\Jobs\UpdateShips;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DevelopmentEnvironmentSeeder extends Seeder
@@ -18,5 +19,6 @@ class DevelopmentEnvironmentSeeder extends Seeder
         UpdateExistingFactions::dispatchSync();
         RelateAgentToUser::run();
         UpdateContracts::dispatchSync();
+        UpdateShips::dispatchSync();
     }
 }

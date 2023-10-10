@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TradeSymbols;
+use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cargo extends Model
 {
+    use FindableBySymbol;
+
     protected $fillable = [
         'symbol',
         'name',
@@ -16,7 +20,7 @@ class Cargo extends Model
     ];
 
     protected $casts = [
-        'symbol' => 'string',
+        'symbol' => TradeSymbols::class,
         'name' => 'string',
         'description' => 'string',
         'units' => 'integer',

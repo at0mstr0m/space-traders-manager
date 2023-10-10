@@ -17,24 +17,24 @@ class AgentData extends Data implements WithModelInstance, GeneratableFromRespon
     use HasCollectionFromResponse;
 
     public function __construct(
-        public ?string $accountId = null,
         public string $symbol,
         public string $headquarters,
         public int $credits,
         public string $startingFaction,
         public ?int $shipCount = null,
+        public ?string $accountId = null,
     ) {
     }
 
     public static function fromResponse(array $response): static
     {
         return new static(
-            accountId: data_get($response, 'accountId'),
             symbol: $response['symbol'],
             headquarters: $response['headquarters'],
             credits: $response['credits'],
             startingFaction: $response['startingFaction'],
             shipCount: $response['shipCount'],
+            accountId: data_get($response, 'accountId'),
         );
     }
 

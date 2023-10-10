@@ -6,8 +6,10 @@ namespace App\Data;
 
 use Spatie\LaravelData\Data;
 use App\Interfaces\GeneratableFromResponse;
+use App\Interfaces\UpdatesShip;
+use App\Models\Ship;
 
-class RefuelShipData extends Data implements GeneratableFromResponse
+class RefuelShipData extends Data implements GeneratableFromResponse, UpdatesShip
 {
     public function __construct(
         public AgentData $agent,
@@ -23,5 +25,10 @@ class RefuelShipData extends Data implements GeneratableFromResponse
             fuel: FuelData::fromResponse($response['fuel']),
             transaction: MarketTransactionData::fromResponse($response['transaction']),
         );
+    }
+
+    public function updateShip(Ship $ship): Ship
+    {
+        return $this->fuel->updateShip($ship);
     }
 }

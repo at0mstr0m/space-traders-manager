@@ -6,22 +6,20 @@ namespace App\Models;
 
 use App\Enums\ShipRoles;
 use App\Enums\FlightModes;
-use App\Data\PurchaseSellCargoData;
-use App\Data\ShipCargoData;
 use App\Enums\TradeSymbols;
-use App\Data\ExtractionData;
-use App\Data\NavigationData;
-use App\Data\RefuelShipData;
 use App\Enums\CrewRotations;
 use App\Enums\ShipNavStatus;
 use App\Helpers\SpaceTraders;
-use App\Data\NavigateShipData;
+use App\Traits\FindableBySymbol;
+use App\Actions\UpdateShipAction;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Ship extends Model
 {
+    use FindableBySymbol;
+
     protected $with = [
         'modules'
     ];
@@ -76,6 +74,38 @@ class Ship extends Model
         'cargo_units' => 'integer',
     ];
 
+    public function getIsDockedAttribute(): bool
+    {
+        return $this->status === ShipNavStatus::DOCKED;
+    }
+
+    public function getIsInOrbitAttribute(): bool
+    {
+        return $this->status === ShipNavStatus::IN_ORBIT;
+    }
+
+    public function getIsInTransitAttribute(): bool
+    {
+        return $this->status === ShipNavStatus::IN_TRANSIT;
+    }
+
+    public function getIsFullyLoadedAttribute(): bool
+    {
+        return $this->cargo_capacity === $this->cargo_units;
+    }
+
+    public function isLoadedWith(TradeSymbols $tradeSymbol): bool
+    {
+        return $this->cargos()
+            ->where('symbol', $tradeSymbol->value)
+            ->exists();
+    }
+
+    private function useApi(): SpaceTraders
+    {
+        return app(SpaceTraders::class);
+    }
+
     public function agent(): BelongsTo
     {
         return $this->belongsTo(Agent::class);
@@ -120,59 +150,119 @@ class Ship extends Model
         return $this->hasMany(Cargo::class);
     }
 
-    public function moveIntoOrbit(): NavigationData
+    public function refetch(): self
     {
-        /** @var SpaceTraders */
-        $api = app(SpaceTraders::class);
-
-        return $api->orbitShip($this->symbol);
+        return UpdateShipAction::run(
+            $this->useApi()->getShip($this->symbol),
+            $this->agent
+        );
     }
 
-    public function navigateTo(string $waypointSymbol): NavigateShipData
+    public function moveIntoOrbit(): self
     {
-        /** @var SpaceTraders */
-        $api = app(SpaceTraders::class);
+        $this->useApi()
+            ->orbitShip($this->symbol)
+            ->updateShip($this)
+            ->save();
 
-        return $api->navigateShip($this->symbol, $waypointSymbol);
+        return $this;
     }
 
-    public function dock(): NavigationData
+    public function navigateTo(string $waypointSymbol): self
     {
-        /** @var SpaceTraders */
-        $api = app(SpaceTraders::class);
+        $this->moveIntoOrbit()
+            ->useApi()
+            ->navigateShip($this->symbol, $waypointSymbol)
+            ->updateShip($this)
+            ->save();
 
-        return $api->dockShip($this->symbol);
+        return $this;
     }
 
-    public function refuel(): RefuelShipData
+    public function dock(): self
     {
-        /** @var SpaceTraders */
-        $api = app(SpaceTraders::class);
+        $this->useApi()
+            ->dockShip($this->symbol)
+            ->updateShip($this)
+            ->save();
 
-        return $api->refuelShip($this->symbol);
+        return $this;
     }
 
-    public function extractResources(): ExtractionData
+    public function refuel(): self
     {
-        /** @var SpaceTraders */
-        $api = app(SpaceTraders::class);
+        $this->dock()
+            ->useApi()
+            ->refuelShip($this->symbol)
+            ->updateShip($this)
+            ->save();
 
-        return $api->extractResources($this->symbol);
+        return $this;
     }
 
-    public function sellCargo(TradeSymbols $tradeSymbol, int $units): PurchaseSellCargoData
+    public function extractResources(): self
     {
-        /** @var SpaceTraders */
-        $api = app(SpaceTraders::class);
+        $this->useApi()
+            ->extractResources($this->symbol)
+            ->updateShip($this)
+            ->save();
 
-        return $api->sellCargo($this->symbol, $tradeSymbol, $units);
+        return $this;
     }
 
-    public function fetchCargo(): ShipCargoData
+    public function purchaseCargo(TradeSymbols $tradeSymbol, int $units): self
     {
-        /** @var SpaceTraders */
-        $api = app(SpaceTraders::class);
+        $this->dock()
+            ->useApi()
+            ->purchaseCargo($this->symbol, $tradeSymbol, $units)
+            ->updateShip($this)
+            ->save();
 
-        return $api->getShipCargo($this->symbol);
+        return $this;
+    }
+
+    public function sellCargo(TradeSymbols $tradeSymbol, int $units): self
+    {
+        $this->dock()
+            ->useApi()
+            ->sellCargo($this->symbol, $tradeSymbol, $units)
+            ->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
+    public function fetchCargo(): self
+    {
+        $this->useApi()
+            ->getShipCargo($this->symbol)
+            ->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
+    public function jettisonCargo(TradeSymbols $tradeSymbol, int $units): self
+    {
+        $this->useApi()
+            ->jettisonCargo($this->symbol, $tradeSymbol, $units)
+            ->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
+    public function deliverCargoToContract(string $contractId, TradeSymbols $tradeSymbol, int $units): self
+    {
+        $this->useApi()
+            ->deliverCargoToContract(
+                $contractId,
+                $this->symbol,
+                $tradeSymbol,
+                $units
+            )->updateShip($this)
+            ->save();
+
+        return $this;
     }
 }

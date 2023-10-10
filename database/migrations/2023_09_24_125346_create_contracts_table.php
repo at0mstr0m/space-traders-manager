@@ -21,6 +21,7 @@ return new class extends Migration
             $table->tinyText('identification');
             $table->enum('faction_symbol', FactionSymbols::values());
             $table->enum('type', ContractTypes::values());
+            $table->boolean('accepted');
             $table->boolean('fulfilled');
             $table->dateTime('deadline');
             $table->dateTime('deadline_to_accept');

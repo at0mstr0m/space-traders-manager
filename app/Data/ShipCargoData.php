@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Models\Ship;
+use App\Models\Cargo;
 use Spatie\LaravelData\Data;
+use App\Interfaces\UpdatesShip;
 use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 
-class ShipCargoData extends Data implements GeneratableFromResponse
+class ShipCargoData extends Data implements GeneratableFromResponse, UpdatesShip
 {
     public function __construct(
         public int $capacity,
@@ -26,5 +29,21 @@ class ShipCargoData extends Data implements GeneratableFromResponse
             units: $response['units'],
             inventory: CargoData::collectionFromResponse($response['inventory']),
         );
+    }
+
+    public function updateShip(Ship $ship): Ship
+    {
+        $ship->fill([
+            'cargo_capacity' => $this->capacity,
+            'cargo_units' => $this->units,
+        ]);
+
+        $ship->cargos()->delete();
+        $this->inventory
+            ->each(
+                fn (CargoData $cargoData) => Cargo::new($cargoData)->ship()->associate($ship)->save()
+            );
+
+        return $ship;
     }
 }

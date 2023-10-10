@@ -20,11 +20,11 @@ class MountData extends Data implements GeneratableFromResponse
         public string $symbol,
         public string $name,
         public string $description,
+        public int $requiredPower,
+        public int $requiredCrew,
         public ?int $strength = null,
         #[DataCollectionOf(DepositData::class)]
         public ?DataCollection $deposits = null,
-        public int $requiredPower,
-        public int $requiredCrew,
     ) {
         if (!MountSymbols::isValid($symbol)) {
             throw new InvalidArgumentException("Invalid mount symbol: {$symbol}");

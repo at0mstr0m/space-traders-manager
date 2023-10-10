@@ -197,7 +197,7 @@ class SpaceTraders
     public function fulfillContract(string $contractId): AcceptOrFulfillContractData
     {
         return AcceptOrFulfillContractData::fromResponse(
-            $this->post('my/contracts/' . $contractId . '/accept')
+            $this->post('my/contracts/' . $contractId . '/fulfill')
                 ->json('data')
         );
     }
@@ -289,12 +289,15 @@ class SpaceTraders
         );
     }
 
-    public function getShipCooldown(string $shipSymbol): Carbon
+    public function getShipCooldown(string $shipSymbol): ?Carbon
     {
-        return Carbon::parse(
+        $response = data_get(
             $this->get('my/ships/' . $shipSymbol . '/cooldown')
-                ->json('data')['expiration']
+                ->json('data'),
+            'expiration'
         );
+
+        return $response ? Carbon::parse($response) : null;
     }
 
     public function dockShip(string $shipSymbol): NavigationData
@@ -504,8 +507,12 @@ class SpaceTraders
         );
     }
 
-    public function listWaypointsInSystem(string $systemSymbol, int $perPage = 10, int $page = 1, bool $all = false): Collection
-    {
+    public function listWaypointsInSystem(
+        string $systemSymbol,
+        int $perPage = 10,
+        int $page = 1,
+        bool $all = false
+    ): Collection {
         $response = $this->get(
             'systems/' . $systemSymbol . '/waypoints',
             [
@@ -520,8 +527,10 @@ class SpaceTraders
             : $data;
     }
 
-    public function listWaypointsInSystemHavingTrait(string $systemSymbol, WaypointTraitSymbols $traitSymbol): Collection
-    {
+    public function listWaypointsInSystemHavingTrait(
+        string $systemSymbol,
+        WaypointTraitSymbols $traitSymbol
+    ): Collection {
         return $this->listWaypointsInSystem($systemSymbol, all: true)
             ->filter(
                 fn (WaypointData $waypoint) => $waypoint->traits
@@ -559,17 +568,35 @@ class SpaceTraders
         );
     }
 
-    public function listMarketplacesInSystemTrading(string $waypointSymbol, TradeSymbols $tradeSymbol): Collection
+    public function listMarketplacesInSystem(string $waypointSymbol): Collection
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return $this->listWaypointsInSystemHavingTrait($systemSymbol, WaypointTraitSymbols::MARKETPLACE)
-            ->map(fn (WaypointData $waypoint) => $this->getMarket($waypoint->symbol))
-            ->filter(
-                fn (MarketData $marketData) => $marketData->tradeGoods->toCollection()->filter(
-                    fn (TradeGoodsData $tradeGoodsData) => $tradeGoodsData->symbol === $tradeSymbol->value
-                )->isNotEmpty()
-            );
+        return $this->listWaypointsInSystemHavingTrait(
+            $systemSymbol,
+            WaypointTraitSymbols::MARKETPLACE
+        )->map(fn (WaypointData $waypoint) => $this->getMarket($waypoint->symbol));
+    }
+
+    public function listMarketplacesInSystemTrading(string $waypointSymbol, TradeSymbols $tradeSymbol): Collection
+    {
+        return self::filterMarketsByTradeSymbol(
+            $this->listMarketplacesInSystem($waypointSymbol),
+            $tradeSymbol
+        );
+    }
+
+    public function listMarketplacesInSystemTradingMany(
+        string $waypointSymbol,
+        Collection|array $tradeSymbols
+    ): Collection {
+        $marketplaces = $this->listMarketplacesInSystem($waypointSymbol);
+
+        return collect($tradeSymbols)->unique()
+            ->mapWithKeys(fn (TradeSymbols $tradeSymbol) => [
+                $tradeSymbol->value => self::filterMarketsByTradeSymbol($marketplaces, $tradeSymbol)
+            ])
+            ->map(fn (Collection $marketplaces) => $marketplaces->first());
     }
 
     public function getShipyard(string $waypointSymbol): ShipyardData
@@ -589,6 +616,17 @@ class SpaceTraders
         return JumpGateData::fromResponse(
             $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/jump-gate')
                 ->json('data')
+        );
+    }
+
+    private static function filterMarketsByTradeSymbol(Collection $marketplaces, TradeSymbols $tradeSymbol): Collection
+    {
+        return $marketplaces->filter(
+            fn (MarketData $marketData) => $marketData->tradeGoods
+                ->toCollection()
+                ->filter(
+                    fn (TradeGoodsData $tradeGoodsData) => $tradeGoodsData->symbol === $tradeSymbol->value
+                )->isNotEmpty()
         );
     }
 }

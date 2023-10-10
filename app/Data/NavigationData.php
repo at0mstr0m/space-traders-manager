@@ -11,8 +11,10 @@ use Spatie\LaravelData\Data;
 use InvalidArgumentException;
 use Illuminate\Support\Carbon;
 use App\Interfaces\GeneratableFromResponse;
+use App\Interfaces\UpdatesShip;
+use App\Models\Ship;
 
-class NavigationData extends Data implements GeneratableFromResponse
+class NavigationData extends Data implements GeneratableFromResponse, UpdatesShip
 {
     public function __construct(
         public string $systemSymbol,
@@ -49,5 +51,20 @@ class NavigationData extends Data implements GeneratableFromResponse
             departureTime: Carbon::parse($response['route']['departureTime']),
             arrival: Carbon::parse($response['route']['arrival']),
         );
+    }
+
+    public function updateShip(Ship $ship): Ship
+    {
+        $now = Carbon::now();
+        $cooldown = $now->isBefore($this->arrival)
+            ? $now->diffInSeconds($this->arrival)
+            : 0;
+
+        return $ship->fill([
+            'waypoint_symbol' => $this->waypointSymbol,
+            'status' => $this->status,
+            'flight_mode' => $this->flightMode,
+            'cooldown' => $cooldown,
+        ]);
     }
 }
