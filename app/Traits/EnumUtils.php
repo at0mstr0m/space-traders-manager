@@ -28,4 +28,16 @@ trait EnumUtils
     {
         return in_array($needle, self::values(), true);
     }
+
+    // https://stackoverflow.com/a/71002493
+    public static function fromName(string $name): self
+    {
+        foreach (self::cases() as $case) {
+            if ($name === $case->name) {
+                return $case;
+            }
+        }
+
+        throw new \ValueError("{$name} is not a valid value for enum " . self::class);
+    }
 }

@@ -4,24 +4,25 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\ShipRoles;
-use App\Enums\FlightModes;
-use App\Enums\TradeSymbols;
+use App\Actions\UpdateShipAction;
 use App\Enums\CrewRotations;
+use App\Enums\FlightModes;
 use App\Enums\ShipNavStatus;
+use App\Enums\ShipRoles;
+use App\Enums\TradeSymbols;
 use App\Helpers\SpaceTraders;
 use App\Traits\FindableBySymbol;
-use App\Actions\UpdateShipAction;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Ship extends Model
 {
     use FindableBySymbol;
 
     protected $with = [
-        'modules'
+        'modules',
     ];
 
     protected $fillable = [
@@ -99,11 +100,6 @@ class Ship extends Model
         return $this->cargos()
             ->where('symbol', $tradeSymbol->value)
             ->exists();
-    }
-
-    private function useApi(): SpaceTraders
-    {
-        return app(SpaceTraders::class);
     }
 
     public function agent(): BelongsTo
@@ -202,7 +198,8 @@ class Ship extends Model
 
     public function extractResources(): self
     {
-        $this->useApi()
+        $this->moveIntoOrbit()
+            ->useApi()
             ->extractResources($this->symbol)
             ->updateShip($this)
             ->save();
@@ -221,11 +218,26 @@ class Ship extends Model
         return $this;
     }
 
-    public function sellCargo(TradeSymbols $tradeSymbol, int $units): self
+    public function sellCargo(TradeSymbols $tradeSymbol, int $units = 0): self
     {
+        $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
+
         $this->dock()
             ->useApi()
             ->sellCargo($this->symbol, $tradeSymbol, $units)
+            ->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
+    public function jettisonCargo(TradeSymbols $tradeSymbol, int $units = 0): self
+    {
+        // jettison all cargo of this type if no units specified
+        $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
+
+        $this->useApi()
+            ->jettisonCargo($this->symbol, $tradeSymbol, $units)
             ->updateShip($this)
             ->save();
 
@@ -236,16 +248,6 @@ class Ship extends Model
     {
         $this->useApi()
             ->getShipCargo($this->symbol)
-            ->updateShip($this)
-            ->save();
-
-        return $this;
-    }
-
-    public function jettisonCargo(TradeSymbols $tradeSymbol, int $units): self
-    {
-        $this->useApi()
-            ->jettisonCargo($this->symbol, $tradeSymbol, $units)
             ->updateShip($this)
             ->save();
 
@@ -264,5 +266,16 @@ class Ship extends Model
             ->save();
 
         return $this;
+    }
+
+    public function getMarketplacesForCargos(): Collection
+    {
+        return $this->useApi()
+            ->listMarketplacesInShipForShipCargos($this);
+    }
+
+    private function useApi(): SpaceTraders
+    {
+        return app(SpaceTraders::class);
     }
 }

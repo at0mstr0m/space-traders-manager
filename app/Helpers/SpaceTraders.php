@@ -40,6 +40,7 @@ use App\Enums\ShipTypes;
 use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;
+use App\Models\Ship;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Response as HttpResponse;
@@ -532,6 +533,17 @@ class SpaceTraders
                 $tradeSymbol->value => self::filterMarketsByTradeSymbol($marketplaces, $tradeSymbol),
             ])
             ->map(fn (Collection $marketplaces) => $marketplaces->first());
+    }
+
+    public function listMarketplacesInShipForShipCargos(Ship $ship): Collection
+    {
+        $waypointSymbol = $ship->waypoint_symbol;
+        $tradeSymbols = $ship->cargos()->pluck('symbol');
+
+        return $this->listMarketplacesInSystemTradingMany(
+            $waypointSymbol,
+            $tradeSymbols
+        );
     }
 
     public function getShipyard(string $waypointSymbol): ShipyardData
