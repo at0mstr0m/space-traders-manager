@@ -105,6 +105,7 @@ class MineAndDeliver implements ShouldQueue
         if ($this->ship->waypoint_symbol !== $deliveryDestination) {
             dump('fly to delivery destination');
             $cooldown = $this->ship
+                ->refuel()
                 ->navigateTo($deliveryDestination)
                 ->cooldown;
             $this->selfDispatch()->delay($cooldown);
