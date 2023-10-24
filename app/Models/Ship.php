@@ -256,7 +256,8 @@ class Ship extends Model
 
     public function deliverCargoToContract(string $contractId, TradeSymbols $tradeSymbol, int $units): self
     {
-        $this->useApi()
+        $this->dock()
+            ->useApi()
             ->deliverCargoToContract(
                 $contractId,
                 $this->symbol,

@@ -118,7 +118,7 @@ class MineAndDeliver implements ShouldQueue
             $this->ship->deliverCargoToContract(
                 $this->contract->identification,
                 $resource,
-                $this->ship->cargos()->findBySymbol($resource->value)->units
+                $this->ship->cargos()->firstWhere('symbol', $resource->value)->units
             );
         }
 
