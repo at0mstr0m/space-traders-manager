@@ -3,27 +3,29 @@
 </template>
 
 <script setup>
-import axios from "axios";
+import useUserStore from "@/store/user";
+import AuthService from "@/services/AuthService";
 
-console.log(import.meta.env.BASE_URL);
+console.log(import.meta.env.VITE_APP_URL);
 
-const apiClient = axios.create({
-  baseURL: process.env.VUE_APP_API_URL,
-  withCredentials: true, // required to handle the CSRF token
-});
+const userStore = useUserStore();
 
-apiClient.get("/sanctum/csrf-cookie").then((response) => {
-  console.log(response);
-  apiClient
-    .post("/auth/login", {
-      email: import.meta.env.VITE_USER_EMAIL,
-      password: "password",
-    })
-    .then((response) => {
-      console.log(response);
-      apiClient.post("/auth/logout").then((response) => {
-        console.log(response);
-      });
-    });
-});
+async function foo() {
+  console.log(userStore.isAuthenticated());
+  if (!userStore.isAuthenticated()) {
+    console.log("not yet authenticated");
+    const user = await userStore.login(
+      import.meta.env.VITE_USER_EMAIL,
+      "password"
+    );
+    console.log(user);
+  }
+  // userStore.logout();
+  const result = await AuthService.currentUser();
+  console.log(result);
+  // userStore.logout();
+  // console.log(await AuthService.currentUser());
+}
+
+foo();
 </script>

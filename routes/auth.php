@@ -14,8 +14,11 @@ Route::prefix('auth')->group(function () {
         ->name('register');
 
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-        ->middleware('guest')
         ->name('login');
+
+    Route::get('/current-user', [AuthenticatedSessionController::class, 'currentUser'])
+        ->middleware('auth')
+        ->name('current-user');
 
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
         ->middleware('guest')
