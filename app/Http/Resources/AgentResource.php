@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class AgentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,9 +18,11 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
-            'name' => $this->name,
-            'email' => $this->email,
-            'agent' => AgentResource::make($this->agent),
+            'symbol' => $this->symbol,
+            'headquarters' => $this->headquarters,
+            'credits' => $this->credits,
+            'starting_faction' => $this->starting_faction,
+            'ship_count' => $this->ship_count,
         ];
     }
 }

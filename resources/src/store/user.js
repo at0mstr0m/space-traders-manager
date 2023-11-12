@@ -37,12 +37,17 @@ const useUserStore = defineStore("user", () => {
     return !!_user.value;
   }
 
+  function getAgent() {
+    return _user.value?.agent;
+  }
+
   return {
     init,
     getUser,
     login,
     logout,
     isAuthenticated,
+    getAgent,
   };
 });
 

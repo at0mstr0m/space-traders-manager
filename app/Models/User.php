@@ -48,6 +48,10 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $with = [
+        'agent',
+    ];
+
     public function agent(): HasOne
     {
         return $this->hasOne(Agent::class);
