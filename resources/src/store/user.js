@@ -3,21 +3,10 @@ import { ref } from "vue";
 import AuthService from "@/services/AuthService";
 
 const useUserStore = defineStore("user", () => {
-  const _user = ref(null);
+  const _user = ref(window?.USER ?? null);
 
   function getUser() {
     return _user.value;
-  }
-
-  async function init() {
-    try {
-      const response = await AuthService.currentUser();
-      _user.value = response.data.data;
-    } catch (error) {
-      console.error(error);
-      _user.value = null;
-    }
-    return getUser();
   }
 
   async function login(email, password) {
@@ -42,7 +31,6 @@ const useUserStore = defineStore("user", () => {
   }
 
   return {
-    init,
     getUser,
     login,
     logout,

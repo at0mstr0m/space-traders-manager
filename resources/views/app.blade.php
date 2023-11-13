@@ -8,5 +8,8 @@
     </head>
     <body class="antialiased">
         <div id="app"></div>
+        <script>
+            window.USER = {{ Js::from($user) }};
+        </script>
     </body>
 </html>

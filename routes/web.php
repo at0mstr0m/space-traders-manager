@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,8 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('app');
-});
+// https://stackoverflow.com/a/60203237
+Route::get('/{any}', FrontendController::class)->where('any', '^(?!api).*$');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
