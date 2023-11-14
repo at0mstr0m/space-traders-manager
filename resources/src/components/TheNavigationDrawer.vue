@@ -10,19 +10,31 @@
     <v-divider />
     <v-list density="compact" nav>
       <v-list-item
+        prepend-icon="mdi-home"
+        title="Home"
+        value="home"
+        @click="navigateTo('Home')"
+      />
+      <v-list-item
         prepend-icon="mdi-rocket-launch-outline"
         title="Ships"
         value="ships"
+        @click="navigateTo('Ships')"
       />
     </v-list>
   </v-navigation-drawer>
-
-  <v-main style="height: 250px"></v-main>
 </template>
 
 <script setup>
 import useUserStore from "@/store/user";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const userStore = useUserStore();
+
 const user = userStore.getUser();
+
+function navigateTo(routeName) {
+  router.push({ name: routeName });
+}
 </script>

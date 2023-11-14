@@ -41,7 +41,12 @@ export default {
     return Axios.get(import.meta.env.VITE_APP_URL + prefix + "/current-user");
   },
   logout() {
-    return api.post("/logout");
+    // avoid interceptors
+    const Axios = axios.create({
+      baseURL: import.meta.env.VITE_APP_URL + prefix,
+      withCredentials: true, // required to handle the CSRF token
+    });
+    return Axios.post("/logout");
   },
   async forgotPassword(payload) {
     await csrf();
