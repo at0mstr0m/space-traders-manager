@@ -21,6 +21,12 @@
         value="ships"
         @click="navigateTo('Ships')"
       />
+      <v-list-item
+        prepend-icon="mdi-map-outline"
+        title="Map"
+        value="map"
+        @click="navigateTo('Map')"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>
