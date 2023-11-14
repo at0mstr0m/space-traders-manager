@@ -27,6 +27,12 @@
         value="map"
         @click="navigateTo('Map')"
       />
+      <v-list-item
+        prepend-icon="mdi-file-sign"
+        title="Contracts"
+        value="contracts"
+        @click="navigateTo('Contracts')"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>

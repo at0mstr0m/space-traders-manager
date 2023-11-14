@@ -16,6 +16,8 @@ class ShipResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'symbol' => $this->symbol,
             'role' => $this->role,
             'waypoint_symbol' => $this->waypoint_symbol,

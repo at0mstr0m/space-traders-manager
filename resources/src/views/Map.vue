@@ -4,6 +4,7 @@
     <iframe
       src="https://docs.spacetraders.io/playground"
       :style="{
+        border: '0',
         width: '100%',
         height: dynamicHeight + 'px',
       }"
