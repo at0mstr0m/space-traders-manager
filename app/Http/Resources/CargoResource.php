@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DeliveryResource extends JsonResource
+class CargoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,10 +18,10 @@ class DeliveryResource extends JsonResource
             'id' => $this->id,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
-            'trade_symbol' => $this->trade_symbol,
-            'destination_symbol' => $this->destination_symbol,
-            'units_required' => $this->units_required,
-            'units_fulfilled' => $this->units_fulfilled,
+            'symbol' => $this->symbol,
+            'name' => $this->name,
+            'description' => $this->description,
+            'units' => $this->units,
         ];
     }
 }

@@ -16,8 +16,8 @@ class ShipResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString(),
             'symbol' => $this->symbol,
             'role' => $this->role,
             'waypoint_symbol' => $this->waypoint_symbol,
@@ -38,6 +38,12 @@ class ShipResource extends JsonResource
             'engine_condition' => $this->engine_condition,
             'cargo_capacity' => $this->cargo_capacity,
             'cargo_units' => $this->cargo_units,
+            'frame' => FrameResource::make($this->loadMissing('frame')->frame),
+            'reactor' => ReactorResource::make($this->loadMissing('reactor')->reactor),
+            'engine' => EngineResource::make($this->loadMissing('engine')->engine),
+            'modules' => ShipModuleResource::collection($this->loadMissing('modules')->modules),
+            'mounts' => ShipMountResource::collection($this->loadMissing('mounts')->mounts),
+            'cargos' => CargoResource::collection($this->loadMissing('cargos')->cargos),
         ];
     }
 }

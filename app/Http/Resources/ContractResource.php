@@ -16,8 +16,8 @@ class ContractResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString(),
             'identification' => $this->identification,
             'faction_symbol' => $this->faction_symbol,
             'type' => $this->type,
