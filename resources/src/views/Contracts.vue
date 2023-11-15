@@ -2,11 +2,11 @@
 <template>
   <v-container>
     <v-data-table
-      v-model:expanded="expanded"
       :headers="contractColumns"
       :items="contracts"
-      item-value="name"
+      item-value="id"
       show-expand
+      expand-on-click
     >
       <template #top>
         <v-toolbar flat>
@@ -52,7 +52,6 @@ import { ref } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
 import api from "@/services/API.js";
 
-const expanded = ref([]);
 const busy = ref(false);
 const contracts = ref([]);
 const contractColumns = ref([
