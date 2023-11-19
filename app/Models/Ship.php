@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Actions\UpdateShipAction;
+use App\Actions\UpdateSurveyAction;
+use App\Data\SurveyData;
 use App\Enums\CrewRotations;
 use App\Enums\FlightModes;
 use App\Enums\ShipNavStatus;
@@ -181,6 +183,30 @@ class Ship extends Model
             ->dockShip($this->symbol)
             ->updateShip($this)
             ->save();
+
+        return $this;
+    }
+
+    public function survey(): self
+    {
+        $createSurveyData = $this->moveIntoOrbit()
+            ->useApi()
+            ->createSurvey($this->symbol);
+        $createSurveyData->updateShip($this)->save();
+        $createSurveyData->surveys
+            ->each(fn (SurveyData $surveyData) => UpdateSurveyAction::run($surveyData, $this->agent));
+
+        return $this;
+    }
+
+    public function extractResourcesWithSurvey(Survey $survey): self
+    {
+        $this->moveIntoOrbit()
+            ->useApi()
+            ->extractResourcesWithSurvey(
+                $this->symbol,
+                $survey->toRequestableObject()
+            );
 
         return $this;
     }

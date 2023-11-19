@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Enums\DepositSymbols;
-use InvalidArgumentException;
 use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class DepositData extends Data
 {
@@ -19,12 +18,12 @@ class DepositData extends Data
         public string $symbol
     ) {
         if (!DepositSymbols::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid deposit symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid deposit symbol: {$symbol}");
         }
     }
 
-    public static function transformFromArrayResponse(string $symbol): static
+    public static function transformFromArrayResponse(array|string $symbol): static
     {
-        return new self(symbol: $symbol);
+        return new self(symbol: is_array($symbol) ? $symbol['symbol'] : $symbol);
     }
 }

@@ -172,7 +172,7 @@
                   :key="'cargo_' + cargo.id"
                   class="ma-3"
                   :title="cargo.name"
-                  :subtitle="'Units: ' + cargo.quantity"
+                  :subtitle="'Units: ' + cargo.units"
                   :text="cargo.description"
                 />
 
@@ -313,6 +313,7 @@ async function getShips() {
   try {
     const response = await api.get("/ships");
     ships.value = response.data.data;
+    console.log(JSON.stringify(ships.value, null, 2));
   } catch (error) {
     console.error(error);
   }

@@ -26,4 +26,9 @@ class Deposit extends Model
     {
         return $this->belongsToMany(Mount::class);
     }
+
+    public function surveys(): BelongsToMany
+    {
+        return $this->belongsToMany(Survey::class);
+    }
 }

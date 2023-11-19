@@ -8,6 +8,7 @@ use App\Data\AcceptOrFulfillContractData;
 use App\Data\AgentData;
 use App\Data\ContractData;
 use App\Data\CreateChartData;
+use App\Data\CreateSurveyData;
 use App\Data\DeliverCargoToContractData;
 use App\Data\ExtractionData;
 use App\Data\FactionData;
@@ -31,7 +32,6 @@ use App\Data\SystemData;
 use App\Data\TradeGoodsData;
 use App\Data\TransactionData;
 use App\Data\WaypointData;
-use App\Data\WaypointTraitData;
 use App\Enums\FactionSymbols;
 use App\Enums\FlightModes;
 use App\Enums\MountSymbols;
@@ -244,6 +244,24 @@ class SpaceTraders
         );
     }
 
+    public function createSurvey(string $shipSymbol): CreateSurveyData
+    {
+        return CreateSurveyData::from(
+            $this->post('my/ships/' . $shipSymbol . '/survey')
+                ->json('data')
+        );
+    }
+
+    public function extractResourcesWithSurvey(string $shipSymbol, array $surveyData): ExtractionData
+    {
+        return ExtractionData::fromResponse(
+            $this->post(
+                'my/ships/' . $shipSymbol . '/extract/survey',
+                $surveyData,
+            )->json('data')
+        );
+    }
+
     public function extractResources(string $shipSymbol): ExtractionData
     {
         return ExtractionData::fromResponse(
@@ -445,6 +463,8 @@ class SpaceTraders
 
     public function listWaypointsInSystem(
         string $systemSymbol,
+        ?WaypointTypes $waypointType = null,
+        ?WaypointTraitSymbols $waypointTrait = null,
         int $perPage = 10,
         int $page = 1,
         bool $all = false
@@ -454,34 +474,19 @@ class SpaceTraders
             [
                 'limit' => $perPage,
                 'page' => $page,
+                ...($waypointType ? ['type' => $waypointType->value] : []),
+                ...($waypointTrait ? ['traits' => $waypointTrait->value] : []),
             ]
         );
         $data = WaypointData::collection($response->json('data'))->toCollection();
 
         return $all
-            ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
+            ? $this->getAllPagesData($data, $response, __FUNCTION__, $page, [
+                'systemSymbol' => $systemSymbol,
+                'waypointType' => $waypointType,
+                'waypointTrait' => $waypointTrait,
+            ])
             : $data;
-    }
-
-    public function listWaypointsInSystemHavingTrait(
-        string $systemSymbol,
-        WaypointTraitSymbols $traitSymbol
-    ): Collection {
-        return $this->listWaypointsInSystem($systemSymbol, all: true)
-            ->filter(
-                fn (WaypointData $waypoint) => $waypoint->traits
-                    ->toCollection()
-                    ->filter(
-                        fn (WaypointTraitData $trait) => $trait->symbol === $traitSymbol->value
-                    )
-                    ->isNotEmpty()
-            );
-    }
-
-    public function listWaypointsInSystemOfType(string $systemSymbol, WaypointTypes $waypointType): Collection
-    {
-        return $this->listWaypointsInSystem($systemSymbol, all: true)
-            ->filter(fn (WaypointData $waypoint) => $waypoint->type === $waypointType->value);
     }
 
     public function getWaypoint(string $waypointSymbol): WaypointData
@@ -508,9 +513,10 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return $this->listWaypointsInSystemHavingTrait(
+        return $this->listWaypointsInSystem(
             $systemSymbol,
-            WaypointTraitSymbols::MARKETPLACE
+            waypointTrait: WaypointTraitSymbols::MARKETPLACE,
+            all: true
         )->map(fn (WaypointData $waypoint) => $this->getMarket($waypoint->symbol));
     }
 
@@ -524,7 +530,7 @@ class SpaceTraders
 
     public function listMarketplacesInSystemTradingMany(
         string $waypointSymbol,
-        Collection|array $tradeSymbols
+        array|Collection $tradeSymbols
     ): Collection {
         $marketplaces = $this->listMarketplacesInSystem($waypointSymbol);
 

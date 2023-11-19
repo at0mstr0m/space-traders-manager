@@ -44,4 +44,9 @@ class Agent extends Model
     {
         return $this->hasMany(Contract::class);
     }
+
+    public function surveys(): HasMany
+    {
+        return $this->hasMany(Survey::class);
+    }
 }
