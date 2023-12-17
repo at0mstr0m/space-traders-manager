@@ -298,7 +298,7 @@ class Ship extends Model
     public function getMarketplacesForCargos(): Collection
     {
         return $this->useApi()
-            ->listMarketplacesInShipForShipCargos($this);
+            ->listMarketplacesInSystemForShipCargos($this);
     }
 
     private function useApi(): SpaceTraders
