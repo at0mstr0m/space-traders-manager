@@ -1,6 +1,12 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-container>
+    <v-btn elevation="1" class="mb-4" :loading="refreshing" color="primary" @click="refetchShips">
+      Refresh
+      <template v-slot:loader>
+        <v-progress-linear indeterminate></v-progress-linear>
+      </template>
+    </v-btn>
     <v-data-table
       v-model:expanded="expanded"
       :headers="columns"
@@ -307,13 +313,13 @@ const columns = ref([
     key: "cargo_units",
   },
 ]);
+const refreshing = ref(false);
 
 async function getShips() {
   busy.value = true;
   try {
     const response = await api.get("/ships");
     ships.value = response.data.data;
-    console.log(JSON.stringify(ships.value, null, 2));
   } catch (error) {
     console.error(error);
   }
@@ -326,6 +332,19 @@ function getColor(number) {
   else if (number > 50) return "yellow";
   else if (number > 25) return "orange";
   else return "red";
+}
+
+async function refetchShips() {
+  refreshing.value = true;
+  busy.value = true;
+  try {
+    const response = await api.get("/ships/refetch");
+    ships.value = response.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+  refreshing.value = false;
+  busy.value = false;
 }
 
 getShips();

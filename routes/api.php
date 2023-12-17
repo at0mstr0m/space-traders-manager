@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('ships')
+        ->as('ships.')
+        ->controller(ShipController::class)
+        ->group(function () {
+            Route::get('refetch', 'refetch')->name('refetch');
+        });
     Route::apiResource('ships', ShipController::class);
+
     Route::apiResource('contracts', ContractController::class);
 });

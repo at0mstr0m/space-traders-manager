@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ShipCollection;
 use App\Models\Ship;
+use App\Jobs\UpdateShips;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Http\Resources\ShipCollection;
 
 class ShipController extends Controller
 {
@@ -35,4 +37,13 @@ class ShipController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Ship $ship) {}
+
+    /**
+     * Refetch all ships.
+     */
+    public function refetch() {
+        UpdateShips::dispatchSync();
+
+        return $this->index();
+    }
 }
