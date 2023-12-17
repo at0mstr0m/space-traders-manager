@@ -21,7 +21,7 @@ class ScanShipsData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             cooldown: Carbon::parse($response['cooldown']['expiration']),
             ships: ScannedShipData::collectionFromResponse($response['ships']),
         );

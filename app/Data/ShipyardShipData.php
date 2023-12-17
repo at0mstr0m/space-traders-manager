@@ -38,7 +38,7 @@ class ShipyardShipData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             type: $response['type'],
             name: $response['name'],
             description: $response['description'],

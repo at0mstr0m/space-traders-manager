@@ -38,7 +38,7 @@ class ExtractionData extends Data implements GeneratableFromResponse, UpdatesShi
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             shipSymbol: $response['extraction']['shipSymbol'],
             tradeSymbol: $response['extraction']['yield']['symbol'],
             units: $response['extraction']['yield']['units'],

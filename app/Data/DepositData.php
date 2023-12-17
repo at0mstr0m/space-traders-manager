@@ -24,6 +24,6 @@ class DepositData extends Data
 
     public static function transformFromArrayResponse(array|string $symbol): static
     {
-        return new self(symbol: is_array($symbol) ? $symbol['symbol'] : $symbol);
+        return new static(symbol: is_array($symbol) ? $symbol['symbol'] : $symbol);
     }
 }

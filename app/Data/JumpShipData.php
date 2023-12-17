@@ -18,7 +18,7 @@ class JumpShipData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             cooldown: Carbon::parse($response['cooldown']['expiration']),
             nav: NavigationData::fromResponse($response['nav']),
         );

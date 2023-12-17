@@ -20,7 +20,7 @@ class RefuelShipData extends Data implements GeneratableFromResponse, UpdatesShi
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             agent: AgentData::fromResponse($response['agent']),
             fuel: FuelData::fromResponse($response['fuel']),
             transaction: MarketTransactionData::fromResponse($response['transaction']),

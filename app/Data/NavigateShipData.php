@@ -19,7 +19,7 @@ class NavigateShipData extends Data implements GeneratableFromResponse, UpdatesS
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             fuel: FuelData::fromResponse($response['fuel']),
             nav: NavigationData::fromResponse($response['nav']),
         );

@@ -30,7 +30,7 @@ class SystemWaypointData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             symbol: $response['symbol'],
             type: $response['type'],
             x: $response['x'],

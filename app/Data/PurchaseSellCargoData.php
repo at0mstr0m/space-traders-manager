@@ -20,7 +20,7 @@ class PurchaseSellCargoData extends Data implements GeneratableFromResponse, Upd
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             agent: AgentData::fromResponse($response['agent']),
             cargo: ShipCargoData::fromResponse($response['cargo']),
             transaction: MarketTransactionData::fromResponse($response['transaction']),

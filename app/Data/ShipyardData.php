@@ -25,7 +25,7 @@ class ShipyardData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             symbol: $response['symbol'],
             shipTypes: ShipTypeData::collectionFromResponse($response['shipTypes']),
             transactions: TransactionData::collectionFromResponse($response['transactions']),

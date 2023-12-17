@@ -33,7 +33,7 @@ class MountData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             symbol: $response['symbol'],
             name: $response['name'],
             description: $response['description'],

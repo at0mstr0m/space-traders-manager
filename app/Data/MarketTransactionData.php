@@ -35,7 +35,7 @@ class MarketTransactionData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             waypointSymbol: $response['waypointSymbol'],
             shipSymbol: $response['shipSymbol'],
             tradeSymbol: $response['tradeSymbol'],

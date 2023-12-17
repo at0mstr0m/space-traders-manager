@@ -17,7 +17,7 @@ class CreateChartData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             chart: ChartData::fromResponse($response['chart']),
             waypoint: WaypointData::fromResponse($response['waypoint']),
         );

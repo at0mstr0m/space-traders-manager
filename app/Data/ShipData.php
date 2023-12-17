@@ -89,7 +89,7 @@ class ShipData extends Data implements GeneratableFromResponse
             : 0;
         $cooldown = max($response['cooldown']['remainingSeconds'], $diffInSeconds);
 
-        return new self(
+        return new static(
             symbol: $response['symbol'],
             factionId: Faction::findBySymbol($response['registration']['factionSymbol'])->id,
             role: $response['registration']['role'],

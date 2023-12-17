@@ -19,7 +19,7 @@ class ChartData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             waypointSymbol: data_get($response, 'waypointSymbol'),
             submittedBy: $response['submittedBy'],
             submittedOn: Carbon::parse($response['submittedOn']),

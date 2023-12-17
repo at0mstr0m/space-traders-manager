@@ -24,7 +24,7 @@ class TransactionData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             shipSymbol: $response['shipSymbol'],
             waypointSymbol: $response['waypointSymbol'],
             agentSymbol: $response['agentSymbol'],

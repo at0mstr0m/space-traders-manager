@@ -26,7 +26,7 @@ class ShipRefineData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             shipSymbol: $response['cooldown']['shipSymbol'],
             expiration: Carbon::parse($response['cooldown']['expiration']),
             producedTradeSymbol: $response['produced']['tradeSymbol'],

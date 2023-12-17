@@ -27,7 +27,7 @@ class JumpGateData extends Data implements GeneratableFromResponse
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             jumpRange: $response['jumpRange'],
             factionSymbol: $response['factionSymbol'],
             connectedSystems: JumpGateSystemData::collectionFromResponse($response['connectedSystems']),

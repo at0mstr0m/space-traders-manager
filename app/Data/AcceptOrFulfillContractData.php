@@ -17,7 +17,7 @@ class AcceptOrFulfillContractData extends Data implements GeneratableFromRespons
 
     public static function fromResponse(array $response): static
     {
-        return new self(
+        return new static(
             agent: AgentData::fromResponse($response['agent']),
             contract: ContractData::fromResponse($response['contract']),
         );
