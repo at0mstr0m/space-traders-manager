@@ -45,7 +45,7 @@ class Contract extends Model
         return $this->hasMany(Delivery::class);
     }
 
-    public function refetch(): self
+    public function refetch(): static
     {
         /** @var SpaceTraders */
         $api = app(SpaceTraders::class);

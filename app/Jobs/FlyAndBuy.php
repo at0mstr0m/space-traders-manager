@@ -71,7 +71,7 @@ class FlyAndBuy implements ShouldQueue
 
     private function selfDispatch(): PendingDispatch
     {
-        return self::dispatch(
+        return static::dispatch(
             $this->shipSymbol,
             $this->destinationSymbol,
             $this->tradeSymbol,

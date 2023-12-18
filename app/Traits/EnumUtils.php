@@ -9,35 +9,35 @@ trait EnumUtils
     // https://stackoverflow.com/a/71680007/13128152
     public static function names(): array
     {
-        return array_column(self::cases(), 'name');
+        return array_column(static::cases(), 'name');
     }
 
     // https://stackoverflow.com/a/71680007/13128152
     public static function values(): array
     {
-        return array_column(self::cases(), 'value');
+        return array_column(static::cases(), 'value');
     }
 
     // https://stackoverflow.com/a/71680007/13128152
     public static function toArray(): array
     {
-        return array_combine(self::names(), self::values());
+        return array_combine(static::names(), static::values());
     }
 
     public static function isValid(string $needle): bool
     {
-        return in_array($needle, self::values(), true);
+        return in_array($needle, static::values(), true);
     }
 
     // https://stackoverflow.com/a/71002493
-    public static function fromName(string $name): self
+    public static function fromName(string $name): static
     {
-        foreach (self::cases() as $case) {
+        foreach (static::cases() as $case) {
             if ($name === $case->name) {
                 return $case;
             }
         }
 
-        throw new \ValueError("{$name} is not a valid value for enum " . self::class);
+        throw new \ValueError("{$name} is not a valid value for enum " . static::class);
     }
 }

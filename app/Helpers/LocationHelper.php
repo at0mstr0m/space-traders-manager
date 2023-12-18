@@ -12,6 +12,6 @@ class LocationHelper {
 
     public static function parseSystemSymbol(string $waypointSymbol): string
     {
-        return self::parseLocation($waypointSymbol)[0] . '-' . self::parseLocation($waypointSymbol)[1];
+        return static::parseLocation($waypointSymbol)[0] . '-' . static::parseLocation($waypointSymbol)[1];
     }
 }

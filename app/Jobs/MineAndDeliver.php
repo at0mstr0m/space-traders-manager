@@ -171,7 +171,7 @@ class MineAndDeliver implements ShouldQueue
 
     private function selfDispatch(): PendingDispatch
     {
-        return self::dispatch(
+        return static::dispatch(
             $this->shipSymbol,
             $this->contractIdentification,
             $this->extractionLocation,

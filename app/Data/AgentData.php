@@ -43,7 +43,7 @@ class AgentData extends Data implements WithModelInstance, GeneratableFromRespon
         if (!$this->accountId) {
             throw new \Exception('Cannot create an Agent Model without an accountId');
         }
-        return $this->makeModel()->setAttributes([
+        return $this->makeModel([
             'account_id' => $this->accountId,
             'symbol' => $this->symbol,
             'headquarters' => $this->headquarters,

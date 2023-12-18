@@ -18,32 +18,12 @@ class Model extends EloquentModel
         return $this->fill($attributes)->save();
     }
 
-    public static function new(Arrayable|array $attributes = []): self
+    public static function new(Arrayable|array $attributes = []): static
     {
         if (!is_array($attributes)) {
             $attributes = $attributes->toArray();
         }
 
         return new static($attributes);
-    }
-
-    public function setAttributes(Arrayable|array $attributes = []): self
-    {
-        if (!is_array($attributes)) {
-            $attributes = $attributes->toArray();
-        }
-
-        foreach ($attributes as $key => $value) {
-            $this->setAttribute($key, $value);
-        }
-
-        return $this;
-    }
-
-    public function pipeSave(array $options = []): self
-    {
-        $this->save($options);
-
-        return $this;
     }
 }

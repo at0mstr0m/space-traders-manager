@@ -6,8 +6,8 @@ namespace App\Traits;
 
 use App\Models\Model;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Support\Arr;
 
 trait HasModel
 {
@@ -23,8 +23,8 @@ trait HasModel
         throw new FileNotFoundException("Model class for {$classBaseName} not found");
     }
 
-    public function makeModel(): Model
+    public function makeModel(Arrayable|array $attributes): Model
     {
-        return self::getModelClass()::new();
+        return static::getModelClass()::new($attributes);
     }
 }

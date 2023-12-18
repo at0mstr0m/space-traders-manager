@@ -148,7 +148,7 @@ class Ship extends Model
         return $this->hasMany(Cargo::class);
     }
 
-    public function refetch(): self
+    public function refetch(): static
     {
         return UpdateShipAction::run(
             $this->useApi()->getShip($this->symbol),
@@ -156,7 +156,7 @@ class Ship extends Model
         );
     }
 
-    public function moveIntoOrbit(): self
+    public function moveIntoOrbit(): static
     {
         $this->useApi()
             ->orbitShip($this->symbol)
@@ -166,7 +166,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function navigateTo(string $waypointSymbol): self
+    public function navigateTo(string $waypointSymbol): static
     {
         $this->moveIntoOrbit()
             ->useApi()
@@ -177,7 +177,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function dock(): self
+    public function dock(): static
     {
         $this->useApi()
             ->dockShip($this->symbol)
@@ -187,7 +187,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function survey(): self
+    public function survey(): static
     {
         $createSurveyData = $this->moveIntoOrbit()
             ->useApi()
@@ -199,7 +199,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function extractResourcesWithSurvey(Survey $survey): self
+    public function extractResourcesWithSurvey(Survey $survey): static
     {
         $this->moveIntoOrbit()
             ->useApi()
@@ -211,7 +211,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function refuel(): self
+    public function refuel(): static
     {
         $this->dock()
             ->useApi()
@@ -222,7 +222,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function extractResources(): self
+    public function extractResources(): static
     {
         $this->moveIntoOrbit()
             ->useApi()
@@ -233,7 +233,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function purchaseCargo(TradeSymbols $tradeSymbol, int $units): self
+    public function purchaseCargo(TradeSymbols $tradeSymbol, int $units): static
     {
         $this->dock()
             ->useApi()
@@ -244,7 +244,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function sellCargo(TradeSymbols $tradeSymbol, int $units = 0): self
+    public function sellCargo(TradeSymbols $tradeSymbol, int $units = 0): static
     {
         $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
 
@@ -257,7 +257,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function jettisonCargo(TradeSymbols $tradeSymbol, int $units = 0): self
+    public function jettisonCargo(TradeSymbols $tradeSymbol, int $units = 0): static
     {
         // jettison all cargo of this type if no units specified
         $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
@@ -270,7 +270,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function fetchCargo(): self
+    public function fetchCargo(): static
     {
         $this->useApi()
             ->getShipCargo($this->symbol)
@@ -280,7 +280,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function deliverCargoToContract(string $contractId, TradeSymbols $tradeSymbol, int $units): self
+    public function deliverCargoToContract(string $contractId, TradeSymbols $tradeSymbol, int $units): static
     {
         $this->dock()
             ->useApi()

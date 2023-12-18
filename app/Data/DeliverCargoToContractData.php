@@ -26,7 +26,7 @@ class DeliverCargoToContractData extends Data implements GeneratableFromResponse
         );
     }
 
-    public function updateContract(): self
+    public function updateContract(): static
     {
         UpdateContractAction::run(
             $this->contract,

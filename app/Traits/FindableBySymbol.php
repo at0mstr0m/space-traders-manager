@@ -6,8 +6,8 @@ namespace App\Traits;
 
 trait FindableBySymbol
 {
-    public static function findBySymbol(string $symbol): ?self
+    public static function findBySymbol(string $symbol): ?static
     {
-        return self::firstWhere('symbol', $symbol);
+        return static::firstWhere('symbol', $symbol);
     }
 }
