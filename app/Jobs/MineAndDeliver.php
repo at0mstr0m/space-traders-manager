@@ -164,7 +164,7 @@ class MineAndDeliver implements ShouldQueue
         $systemSymbol = LocationHelper::parseSystemSymbol($this->ship->waypoint_symbol);
 
         $this->extractionLocation ??= $this->api
-            ->listWaypointsInSystem($systemSymbol, WaypointTypes::ASTEROID_FIELD)
+            ->listWaypointsInSystem($systemSymbol, WaypointTypes::ASTEROID)
             ->first()
             ->symbol;
     }

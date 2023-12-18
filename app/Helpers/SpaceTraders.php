@@ -464,6 +464,9 @@ class SpaceTraders
         );
     }
 
+    /**
+     * @return Collection<int, WaypointData>
+     */
     public function listWaypointsInSystem(
         string $systemSymbol,
         ?WaypointTypes $waypointType = null,
@@ -506,9 +509,13 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return MarketData::fromResponse(
-            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/market')
-                ->json('data')
+        return Cache::remember(
+            'get_market:' . $waypointSymbol,
+            now()->addMinute(),
+            fn () => MarketData::fromResponse(
+                $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/market')
+                    ->json('data')
+            )
         );
     }
 
@@ -517,7 +524,7 @@ class SpaceTraders
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
         return Cache::remember(
-            'marketplaces_in_system:' . $systemSymbol,
+            'list_marketplaces_in_system:' . $systemSymbol,
             now()->addHour(),
             fn () => $this->listWaypointsInSystem(
                 $systemSymbol,
@@ -634,8 +641,6 @@ class SpaceTraders
     }
 
     /**
-     *
-     * @param string $waypointSymbol
      * @return Collection<string, Collection<PotentialTradeRouteData>>
      */
     public function listPotentialTradeRoutesInSystem(string $waypointSymbol): Collection
