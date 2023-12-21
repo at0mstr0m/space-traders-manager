@@ -127,7 +127,6 @@ class MineAndDeliver implements ShouldQueue
         dump('sell all cargo');
         $this->ship->getMarketplacesForCargos()
             ->each(function (?MarketData $cargo, string $tradeSymbol) {
-                $tradeSymbol = TradeSymbols::fromName($tradeSymbol);
                 if ($cargo && $this->ship->waypoint_symbol === $cargo->symbol) {
                     $this->ship->sellCargo($tradeSymbol);
                 } else {

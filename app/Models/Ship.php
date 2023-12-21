@@ -97,6 +97,11 @@ class Ship extends Model
         return $this->cargo_capacity === $this->cargo_units;
     }
 
+    public function getCargoIsEmptyAttribute(): bool
+    {
+        return $this->cargo_units === 0;
+    }
+
     public function isLoadedWith(TradeSymbols $tradeSymbol): bool
     {
         return $this->cargos()
@@ -244,8 +249,10 @@ class Ship extends Model
         return $this;
     }
 
-    public function sellCargo(TradeSymbols $tradeSymbol, int $units = 0): static
+    public function sellCargo(string|TradeSymbols $tradeSymbol, int $units = 0): static
     {
+        $tradeSymbol = is_string($tradeSymbol) ? TradeSymbols::fromName($tradeSymbol) : $tradeSymbol;
+        // sell all cargo of this type if no units specified
         $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
 
         $this->dock()
@@ -257,8 +264,9 @@ class Ship extends Model
         return $this;
     }
 
-    public function jettisonCargo(TradeSymbols $tradeSymbol, int $units = 0): static
+    public function jettisonCargo(string|TradeSymbols $tradeSymbol, int $units = 0): static
     {
+        $tradeSymbol = is_string($tradeSymbol) ? TradeSymbols::fromName($tradeSymbol) : $tradeSymbol;
         // jettison all cargo of this type if no units specified
         $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
 
@@ -280,8 +288,12 @@ class Ship extends Model
         return $this;
     }
 
-    public function deliverCargoToContract(string $contractId, TradeSymbols $tradeSymbol, int $units): static
-    {
+    public function deliverCargoToContract(
+        string $contractId,
+        string|TradeSymbols $tradeSymbol,
+        int $units
+    ): static {
+        $tradeSymbol = is_string($tradeSymbol) ? TradeSymbols::fromName($tradeSymbol) : $tradeSymbol;
         $this->dock()
             ->useApi()
             ->deliverCargoToContract(
@@ -299,6 +311,31 @@ class Ship extends Model
     {
         return $this->useApi()
             ->listMarketplacesInSystemForShipCargos($this);
+    }
+
+    public function transferCargoTo(
+        self|string $receivingShip,
+        string|TradeSymbols $tradeSymbol,
+        int $units = 0
+    ): static {
+        $receivingShip = is_string($receivingShip)
+            ? Ship::findBySymbol($receivingShip)->symbol
+            : $receivingShip->symbol;
+        $tradeSymbol = is_string($tradeSymbol)
+            ? TradeSymbols::fromName($tradeSymbol)
+            : $tradeSymbol;
+        $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
+
+        $this->useApi()
+            ->transferCargo(
+                $this->symbol,
+                $receivingShip,
+                $tradeSymbol,
+                $units
+            )->updateShip($this)
+            ->save();
+
+        return $this;
     }
 
     private function useApi(): SpaceTraders
