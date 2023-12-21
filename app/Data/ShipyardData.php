@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class ShipyardData extends Data implements GeneratableFromResponse
 {
@@ -20,16 +20,15 @@ class ShipyardData extends Data implements GeneratableFromResponse
         #[DataCollectionOf(ShipyardShipData::class)]
         public ?DataCollection $ships = null,
         public int $modificationsFee,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {
         return new static(
             symbol: $response['symbol'],
             shipTypes: ShipTypeData::collectionFromResponse($response['shipTypes']),
-            transactions: TransactionData::collectionFromResponse($response['transactions']),
-            ships: ShipyardShipData::collectionFromResponse($response['ships']),
+            transactions: TransactionData::collectionFromResponse(data_get($response, 'transactions', [])),
+            ships: ShipyardShipData::collectionFromResponse(data_get($response, 'ships', [])),
             modificationsFee: $response['modificationsFee'],
         );
     }
