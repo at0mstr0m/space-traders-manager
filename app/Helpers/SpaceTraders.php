@@ -399,7 +399,7 @@ class SpaceTraders
         int $units
     ): ShipCargoData {
         $payload = [
-            'symbol' => $tradeSymbol->value,
+            'tradeSymbol' => $tradeSymbol->value,
             'units' => $units,
             'shipSymbol' => $receivingShipSymbol,
         ];
