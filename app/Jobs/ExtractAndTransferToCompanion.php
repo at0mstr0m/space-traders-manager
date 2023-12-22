@@ -111,14 +111,24 @@ class ExtractAndTransferToCompanion implements ShouldQueue
         if (!$this->ship->is_fully_loaded) {
             return;
         }
+
         /** @var Ship */
-        $companionShip = Ship::findBySymbol($this->companionSymbol);
+        $companionShip = Ship::findBySymbol($this->companionSymbol)->refetch();
+        if (
+            $companionShip->waypoint_symbol !== $this->ship->waypoint_symbol
+            || $companionShip->is_in_transit
+        ) {
+            dump('companion ship is not at the same location or is in transit');
+
+            return;
+        }
+
         $companionShip->moveIntoOrbit();
         // move into orbit to enable transfer
         dump('ship is fully loaded');
         $this->ship->cargos->each(function (Cargo $cargo) {
             dump("transfer cargo {$cargo->symbol->value}");
-
+            // todo: handle case that companion ship cannot cope with the cargo in a better way
             try {
                 $this->ship->transferCargoTo(
                     $this->companionSymbol,
