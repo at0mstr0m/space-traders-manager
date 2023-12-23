@@ -41,7 +41,7 @@ class UpdateShips implements ShouldQueue
     public function handle(): void
     {
         // update ships
-        $this->api->listShips()->each(function (ShipData $shipData) {
+        $this->api->listShips(all:true)->each(function (ShipData $shipData) {
             $shipFaction = Faction::find($shipData->factionId);
             if ($this->agentFaction->isNot($shipFaction)) {
                 throw new \Exception('Ship faction does not match agent faction');

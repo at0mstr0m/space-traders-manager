@@ -26,8 +26,8 @@ class ServeTradeRoute implements ShouldQueue
      */
     public function __construct(
         private string $shipSymbol,
-        private string $from,
-        private string $to,
+        private string $origin,
+        private string $destination,
         private TradeSymbols $tradedGood,
         private ?Ship $ship = null,
     ) {
@@ -41,39 +41,42 @@ class ServeTradeRoute implements ShouldQueue
     {
         $this->initShip();
 
-        dump("{$this->ship->symbol} serving trade route {$this->from} -> {$this->to} with {$this->tradedGood->value}");
+        dump("{$this->ship->symbol} serving trade route {$this->origin} -> {$this->destination} with {$this->tradedGood->value}");
 
         if ($this->ship->is_in_transit || $this->ship->cooldown) {
             dump("{$this->ship->symbol} is in transit or on cooldown");
             $this->selfDispatch()->delay($this->ship->cooldown);
+            return;
         }
 
         if ($this->ship->cargo_is_empty) {
             dump("{$this->ship->symbol} cargo is empty");
-            if ($this->ship->waypoint_symbol === $this->from) {
+            if ($this->ship->waypoint_symbol === $this->origin) {
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
                 $this->ship->purchaseCargo($this->tradedGood);
-                dump("{$this->ship->symbol} fly to {$this->to}");
-                $this->flyToLocation($this->to);
+                dump("{$this->ship->symbol} fly to {$this->destination}");
+                $this->flyToLocation($this->destination);
+
+                return;
             }
-            dump("{$this->ship->symbol} fly to {$this->from}");
-            $this->flyToLocation($this->from);
+            dump("{$this->ship->symbol} fly to {$this->origin}");
+            $this->flyToLocation($this->origin);
 
             return;
         }
 
         if ($this->ship->is_fully_loaded) {
             dump("{$this->ship->symbol} cargo is full");
-            if ($this->ship->waypoint_symbol === $this->to) {
+            if ($this->ship->waypoint_symbol === $this->destination) {
                 dump("{$this->ship->symbol} sell cargo {$this->tradedGood->value}");
                 $this->ship->sellCargo($this->tradedGood);
-                dump("{$this->ship->symbol} fly to {$this->from}");
-                $this->flyToLocation($this->from);
+                dump("{$this->ship->symbol} fly to {$this->origin}");
+                $this->flyToLocation($this->origin);
 
                 return;
             }
-            dump("{$this->ship->symbol} fly to {$this->to}");
-            $this->flyToLocation($this->to);
+            dump("{$this->ship->symbol} fly to {$this->destination}");
+            $this->flyToLocation($this->destination);
 
             return;
         }
@@ -104,8 +107,8 @@ class ServeTradeRoute implements ShouldQueue
     {
         return static::dispatch(
             $this->shipSymbol,
-            $this->from,
-            $this->to,
+            $this->origin,
+            $this->destination,
             $this->tradedGood,
             $this->ship,
         );
