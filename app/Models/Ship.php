@@ -102,6 +102,11 @@ class Ship extends Model
         return $this->cargo_units === 0;
     }
 
+    public function getAvailableCargoSpaceAttribute(): int
+    {
+        return $this->cargo_capacity - $this->cargo_units;
+    }
+
     public function isLoadedWith(TradeSymbols $tradeSymbol): bool
     {
         return $this->cargos()
@@ -238,8 +243,16 @@ class Ship extends Model
         return $this;
     }
 
-    public function purchaseCargo(TradeSymbols $tradeSymbol, int $units): static
+    public function purchaseCargo(string|TradeSymbols $tradeSymbol, int $units = 0): static
     {
+        $tradeSymbol = is_string($tradeSymbol) ? TradeSymbols::fromName($tradeSymbol) : $tradeSymbol;
+        // purchase as much cargo of this type as possible if not specified
+        $units = $units ?: $this->available_cargo_space;
+
+        if ($units === 0 || $units > $this->available_cargo_space) {
+            throw new \Exception('Not enough cargo space available', 1);
+        }
+
         $this->dock()
             ->useApi()
             ->purchaseCargo($this->symbol, $tradeSymbol, $units)
@@ -333,6 +346,16 @@ class Ship extends Model
                 $tradeSymbol,
                 $units
             )->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
+    public function setFlightMode(FlightModes $flightMode): static
+    {
+        $this->useApi()
+            ->patchShipNav($this->symbol, $flightMode)
+            ->updateShip($this)
             ->save();
 
         return $this;
