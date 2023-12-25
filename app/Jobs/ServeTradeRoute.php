@@ -2,17 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Models\Ship;
+use App\Actions\UpdateOrRemovePotentialTradeRoutesAction;
 use App\Enums\TradeSymbols;
 use App\Helpers\SpaceTraders;
-use Illuminate\Bus\Queueable;
 use App\Models\PotentialTradeRoute;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Models\Ship;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Bus\PendingDispatch;
-use App\Actions\UpdateOrRemovePotentialTradeRoutesAction;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ServeTradeRoute implements ShouldQueue
 {
@@ -48,6 +48,7 @@ class ServeTradeRoute implements ShouldQueue
         if ($this->ship->is_in_transit || $this->ship->cooldown) {
             dump("{$this->ship->symbol} is in transit or on cooldown");
             $this->selfDispatch()->delay($this->ship->cooldown);
+
             return;
         }
 
@@ -63,16 +64,23 @@ class ServeTradeRoute implements ShouldQueue
                 ]);
                 if (!$tradeRoute) {
                     dump("{$this->ship->symbol} trade route does not exist anymore");
+
                     return;
                 }
 
-                if ($tradeRoute->profit < 2) {
+                if ($tradeRoute->profit <= 2) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
+
                     return;
                 }
 
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
-                $this->ship->purchaseCargo($this->tradedGood);
+                $this->ship->purchaseCargo(
+                    $this->tradedGood,
+                    $this->ship->cargo_capacity > $tradeRoute->trade_volume_at_origin
+                        ? $tradeRoute->trade_volume_at_origin
+                        : $this->ship->cargo_capacity
+                );
                 dump("{$this->ship->symbol} fly to {$this->destination}");
                 $this->flyToLocation($this->destination);
 
