@@ -90,10 +90,8 @@ class ServeTradeRoute implements ShouldQueue
             $this->flyToLocation($this->origin);
 
             return;
-        }
-
-        if ($this->ship->is_fully_loaded) {
-            dump("{$this->ship->symbol} cargo is full");
+        } else {
+            dump("{$this->ship->symbol} cargo is not empty");
             if ($this->ship->waypoint_symbol === $this->destination) {
                 dump("{$this->ship->symbol} sell cargo {$this->tradedGood->value}");
                 $this->ship->sellCargo($this->tradedGood);
