@@ -15,8 +15,10 @@
     </v-btn>
     <v-data-table
       v-model:expanded="expanded"
+      :loading="busy"
       :headers="tableColumns"
       :items="ships"
+      :items-per-page="perPage"
       item-value="id"
       show-expand
       expand-on-click
@@ -192,11 +194,13 @@
           </td>
         </tr>
       </template>
+
       <template #item.crew_morale="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
+
       <template #item.fuel_current="{ item, value }">
         <v-chip
           :color="
@@ -208,20 +212,49 @@
           {{ value }}
         </v-chip>
       </template>
+
       <template #item.frame_condition="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
+
       <template #item.reactor_condition="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
+
       <template #item.engine_condition="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
+      </template>
+
+      <template #bottom>
+        <v-row align-content="center">
+          <v-col>
+            <v-pagination
+              v-model="page"
+              class="w-50"
+              :length="totalPages"
+              :total-visible="6"
+              @update:model-value="getShips"
+            />
+          </v-col>
+          <!-- todo: implement -->
+          <!-- <v-col class="w-25">
+            <v-select
+              v-model="perPage"
+              class="mt-3 w-25"
+              :items="[15, 25, 50, 100]"
+              label="Items per page"
+              variant="outlined"
+              density="compact"
+              @update:model-value="getShips"
+            />
+          </v-col> -->
+        </v-row>
       </template>
     </v-data-table>
   </v-container>
@@ -230,21 +263,29 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
-import api from "@/services/API.js";
 import useShipUtils from "@/utils/ships.js";
+import Repository from "@/repos/ships.js";
 
 const { tableColumns } = useShipUtils();
 
 const expanded = ref([]);
 const busy = ref(false);
 const ships = ref([]);
+const page = ref(1);
+const perPage = ref(15);
+const totalItems = ref(0);
+const totalPages = ref(0);
 const refreshing = ref(false);
 
 async function getShips() {
   busy.value = true;
   try {
-    const response = await api.get("ships");
-    ships.value = response.data.data;
+    const {
+      data: { data, meta },
+    } = await Repository.index(page.value, perPage.value);
+    ships.value = data;
+    totalPages.value = meta.last_page;
+    totalItems.value = meta.total;
   } catch (error) {
     console.error(error);
   }
@@ -263,7 +304,7 @@ async function refetchShips() {
   refreshing.value = true;
   busy.value = true;
   try {
-    const response = await api.get("/ships/refetch");
+    const response = await Repository.refetch();
     ships.value = response.data.data;
   } catch (error) {
     console.error(error);

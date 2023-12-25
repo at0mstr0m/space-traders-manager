@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ship;
-use App\Jobs\UpdateShips;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Http\Resources\ShipCollection;
+use App\Jobs\UpdateShips;
+use App\Models\Ship;
+use Illuminate\Http\Request;
 
 class ShipController extends Controller
 {
@@ -41,7 +40,8 @@ class ShipController extends Controller
     /**
      * Refetch all ships.
      */
-    public function refetch() {
+    public function refetch()
+    {
         UpdateShips::dispatchSync();
 
         return $this->index();
