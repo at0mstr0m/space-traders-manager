@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\ContractController;
+use App\Http\Controllers\PotentialTradeRouteController;
 use App\Http\Controllers\ShipController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,4 +27,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('ships', ShipController::class);
 
     Route::apiResource('contracts', ContractController::class);
+
+    Route::prefix('potential-trade-routes')
+        ->as('potential-trade-routes.')
+        ->controller(PotentialTradeRouteController::class)
+        ->group(function () {
+            Route::get('refetch', 'refetch')->name('refetch');
+        });
+    Route::apiResource('potential-trade-routes', PotentialTradeRouteController::class);
 });
+

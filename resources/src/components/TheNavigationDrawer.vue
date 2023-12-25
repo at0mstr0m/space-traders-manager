@@ -13,25 +13,31 @@
         prepend-icon="mdi-home"
         title="Home"
         value="home"
-        @click="navigateTo('Home')"
+        @click="navigateTo('home')"
       />
       <v-list-item
         prepend-icon="mdi-rocket-launch-outline"
         title="Ships"
         value="ships"
-        @click="navigateTo('Ships')"
+        @click="navigateTo('ships')"
       />
       <v-list-item
         prepend-icon="mdi-map-outline"
         title="Map"
         value="map"
-        @click="navigateTo('Map')"
+        @click="navigateTo('map')"
       />
       <v-list-item
         prepend-icon="mdi-file-sign"
         title="Contracts"
         value="contracts"
-        @click="navigateTo('Contracts')"
+        @click="navigateTo('contracts')"
+      />
+      <v-list-item
+        prepend-icon="mdi-map-marker-distance"
+        title="Potential Trade Routes"
+        value="Potential Trade Routes"
+        @click="navigateTo('potential-trade-routes')"
       />
     </v-list>
   </v-navigation-drawer>

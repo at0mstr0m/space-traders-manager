@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ContractCollection;
+use App\Http\Resources\ContractResource;
 use App\Models\Contract;
 use Illuminate\Http\Request;
 
@@ -13,7 +13,7 @@ class ContractController extends Controller
      */
     public function index()
     {
-        return ContractCollection::make(Contract::paginate());
+        return ContractResource::collection(Contract::paginate());
     }
 
     /**

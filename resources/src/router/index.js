@@ -8,7 +8,7 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Home",
+        name: "home",
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -17,21 +17,27 @@ const routes = [
       },
       {
         path: "ships",
-        name: "Ships",
+        name: "ships",
         component: () =>
           import("@/views/Ships.vue"),
       },
       {
         path: "map",
-        name: "Map",
+        name: "map",
         component: () =>
           import("@/views/Map.vue"),
       },
       {
         path: "contracts",
-        name: "Contracts",
+        name: "contracts",
         component: () =>
           import("@/views/Contracts.vue"),
+      },
+      {
+        path: "potential-trade-routes",
+        name: "potential-trade-routes",
+        component: () =>
+          import("@/views/PotentialTradeRoutes.vue"),
       },
     ],
   },

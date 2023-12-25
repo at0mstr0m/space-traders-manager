@@ -195,12 +195,14 @@
         </tr>
       </template>
 
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.crew_morale="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
 
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.fuel_current="{ item, value }">
         <v-chip
           :color="
@@ -213,18 +215,21 @@
         </v-chip>
       </template>
 
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.frame_condition="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
 
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.reactor_condition="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
 
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.engine_condition="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}

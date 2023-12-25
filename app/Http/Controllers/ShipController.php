@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ShipCollection;
+use App\Http\Resources\ShipResource;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class ShipController extends Controller
      */
     public function index()
     {
-        return ShipCollection::make(Ship::paginate());
+        return ShipResource::collection(Ship::paginate());
     }
 
     /**
