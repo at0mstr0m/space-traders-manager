@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
-trait HasModel
+trait DataHasModel
 {
     public static function getModelClass(): string
     {

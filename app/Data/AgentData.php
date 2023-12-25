@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Models\Model;
-use App\Traits\HasModel;
+use App\Traits\DataHasModel;
 use Spatie\LaravelData\Data;
 use App\Interfaces\WithModelInstance;
 use App\Interfaces\GeneratableFromResponse;
@@ -13,7 +13,7 @@ use App\Traits\HasCollectionFromResponse;
 
 class AgentData extends Data implements WithModelInstance, GeneratableFromResponse
 {
-    use HasModel;
+    use DataHasModel;
     use HasCollectionFromResponse;
 
     public function __construct(

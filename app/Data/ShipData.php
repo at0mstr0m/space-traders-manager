@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Enums\CrewRotations;
+use App\Enums\FlightModes;
+use App\Enums\ShipNavStatus;
+use App\Enums\ShipRoles;
+use App\Interfaces\GeneratableFromResponse;
 use App\Models\Agent;
-use App\Models\Frame;
 use App\Models\Engine;
 use App\Models\Faction;
+use App\Models\Frame;
 use App\Models\Reactor;
-use App\Enums\ShipRoles;
-use App\Enums\FlightModes;
-use Illuminate\Support\Str;
-use App\Enums\CrewRotations;
-use App\Enums\ShipNavStatus;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
 use Illuminate\Support\Carbon;
-use Spatie\LaravelData\DataCollection;
-use App\Interfaces\GeneratableFromResponse;
+use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class ShipData extends Data implements GeneratableFromResponse
 {
@@ -61,10 +60,10 @@ class ShipData extends Data implements GeneratableFromResponse
         public ?DataCollection $inventory = null,
     ) {
         match (true) {
-            !ShipRoles::isValid($role) => throw new InvalidArgumentException("Invalid role: {$role}"),
-            !ShipNavStatus::isValid($status) => throw new InvalidArgumentException("Invalid status: {$status}"),
-            !FlightModes::isValid($flightMode) => throw new InvalidArgumentException("Invalid flight mode: {$flightMode}"),
-            !CrewRotations::isValid($crewRotation) => throw new InvalidArgumentException("Invalid crew rotation: {$crewRotation}"),
+            !ShipRoles::isValid($role) => throw new \InvalidArgumentException("Invalid role: {$role}"),
+            !ShipNavStatus::isValid($status) => throw new \InvalidArgumentException("Invalid status: {$status}"),
+            !FlightModes::isValid($flightMode) => throw new \InvalidArgumentException("Invalid flight mode: {$flightMode}"),
+            !CrewRotations::isValid($crewRotation) => throw new \InvalidArgumentException("Invalid crew rotation: {$crewRotation}"),
             default => null,
         };
 
