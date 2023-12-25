@@ -39,6 +39,7 @@ use App\Enums\FlightModes;
 use App\Enums\MountSymbols;
 use App\Enums\RefinementGood;
 use App\Enums\ShipTypes;
+use App\Enums\Supplies;
 use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;
@@ -525,7 +526,7 @@ class SpaceTraders
 
         return Cache::remember(
             'list_marketplaces_in_system:' . $systemSymbol,
-            now()->addHour(),
+            now()->addMinute(),
             fn () => $this->listWaypointsInSystem(
                 $systemSymbol,
                 waypointTrait: WaypointTraitSymbols::MARKETPLACE,
@@ -655,14 +656,14 @@ class SpaceTraders
             $exportingMarketplaces = $this->listMarketplacesInSystemExporting($waypointSymbol, $tradeSymbol);
             $importingMarketplaces = $this->listMarketplacesInSystemImporting($waypointSymbol, $tradeSymbol);
             $potentialTradeRoutes = $exportingMarketplaces->crossJoin($importingMarketplaces)
-                ->map(fn (array $correspondingMarketplaces) => new PotentialTradeRouteData(
-                    symbol: $goodData->symbol,
-                    exportingMarket: $correspondingMarketplaces[0],
-                    importingMarket: $correspondingMarketplaces[1]
-                ));
+                ->map(fn (array $correspondingMarketplaces) => PotentialTradeRouteData::fromAggregatedData([
+                    'symbol' => $goodData->symbol,
+                    'exportingMarket' => $correspondingMarketplaces[0],
+                    'importingMarket' => $correspondingMarketplaces[1],
+                ]));
 
             return [$tradeSymbol->value => $potentialTradeRoutes];
-        });
+        })->flatten();
     }
 
     public function getShipyard(string $waypointSymbol): ShipyardData

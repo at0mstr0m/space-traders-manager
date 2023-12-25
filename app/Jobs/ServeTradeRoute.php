@@ -2,15 +2,17 @@
 
 namespace App\Jobs;
 
+use App\Models\Ship;
 use App\Enums\TradeSymbols;
 use App\Helpers\SpaceTraders;
-use App\Models\Ship;
 use Illuminate\Bus\Queueable;
+use App\Models\PotentialTradeRoute;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Bus\PendingDispatch;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use App\Actions\UpdateOrRemovePotentialTradeRoutesAction;
 
 class ServeTradeRoute implements ShouldQueue
 {
@@ -52,6 +54,23 @@ class ServeTradeRoute implements ShouldQueue
         if ($this->ship->cargo_is_empty) {
             dump("{$this->ship->symbol} cargo is empty");
             if ($this->ship->waypoint_symbol === $this->origin) {
+                UpdateOrRemovePotentialTradeRoutesAction::run();
+                /** @var PotentialTradeRoute */
+                $tradeRoute = PotentialTradeRoute::firstWhere([
+                    'trade_symbol' => $this->tradedGood->value,
+                    'origin' => $this->origin,
+                    'destination' => $this->destination,
+                ]);
+                if (!$tradeRoute) {
+                    dump("{$this->ship->symbol} trade route does not exist anymore");
+                    return;
+                }
+
+                if ($tradeRoute->profit < 2) {
+                    dump("{$this->ship->symbol} trade route is not profitable enough");
+                    return;
+                }
+
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
                 $this->ship->purchaseCargo($this->tradedGood);
                 dump("{$this->ship->symbol} fly to {$this->destination}");
