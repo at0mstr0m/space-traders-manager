@@ -1,7 +1,13 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-container>
-    <v-btn elevation="1" class="mb-4" :loading="refreshing" color="primary" @click="refetchShips">
+    <v-btn
+      elevation="1"
+      class="mb-4"
+      :loading="refreshing"
+      color="primary"
+      @click="refetchShips"
+    >
       Refresh
       <template v-slot:loader>
         <v-progress-linear indeterminate></v-progress-linear>
@@ -9,7 +15,7 @@
     </v-btn>
     <v-data-table
       v-model:expanded="expanded"
-      :headers="columns"
+      :headers="tableColumns"
       :items="ships"
       item-value="id"
       show-expand
@@ -181,7 +187,6 @@
                   :subtitle="'Units: ' + cargo.units"
                   :text="cargo.description"
                 />
-
               </v-card>
             </v-row>
           </td>
@@ -223,102 +228,22 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
 import api from "@/services/API.js";
+import useShipUtils from "@/utils/ships.js";
+
+const { tableColumns } = useShipUtils();
 
 const expanded = ref([]);
 const busy = ref(false);
 const ships = ref([]);
-const columns = ref([
-  {
-    title: "Symbol",
-    key: "symbol",
-    width: "160px",
-  },
-  {
-    title: "Role",
-    key: "role",
-  },
-  {
-    title: "Waypoint Symbol",
-    key: "waypoint_symbol",
-  },
-  {
-    title: "Status",
-    key: "status",
-  },
-  {
-    title: "Flight Mode",
-    key: "flight_mode",
-  },
-  {
-    title: "Crew Current",
-    key: "crew_current",
-  },
-  {
-    title: "Crew Capacity",
-    key: "crew_capacity",
-  },
-  {
-    title: "Crew Required",
-    key: "crew_required",
-  },
-  {
-    title: "Crew Rotation",
-    key: "crew_rotation",
-  },
-  {
-    title: "Crew Morale",
-    key: "crew_morale",
-  },
-  {
-    title: "Crew Wages",
-    key: "crew_wages",
-  },
-  {
-    title: "Fuel Current",
-    key: "fuel_current",
-  },
-  {
-    title: "Fuel Capacity",
-    key: "fuel_capacity",
-  },
-  {
-    title: "Fuel Consumed",
-    key: "fuel_consumed",
-  },
-  {
-    title: "Cooldown",
-    key: "cooldown",
-  },
-  {
-    title: "Frame Condition",
-    key: "frame_condition",
-  },
-  {
-    title: "Reactor Condition",
-    key: "reactor_condition",
-  },
-  {
-    title: "Engine Condition",
-    key: "engine_condition",
-  },
-  {
-    title: "Cargo Capacity",
-    key: "cargo_capacity",
-  },
-  {
-    title: "Cargo Units",
-    key: "cargo_units",
-  },
-]);
 const refreshing = ref(false);
 
 async function getShips() {
   busy.value = true;
   try {
-    const response = await api.get("/ships");
+    const response = await api.get("ships");
     ships.value = response.data.data;
   } catch (error) {
     console.error(error);
@@ -347,5 +272,7 @@ async function refetchShips() {
   busy.value = false;
 }
 
-getShips();
+onMounted(() => {
+  getShips();
+});
 </script>
