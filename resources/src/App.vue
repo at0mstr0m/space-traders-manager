@@ -15,9 +15,9 @@ const route = useRoute();
 console.log(userStore.isAuthenticated());
 
 if (!userStore.isAuthenticated() && route.name !== "Login") {
-  router.push({ name: "Login" });
+  router.push({ name: "login" });
 } else if (userStore.isAuthenticated() && route.name === "Login") {
-  router.push({ name: "Home" });
+  router.push({ name: "home" });
 }
 
 // async function foo() {
