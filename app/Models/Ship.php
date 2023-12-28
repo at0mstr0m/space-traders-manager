@@ -361,6 +361,25 @@ class Ship extends Model
         return $this;
     }
 
+    public function supplyCargoToConstructionSite(string|TradeSymbols $tradeSymbol, int $units = 0): static
+    {
+        $tradeSymbol = is_string($tradeSymbol) ? TradeSymbols::fromName($tradeSymbol) : $tradeSymbol;
+        // supply all available cargo of this type if no units specified
+        $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
+
+        $this->useApi()
+            ->supplyConstructionSite(
+                $this->waypoint_symbol,
+                $this->symbol,
+                $tradeSymbol,
+                $units
+            )
+            ->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
     private function useApi(): SpaceTraders
     {
         return app(SpaceTraders::class);

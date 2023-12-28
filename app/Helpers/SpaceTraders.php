@@ -4,54 +4,55 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Models\Ship;
-use App\Data\ShipData;
+use App\Data\AcceptOrFulfillContractData;
 use App\Data\AgentData;
-use App\Data\MountData;
-use App\Data\MarketData;
-use App\Data\SystemData;
-use App\Enums\ShipTypes;
-use App\Data\FactionData;
+use App\Data\ConstructionSiteData;
 use App\Data\ContractData;
+use App\Data\CreateChartData;
+use App\Data\CreateSurveyData;
+use App\Data\DeliverCargoToContractData;
+use App\Data\ExtractionData;
+use App\Data\FactionData;
+use App\Data\ImportExportExchangeGoodData;
+use App\Data\InstallRemoveMountData;
 use App\Data\JumpGateData;
 use App\Data\JumpShipData;
-use App\Data\ShipyardData;
-use App\Data\WaypointData;
-use App\Enums\FlightModes;
-use App\Data\ScanShipsData;
-use App\Data\ShipCargoData;
-use App\Enums\MountSymbols;
-use App\Enums\TradeSymbols;
-use App\Data\ExtractionData;
-use App\Data\NavigationData;
-use App\Data\RefuelShipData;
-use App\Data\ShipRefineData;
-use App\Data\TradeGoodsData;
-use App\Enums\WaypointTypes;
-use App\Data\CreateChartData;
-use App\Data\ScanSystemsData;
-use App\Data\TransactionData;
-use App\Enums\FactionSymbols;
-use App\Enums\RefinementGood;
-use App\Data\CreateSurveyData;
+use App\Data\MarketData;
+use App\Data\MountData;
 use App\Data\NavigateShipData;
-use Illuminate\Support\Carbon;
-use App\Data\ScanWaypointsData;
-use App\Data\ConstructionSiteData;
-use Illuminate\Support\Collection;
-use App\Data\PurchaseSellCargoData;
-use App\Enums\WaypointTraitSymbols;
-use App\Data\InstallRemoveMountData;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
+use App\Data\NavigationData;
 use App\Data\PotentialTradeRouteData;
-use Illuminate\Support\Facades\Cache;
-use Spatie\LaravelData\DataCollection;
-use App\Data\DeliverCargoToContractData;
-use App\Data\AcceptOrFulfillContractData;
-use App\Data\ImportExportExchangeGoodData;
+use App\Data\PurchaseSellCargoData;
+use App\Data\RefuelShipData;
+use App\Data\ScanShipsData;
+use App\Data\ScanSystemsData;
+use App\Data\ScanWaypointsData;
+use App\Data\ShipCargoData;
+use App\Data\ShipData;
+use App\Data\ShipRefineData;
+use App\Data\ShipyardData;
+use App\Data\SupplyConstructionSiteData;
+use App\Data\SystemData;
+use App\Data\TradeGoodsData;
+use App\Data\TransactionData;
+use App\Data\WaypointData;
+use App\Enums\FactionSymbols;
+use App\Enums\FlightModes;
+use App\Enums\MountSymbols;
+use App\Enums\RefinementGood;
+use App\Enums\ShipTypes;
+use App\Enums\TradeSymbols;
+use App\Enums\WaypointTraitSymbols;
+use App\Enums\WaypointTypes;
+use App\Models\Ship;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Spatie\LaravelData\DataCollection;
 
 class SpaceTraders
 {
@@ -693,6 +694,27 @@ class SpaceTraders
         return ConstructionSiteData::fromResponse(
             $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/construction')
                 ->json('data')
+        );
+    }
+
+    public function supplyConstructionSite(
+        string $waypointSymbol,
+        string $shipSymbol,
+        TradeSymbols $tradeSymbol,
+        int $units
+    ): SupplyConstructionSiteData {
+        $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
+        $payload = [
+            'shipSymbol' => $shipSymbol,
+            'tradeSymbol' => $tradeSymbol->value,
+            'units' => $units,
+        ];
+
+        return SupplyConstructionSiteData::fromResponse(
+            $this->post(
+                'systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/construction/supply',
+                $payload
+            )->json('data')
         );
     }
 
