@@ -87,6 +87,6 @@ async function login() {
     console.log(error);
     return;
   }
-  router.push({ name: "Home" });
+  router.push({ name: "home" });
 }
 </script>
