@@ -39,7 +39,6 @@ use App\Enums\FlightModes;
 use App\Enums\MountSymbols;
 use App\Enums\RefinementGood;
 use App\Enums\ShipTypes;
-use App\Enums\Supplies;
 use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;

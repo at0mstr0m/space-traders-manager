@@ -2,7 +2,7 @@
 
 namespace App\Data;
 
-use App\Enums\Supplies;
+use App\Enums\SupplyLevels;
 use App\Enums\TradeSymbols;
 use App\Traits\DataHasModel;
 use Spatie\LaravelData\Data;
@@ -17,15 +17,17 @@ class PotentialTradeRouteData extends Data
         public string $destination,
         public ?int $purchasePrice,
         public ?string $supplyAtOrigin,
+        public ?string $activityAtOrigin,
         public ?int $tradeVolumeAtOrigin,
         public ?int $sellPrice,
         public ?string $supplyAtDestination,
+        public ?string $activityAtDestination,
         public ?int $tradeVolumeAtDestination,
     ) {
         match (true) {
             $tradeSymbol && !TradeSymbols::isValid($tradeSymbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}"),
-            $supplyAtOrigin && !Supplies::isValid($supplyAtOrigin) => throw new \InvalidArgumentException("Invalid supply at origin: {$supplyAtOrigin}"),
-            $supplyAtDestination && !Supplies::isValid($supplyAtDestination) => throw new \InvalidArgumentException("Invalid supply at destination: {$supplyAtDestination}"),
+            $supplyAtOrigin && !SupplyLevels::isValid($supplyAtOrigin) => throw new \InvalidArgumentException("Invalid supply at origin: {$supplyAtOrigin}"),
+            $supplyAtDestination && !SupplyLevels::isValid($supplyAtDestination) => throw new \InvalidArgumentException("Invalid supply at destination: {$supplyAtDestination}"),
             default => null,
         };
     }
@@ -50,10 +52,12 @@ class PotentialTradeRouteData extends Data
             origin: $exportingMarket->symbol,
             destination: $importingMarket->symbol,
             purchasePrice: $exportTradeGoodData?->purchasePrice,
-            supplyAtOrigin: $exportTradeGoodData?->supply,
+            supplyAtOrigin: $exportTradeGoodData?->supplyLevel,
+            activityAtOrigin: $exportTradeGoodData?->activity,
             tradeVolumeAtOrigin: $exportTradeGoodData?->tradeVolume,
             sellPrice: $importTradeGoodData?->purchasePrice,
-            supplyAtDestination: $importTradeGoodData?->supply,
+            supplyAtDestination: $importTradeGoodData?->supplyLevel,
+            activityAtDestination: $importTradeGoodData?->activity,
             tradeVolumeAtDestination: $importTradeGoodData?->tradeVolume,
         );
     }

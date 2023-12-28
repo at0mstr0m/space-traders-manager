@@ -6,7 +6,7 @@ namespace App\Enums;
 
 use App\Traits\EnumUtils;
 
-enum Supplies: string
+enum SupplyLevels: string
 {
     use EnumUtils;
 

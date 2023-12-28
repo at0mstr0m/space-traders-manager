@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\Supplies;
+use App\Enums\ActivityLevels;
+use App\Enums\SupplyLevels;
 use App\Enums\TradeSymbols;
 
 class PotentialTradeRoute extends Model
@@ -15,9 +16,11 @@ class PotentialTradeRoute extends Model
         'destination',
         'purchase_price',
         'supply_at_origin',
+        'activity_at_origin',
         'trade_volume_at_origin',
         'sell_price',
         'supply_at_destination',
+        'activity_at_destination',
         'trade_volume_at_destination',
     ];
 
@@ -26,10 +29,12 @@ class PotentialTradeRoute extends Model
         'origin' => 'string',
         'destination' => 'string',
         'purchase_price' => 'integer',
-        'supply_at_origin' => Supplies::class,
+        'supply_at_origin' => SupplyLevels::class,
+        'activity_at_origin' => ActivityLevels::class,
         'trade_volume_at_origin' => 'integer',
         'sell_price' => 'integer',
-        'supply_at_destination' => Supplies::class,
+        'supply_at_destination' => SupplyLevels::class,
+        'activity_at_destination' => ActivityLevels::class,
         'trade_volume_at_destination' => 'integer',
     ];
 

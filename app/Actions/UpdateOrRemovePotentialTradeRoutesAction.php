@@ -38,9 +38,11 @@ class UpdateOrRemovePotentialTradeRoutesAction
                     [
                         'purchase_price' => $potentialTradeRoute->purchasePrice,
                         'supply_at_origin' => $potentialTradeRoute->supplyAtOrigin,
+                        'activity_at_origin' => $potentialTradeRoute->activityAtOrigin,
                         'trade_volume_at_origin' => $potentialTradeRoute->tradeVolumeAtOrigin,
                         'sell_price' => $potentialTradeRoute->sellPrice,
                         'supply_at_destination' => $potentialTradeRoute->supplyAtDestination,
+                        'activity_at_destination' => $potentialTradeRoute->activityAtDestination,
                         'trade_volume_at_destination' => $potentialTradeRoute->tradeVolumeAtDestination,
                     ],
                 )->id),
