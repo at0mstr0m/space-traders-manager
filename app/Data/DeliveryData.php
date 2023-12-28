@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\TradeSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class DeliveryData extends Data implements GeneratableFromResponse
 {
@@ -21,7 +20,7 @@ class DeliveryData extends Data implements GeneratableFromResponse
         public int $unitsFulfilled,
     ) {
         if (!TradeSymbols::isValid($tradeSymbol)) {
-            throw new InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}");
+            throw new \InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}");
         }
     }
 

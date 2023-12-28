@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Data\DeliveryData;
 use App\Enums\ContractTypes;
-use Spatie\LaravelData\Data;
 use App\Enums\FactionSymbols;
-use InvalidArgumentException;
-use Illuminate\Support\Carbon;
-use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
+use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class ContractData extends Data implements GeneratableFromResponse
 {
@@ -30,8 +28,8 @@ class ContractData extends Data implements GeneratableFromResponse
         public ?DataCollection $deliveries = null,
     ) {
         match (true) {
-            !FactionSymbols::isValid($factionSymbol) => throw new InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
-            !ContractTypes::isValid($type) => throw new InvalidArgumentException("Invalid contract type: {$type}"),
+            !FactionSymbols::isValid($factionSymbol) => throw new \InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
+            !ContractTypes::isValid($type) => throw new \InvalidArgumentException("Invalid contract type: {$type}"),
             default => null,
         };
     }
