@@ -691,10 +691,29 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return ConstructionSiteData::fromResponse(
-            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/construction')
-                ->json('data')
+        return Cache::remember(
+            'get_construction_site:' . $waypointSymbol,
+            now()->addHour(),
+            fn () => ConstructionSiteData::fromResponse(
+                $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/construction')
+                    ->json('data')
+            )
         );
+    }
+
+    /**
+     * @template TWaypointSymbol string
+     *
+     * @return Collection<TWaypointSymbol, ConstructionSiteData>
+     */
+    public function listConstructionSitesInSystem(string $systemSymbol): Collection
+    {
+        return $this->listWaypointsInSystem($systemSymbol, all: true)
+            ->pluck('symbol')
+            ->mapWithKeys(fn (string $waypointSymbol) => [
+                $waypointSymbol => $this->getConstructionSite($waypointSymbol),
+            ])
+            ->filter(fn (ConstructionSiteData $constructionSite) => $constructionSite->isComplete === false);
     }
 
     public function supplyConstructionSite(

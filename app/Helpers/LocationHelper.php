@@ -22,6 +22,11 @@ class LocationHelper
         return static::parseLocation($waypointSymbol)[0] . '-' . static::parseLocation($waypointSymbol)[1];
     }
 
+    public static function waypointIsInSystem(string $waypointSymbol, string $systemSymbol): bool
+    {
+        return static::parseSystemSymbol($waypointSymbol) === $systemSymbol;
+    }
+
     public static function hasLocationPrefix(string $waypointSymbol, string $prefix): bool
     {
         return Str::startsWith(static::parseLocation($waypointSymbol)[2], $prefix);
