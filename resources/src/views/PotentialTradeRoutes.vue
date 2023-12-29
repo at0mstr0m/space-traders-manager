@@ -116,6 +116,10 @@ const tableColumns = [
     key: "trade_volume_at_origin",
   },
   {
+    title: "Activity at Origin",
+    key: "activity_at_origin",
+  },
+  {
     title: "Sell Price",
     key: "sell_price",
   },
@@ -126,6 +130,10 @@ const tableColumns = [
   {
     title: "Trade Volume at Destination",
     key: "trade_volume_at_destination",
+  },
+  {
+    title: "Activity at Destination",
+    key: "activity_at_destination",
   },
 ];
 
