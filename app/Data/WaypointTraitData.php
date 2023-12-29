@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class WaypointTraitData extends Data
 {
@@ -15,6 +15,5 @@ class WaypointTraitData extends Data
         public string $symbol,
         public string $name,
         public string $description,
-    ) {
-    }
+    ) {}
 }

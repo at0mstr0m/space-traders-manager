@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\ShipTypes;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use Spatie\LaravelData\DataCollection;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class ShipyardShipData extends Data implements GeneratableFromResponse
 {
@@ -32,7 +31,7 @@ class ShipyardShipData extends Data implements GeneratableFromResponse
         public int $crewRequired,
     ) {
         if (!ShipTypes::isValid($type)) {
-            throw new InvalidArgumentException("Invalid ship type: {$type}");
+            throw new \InvalidArgumentException("Invalid ship type: {$type}");
         }
     }
 

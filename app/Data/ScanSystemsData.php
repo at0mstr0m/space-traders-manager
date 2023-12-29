@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
-use Illuminate\Support\Carbon;
-use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
+use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class ScanSystemsData extends Data implements GeneratableFromResponse
 {
@@ -16,8 +16,7 @@ class ScanSystemsData extends Data implements GeneratableFromResponse
         public Carbon $cooldown,
         #[DataCollectionOf(ScannedSystemData::class)]
         public ?DataCollection $systems = null,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

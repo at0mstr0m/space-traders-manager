@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Enums\ReactorSymbols;
-use InvalidArgumentException;
 use App\Interfaces\GeneratableFromResponse;
+use Spatie\LaravelData\Data;
 
 class ReactorData extends Data implements GeneratableFromResponse
 {
@@ -19,7 +18,7 @@ class ReactorData extends Data implements GeneratableFromResponse
         public int $requiredCrew,
     ) {
         if (!ReactorSymbols::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid reactor symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid reactor symbol: {$symbol}");
         }
     }
 

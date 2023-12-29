@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Enums\SystemTypes;
-use InvalidArgumentException;
-use Spatie\LaravelData\DataCollection;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class SystemData extends Data implements GeneratableFromResponse
 {
@@ -26,7 +25,7 @@ class SystemData extends Data implements GeneratableFromResponse
         public array $factions,
     ) {
         match (true) {
-            !SystemTypes::isValid($type) => throw new InvalidArgumentException("Invalid system type: {$type}"),
+            !SystemTypes::isValid($type) => throw new \InvalidArgumentException("Invalid system type: {$type}"),
             default => null,
         };
     }

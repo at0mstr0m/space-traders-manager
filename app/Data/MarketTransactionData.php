@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\TradeSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use Illuminate\Support\Carbon;
 use App\Enums\TransactionTypes;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Data;
 
 class MarketTransactionData extends Data implements GeneratableFromResponse
 {
@@ -27,8 +26,8 @@ class MarketTransactionData extends Data implements GeneratableFromResponse
         public Carbon $timestamp,
     ) {
         match (true) {
-            !TradeSymbols::isValid($tradeSymbol) => throw new InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}"),
-            !TransactionTypes::isValid($type) => throw new InvalidArgumentException("Invalid transaction type: {$tradeSymbol}"),
+            !TradeSymbols::isValid($tradeSymbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}"),
+            !TransactionTypes::isValid($type) => throw new \InvalidArgumentException("Invalid transaction type: {$tradeSymbol}"),
             default => null,
         };
     }

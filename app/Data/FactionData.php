@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Enums\FactionSymbols;
-use InvalidArgumentException;
-use Spatie\LaravelData\DataCollection;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class FactionData extends Data implements GeneratableFromResponse
 {
@@ -26,7 +25,7 @@ class FactionData extends Data implements GeneratableFromResponse
         public ?DataCollection $traits = null,
     ) {
         if (!FactionSymbols::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid Faction symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid Faction symbol: {$symbol}");
         }
     }
 

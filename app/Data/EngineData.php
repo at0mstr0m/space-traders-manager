@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\EngineSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
 use App\Interfaces\GeneratableFromResponse;
+use Spatie\LaravelData\Data;
 
 class EngineData extends Data implements GeneratableFromResponse
 {
@@ -20,7 +19,7 @@ class EngineData extends Data implements GeneratableFromResponse
         public int $requiredCrew,
     ) {
         if (!EngineSymbols::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid engine symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid engine symbol: {$symbol}");
         }
     }
 

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\MountSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use Spatie\LaravelData\DataCollection;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class MountData extends Data implements GeneratableFromResponse
 {
@@ -27,7 +26,7 @@ class MountData extends Data implements GeneratableFromResponse
         public ?DataCollection $deposits = null,
     ) {
         if (!MountSymbols::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid mount symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid mount symbol: {$symbol}");
         }
     }
 

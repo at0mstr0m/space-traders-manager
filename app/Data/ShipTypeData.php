@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\ShipTypes;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
 use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class ShipTypeData extends Data
 {
@@ -17,7 +16,7 @@ class ShipTypeData extends Data
         public string $type,
     ) {
         if (!ShipTypes::isValid($type)) {
-            throw new InvalidArgumentException("Invalid ship type: {$type}");
+            throw new \InvalidArgumentException("Invalid ship type: {$type}");
         }
     }
 }

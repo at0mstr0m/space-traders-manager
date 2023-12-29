@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Enums\SystemTypes;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class ScannedSystemData extends Data implements GeneratableFromResponse
 {
@@ -22,7 +21,7 @@ class ScannedSystemData extends Data implements GeneratableFromResponse
         public int $distance,
     ) {
         match (true) {
-            !SystemTypes::isValid($type) => throw new InvalidArgumentException("Invalid system type: {$type}"),
+            !SystemTypes::isValid($type) => throw new \InvalidArgumentException("Invalid system type: {$type}"),
             default => null,
         };
     }

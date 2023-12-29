@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
-use Illuminate\Support\Carbon;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Data;
 
 class ShipRefineData extends Data implements GeneratableFromResponse
 {
@@ -21,8 +21,7 @@ class ShipRefineData extends Data implements GeneratableFromResponse
         public string $consumedTradeSymbol,
         public string $consumedUnits,
         public ShipCargoData $cargo,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

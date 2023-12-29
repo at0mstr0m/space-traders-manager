@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Enums\WaypointTypes;
-use Spatie\LaravelData\Data;
 use App\Enums\FactionSymbols;
-use InvalidArgumentException;
-use Spatie\LaravelData\DataCollection;
+use App\Enums\WaypointTypes;
 use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class WaypointData extends Data implements GeneratableFromResponse
 {
@@ -27,8 +26,8 @@ class WaypointData extends Data implements GeneratableFromResponse
         public ?string $orbits = null,
     ) {
         match (true) {
-            !WaypointTypes::isValid($type) => throw new InvalidArgumentException("Invalid waypoint type: {$type}"),
-            !FactionSymbols::isValid($faction) => throw new InvalidArgumentException("Invalid faction symbol: {$faction}"),
+            !WaypointTypes::isValid($type) => throw new \InvalidArgumentException("Invalid waypoint type: {$type}"),
+            !FactionSymbols::isValid($faction) => throw new \InvalidArgumentException("Invalid faction symbol: {$faction}"),
             default => null,
         };
     }

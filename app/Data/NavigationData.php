@@ -7,12 +7,11 @@ namespace App\Data;
 use App\Enums\FlightModes;
 use App\Enums\ShipNavStatus;
 use App\Enums\WaypointTypes;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use Illuminate\Support\Carbon;
 use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
+use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Data;
 
 class NavigationData extends Data implements GeneratableFromResponse, UpdatesShip
 {
@@ -29,10 +28,10 @@ class NavigationData extends Data implements GeneratableFromResponse, UpdatesShi
         public Carbon $arrival,
     ) {
         match (true) {
-            !ShipNavStatus::isValid($status) => throw new InvalidArgumentException("Invalid ship nav status: {$status}"),
-            !FlightModes::isValid($flightMode) => throw new InvalidArgumentException("Invalid flight mode: {$flightMode}"),
-            !WaypointTypes::isValid($originType) => throw new InvalidArgumentException("Invalid origin type: {$flightMode}"),
-            !WaypointTypes::isValid($destinationType) => throw new InvalidArgumentException("Invalid destination type: {$flightMode}"),
+            !ShipNavStatus::isValid($status) => throw new \InvalidArgumentException("Invalid ship nav status: {$status}"),
+            !FlightModes::isValid($flightMode) => throw new \InvalidArgumentException("Invalid flight mode: {$flightMode}"),
+            !WaypointTypes::isValid($originType) => throw new \InvalidArgumentException("Invalid origin type: {$flightMode}"),
+            !WaypointTypes::isValid($destinationType) => throw new \InvalidArgumentException("Invalid destination type: {$flightMode}"),
             default => null,
         };
     }

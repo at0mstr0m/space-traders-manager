@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
+use Spatie\LaravelData\Data;
 
 class RefuelShipData extends Data implements GeneratableFromResponse, UpdatesShip
 {
@@ -15,8 +15,7 @@ class RefuelShipData extends Data implements GeneratableFromResponse, UpdatesShi
         public AgentData $agent,
         public FuelData $fuel,
         public MarketTransactionData $transaction,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Models\Ship;
-use App\Models\Cargo;
-use Spatie\LaravelData\Data;
-use App\Interfaces\UpdatesShip;
-use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
+use App\Interfaces\UpdatesShip;
+use App\Models\Cargo;
+use App\Models\Ship;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class ShipCargoData extends Data implements GeneratableFromResponse, UpdatesShip
 {
@@ -19,8 +19,7 @@ class ShipCargoData extends Data implements GeneratableFromResponse, UpdatesShip
         public int $units,
         #[DataCollectionOf(CargoData::class)]
         public ?DataCollection $inventory = null,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

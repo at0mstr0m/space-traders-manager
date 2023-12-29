@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Illuminate\Support\Arr;
 use App\Enums\WaypointTypes;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Illuminate\Support\Arr;
+use Spatie\LaravelData\Data;
 
 class SystemWaypointData extends Data implements GeneratableFromResponse
 {
@@ -23,7 +22,7 @@ class SystemWaypointData extends Data implements GeneratableFromResponse
         public array $orbitals,
     ) {
         match (true) {
-            !WaypointTypes::isValid($type) => throw new InvalidArgumentException("Invalid waypoint type: {$type}"),
+            !WaypointTypes::isValid($type) => throw new \InvalidArgumentException("Invalid waypoint type: {$type}"),
             default => null,
         };
     }
@@ -35,7 +34,7 @@ class SystemWaypointData extends Data implements GeneratableFromResponse
             type: $response['type'],
             x: $response['x'],
             y: $response['y'],
-            orbitals: Arr::map(($response['orbitals']), fn (array $orbital) => $orbital['symbol']),
+            orbitals: Arr::map($response['orbitals'], fn (array $orbital) => $orbital['symbol']),
         );
     }
 }

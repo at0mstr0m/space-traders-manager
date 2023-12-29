@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\TradeSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use Illuminate\Support\Carbon;
 use App\Interfaces\GeneratableFromResponse;
+use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Data;
 
 class ShipModificationTransactionData extends Data implements GeneratableFromResponse
 {
@@ -20,7 +19,7 @@ class ShipModificationTransactionData extends Data implements GeneratableFromRes
         public Carbon $timestamp,
     ) {
         match (true) {
-            !TradeSymbols::isValid($tradeSymbol) => throw new InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}"),
+            !TradeSymbols::isValid($tradeSymbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}"),
             default => null,
         };
     }

@@ -2,10 +2,10 @@
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class InstallRemoveMountData extends Data implements GeneratableFromResponse
 {
@@ -15,8 +15,7 @@ class InstallRemoveMountData extends Data implements GeneratableFromResponse
         public ?DataCollection $mounts = null,
         public ShipCargoData $cargo,
         public ShipModificationTransactionData $transaction,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

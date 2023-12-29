@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\FactionTraits;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
 use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class FactionTraitData extends Data
 {
@@ -19,7 +18,7 @@ class FactionTraitData extends Data
         public string $description,
     ) {
         if (!FactionTraits::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid Faction Trait symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid Faction Trait symbol: {$symbol}");
         }
     }
 }

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Enums\FactionSymbols;
-use InvalidArgumentException;
-use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class JumpGateData extends Data implements GeneratableFromResponse
 {
@@ -20,7 +19,7 @@ class JumpGateData extends Data implements GeneratableFromResponse
         public ?DataCollection $connectedSystems = null,
     ) {
         match (true) {
-            !FactionSymbols::isValid($factionSymbol) => throw new InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
+            !FactionSymbols::isValid($factionSymbol) => throw new \InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
             default => null,
         };
     }

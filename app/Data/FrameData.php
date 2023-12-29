@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Models\Frame;
 use App\Enums\FrameSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
 use App\Interfaces\GeneratableFromResponse;
+use Spatie\LaravelData\Data;
 
 class FrameData extends Data implements GeneratableFromResponse
 {
@@ -23,11 +21,12 @@ class FrameData extends Data implements GeneratableFromResponse
         public int $requiredCrew,
     ) {
         if (!FrameSymbols::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid frame symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid frame symbol: {$symbol}");
         }
     }
 
-    public static function fromResponse(array $response): static {
+    public static function fromResponse(array $response): static
+    {
         return new static(
             symbol: $response['symbol'],
             name: $response['name'],

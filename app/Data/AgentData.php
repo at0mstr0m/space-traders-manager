@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Interfaces\GeneratableFromResponse;
+use App\Interfaces\WithModelInstance;
 use App\Models\Model;
 use App\Traits\DataHasModel;
-use Spatie\LaravelData\Data;
-use App\Interfaces\WithModelInstance;
-use App\Interfaces\GeneratableFromResponse;
 use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class AgentData extends Data implements WithModelInstance, GeneratableFromResponse
 {
@@ -23,8 +23,7 @@ class AgentData extends Data implements WithModelInstance, GeneratableFromRespon
         public string $startingFaction,
         public ?int $shipCount = null,
         public ?string $accountId = null,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {
@@ -43,6 +42,7 @@ class AgentData extends Data implements WithModelInstance, GeneratableFromRespon
         if (!$this->accountId) {
             throw new \Exception('Cannot create an Agent Model without an accountId');
         }
+
         return $this->makeModel([
             'account_id' => $this->accountId,
             'symbol' => $this->symbol,

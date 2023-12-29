@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class WaypointOrbitalData extends Data
 {
@@ -13,6 +13,5 @@ class WaypointOrbitalData extends Data
 
     public function __construct(
         public string $symbol,
-    ) {
-    }
+    ) {}
 }

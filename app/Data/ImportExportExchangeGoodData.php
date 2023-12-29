@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\TradeSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class ImportExportExchangeGoodData extends Data implements GeneratableFromResponse
 {
@@ -20,7 +19,7 @@ class ImportExportExchangeGoodData extends Data implements GeneratableFromRespon
         public string $description,
     ) {
         match (true) {
-            !TradeSymbols::isValid($symbol) => throw new InvalidArgumentException("Invalid trade symbol: {$symbol}"),
+            !TradeSymbols::isValid($symbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$symbol}"),
             default => null,
         };
     }

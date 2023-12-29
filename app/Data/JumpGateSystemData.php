@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\FactionSymbols;
-use Spatie\LaravelData\Data;
 use App\Enums\SystemTypes;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class JumpGateSystemData extends Data implements GeneratableFromResponse
 {
@@ -24,8 +23,8 @@ class JumpGateSystemData extends Data implements GeneratableFromResponse
         public int $distance,
     ) {
         match (true) {
-            !SystemTypes::isValid($type) => throw new InvalidArgumentException("Invalid system type: {$type}"),
-            !FactionSymbols::isValid($factionSymbol) => throw new InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
+            !SystemTypes::isValid($type) => throw new \InvalidArgumentException("Invalid system type: {$type}"),
+            !FactionSymbols::isValid($factionSymbol) => throw new \InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
             default => null,
         };
     }

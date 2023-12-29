@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Interfaces\GeneratableFromResponse;
 use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Data;
 
 class ChartData extends Data implements GeneratableFromResponse
 {
@@ -14,8 +14,7 @@ class ChartData extends Data implements GeneratableFromResponse
         public ?string $waypointSymbol,
         public string $submittedBy,
         public Carbon $submittedOn,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 use App\Interfaces\GeneratableFromResponse;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class MarketData extends Data implements GeneratableFromResponse
 {
@@ -23,8 +23,7 @@ class MarketData extends Data implements GeneratableFromResponse
         public ?DataCollection $transactions = null,
         #[DataCollectionOf(TradeGoodsData::class)]
         public ?DataCollection $tradeGoods = null,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

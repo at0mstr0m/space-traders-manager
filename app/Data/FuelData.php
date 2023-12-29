@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use Spatie\LaravelData\Data;
 use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
 use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Data;
 
 class FuelData extends Data implements GeneratableFromResponse, UpdatesShip
 {
@@ -17,8 +17,7 @@ class FuelData extends Data implements GeneratableFromResponse, UpdatesShip
         public int $capacity,
         public int $consumedAmount,
         public Carbon $consumedTimestamp,
-    ) {
-    }
+    ) {}
 
     public static function fromResponse(array $response): static
     {

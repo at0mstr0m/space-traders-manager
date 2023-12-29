@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\ModuleSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Data;
 
 class ModuleData extends Data implements GeneratableFromResponse
 {
@@ -25,7 +24,7 @@ class ModuleData extends Data implements GeneratableFromResponse
         public ?int $range = null,
     ) {
         if (!ModuleSymbols::isValid($symbol)) {
-            throw new InvalidArgumentException("Invalid module symbol: {$symbol}");
+            throw new \InvalidArgumentException("Invalid module symbol: {$symbol}");
         }
     }
 

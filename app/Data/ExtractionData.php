@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Models\Ship;
-use App\Models\Cargo;
 use App\Enums\TradeSymbols;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use Illuminate\Support\Carbon;
-use App\Interfaces\UpdatesShip;
-use Spatie\LaravelData\DataCollection;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Interfaces\UpdatesShip;
+use App\Models\Cargo;
+use App\Models\Ship;
+use App\Traits\HasCollectionFromResponse;
+use Illuminate\Support\Carbon;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
 
 class ExtractionData extends Data implements GeneratableFromResponse, UpdatesShip
 {
@@ -32,7 +31,7 @@ class ExtractionData extends Data implements GeneratableFromResponse, UpdatesShi
         public ?DataCollection $inventory = null,
     ) {
         if (!TradeSymbols::isValid($tradeSymbol)) {
-            throw new InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}");
+            throw new \InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}");
         }
     }
 

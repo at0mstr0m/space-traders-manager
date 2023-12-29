@@ -7,11 +7,10 @@ namespace App\Data;
 use App\Enums\FactionSymbols;
 use App\Enums\FrameSymbols;
 use App\Enums\ShipRoles;
+use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
 use Illuminate\Support\Arr;
 use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
-use App\Interfaces\GeneratableFromResponse;
 
 class ScannedShipData extends Data implements GeneratableFromResponse
 {
@@ -29,9 +28,9 @@ class ScannedShipData extends Data implements GeneratableFromResponse
         public array $mounts,
     ) {
         match (true) {
-            !ShipRoles::isValid($role) => throw new InvalidArgumentException("Invalid role: {$role}"),
-            !FactionSymbols::isValid($factionSymbol) => throw new InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
-            !FrameSymbols::isValid($frameSymbol) => throw new InvalidArgumentException("Invalid frame symbol: {$frameSymbol}"),
+            !ShipRoles::isValid($role) => throw new \InvalidArgumentException("Invalid role: {$role}"),
+            !FactionSymbols::isValid($factionSymbol) => throw new \InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
+            !FrameSymbols::isValid($frameSymbol) => throw new \InvalidArgumentException("Invalid frame symbol: {$frameSymbol}"),
             default => null,
         };
     }
@@ -47,7 +46,7 @@ class ScannedShipData extends Data implements GeneratableFromResponse
             frameSymbol: $response['frame']['symbol'],
             reactorSymbol: $response['reactor']['symbol'],
             engineSymbol: $response['engine']['symbol'],
-            mounts: Arr::map(($response['mounts']), fn (array $mount) => $mount['symbol']),
+            mounts: Arr::map($response['mounts'], fn (array $mount) => $mount['symbol']),
         );
     }
 }

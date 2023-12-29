@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\FactionSymbols;
-use Illuminate\Support\Arr;
 use App\Enums\WaypointTypes;
-use Spatie\LaravelData\Data;
-use InvalidArgumentException;
-use App\Traits\HasCollectionFromResponse;
 use App\Interfaces\GeneratableFromResponse;
+use App\Traits\HasCollectionFromResponse;
+use Illuminate\Support\Arr;
+use Spatie\LaravelData\Data;
 
 class ScannedWaypointData extends Data implements GeneratableFromResponse
 {
@@ -28,8 +27,8 @@ class ScannedWaypointData extends Data implements GeneratableFromResponse
         public ?string $orbits,
     ) {
         match (true) {
-            !WaypointTypes::isValid($type) => throw new InvalidArgumentException("Invalid waypoint type: {$type}"),
-            !FactionSymbols::isValid($faction) => throw new InvalidArgumentException("Invalid faction symbol: {$faction}"),
+            !WaypointTypes::isValid($type) => throw new \InvalidArgumentException("Invalid waypoint type: {$type}"),
+            !FactionSymbols::isValid($faction) => throw new \InvalidArgumentException("Invalid faction symbol: {$faction}"),
             default => null,
         };
     }
@@ -41,9 +40,9 @@ class ScannedWaypointData extends Data implements GeneratableFromResponse
             type: $response['type'],
             x: $response['x'],
             y: $response['y'],
-            orbitals: Arr::map(($response['orbitals']), fn (array $orbital) => $orbital['symbol']),
+            orbitals: Arr::map($response['orbitals'], fn (array $orbital) => $orbital['symbol']),
             faction: $response['faction']['symbol'],
-            traits: Arr::map(($response['traits']), fn (array $orbital) => $orbital['symbol']),
+            traits: Arr::map($response['traits'], fn (array $orbital) => $orbital['symbol']),
             chart: ChartData::fromResponse($response['chart']),
             orbits: data_get($response, 'orbits'),
         );
