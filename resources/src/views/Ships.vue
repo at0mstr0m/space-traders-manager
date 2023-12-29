@@ -269,8 +269,9 @@
 import { ref, onMounted } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
 import useShipUtils from "@/utils/ships.js";
-import Repository from "@/repos/ships.js";
+import { useRepository } from "@/repos/repoGenerator.js";
 
+const repo = useRepository("ships");
 const { tableColumns } = useShipUtils();
 
 const expanded = ref([]);
@@ -287,7 +288,7 @@ async function getShips() {
   try {
     const {
       data: { data, meta },
-    } = await Repository.index(page.value, perPage.value);
+    } = await repo.index(page.value, perPage.value);
     ships.value = data;
     totalPages.value = meta.last_page;
     totalItems.value = meta.total;
@@ -309,7 +310,7 @@ async function refetchShips() {
   refreshing.value = true;
   busy.value = true;
   try {
-    const response = await Repository.refetch();
+    const response = await repo.refetch();
     ships.value = response.data.data;
   } catch (error) {
     console.error(error);

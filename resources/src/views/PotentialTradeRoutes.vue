@@ -80,11 +80,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
-import Repository from "@/repos/potentialTradeRoutes.js";
 import useStringify from "@/utils/stringify";
 import Supplies from "@/enums/supplies";
+import { useRepository } from "@/repos/repoGenerator.js";
 
 const { decimal } = useStringify();
+const repo = useRepository("potential-trade-routes");
 
 const tableColumns = [
   {
@@ -151,7 +152,7 @@ async function getTradeRoutes() {
   try {
     const {
       data: { data, meta },
-    } = await Repository.index(page.value, perPage.value);
+    } = await repo.index(page.value, perPage.value);
     tradeRoutes.value = data;
     totalPages.value = meta.last_page;
     totalItems.value = meta.total;
@@ -189,7 +190,7 @@ async function refetchTradeRoutes() {
   refreshing.value = true;
   busy.value = true;
   try {
-    const response = await Repository.refetch();
+    const response = await repo.refetch();
     tradeRoutes.value = response.data.data;
   } catch (error) {
     console.error(error);
