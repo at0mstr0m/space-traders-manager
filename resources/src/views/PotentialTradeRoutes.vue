@@ -10,7 +10,7 @@
     >
       Refresh
       <template v-slot:loader>
-        <v-progress-linear indeterminate></v-progress-linear>
+        <v-progress-linear indeterminate />
       </template>
     </v-btn>
     <v-data-table
