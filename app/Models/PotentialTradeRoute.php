@@ -40,6 +40,8 @@ class PotentialTradeRoute extends Model
 
     public function getProfitAttribute(): float|int
     {
-        return ($this->sell_price - $this->purchase_price) / $this->purchase_price;
+        return $this->purchase_price
+            ? ($this->sell_price - $this->purchase_price) / $this->purchase_price
+            : 0;
     }
 }
