@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\UpdateContractAction;
 use App\Enums\ContractTypes;
 use App\Enums\FactionSymbols;
 use App\Helpers\SpaceTraders;
-use App\Actions\UpdateContractAction;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contract extends Model
 {
@@ -56,6 +56,17 @@ class Contract extends Model
         );
     }
 
+    public function accept(): static
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return UpdateContractAction::run(
+            $api->acceptContract($this->identification)->contract,
+            $this->agent
+        );
+    }
+
     public function fulfill(): bool
     {
         /** @var SpaceTraders */
@@ -63,7 +74,7 @@ class Contract extends Model
 
         $api->fulfillContract($this->identification);
 
-        //todo: add agent update
+        // todo: add agent update
 
         return $this->delete();
     }

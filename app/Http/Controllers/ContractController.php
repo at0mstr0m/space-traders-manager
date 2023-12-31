@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ContractResource;
+use App\Jobs\UpdateContracts;
 use App\Models\Contract;
-use Illuminate\Http\Request;
 
 class ContractController extends Controller
 {
@@ -17,32 +17,22 @@ class ContractController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Refetch contracts.
      */
-    public function create() {}
+    public function refetch()
+    {
+        UpdateContracts::dispatchSync(request()->user()->agent);
+
+        return $this->index();
+    }
 
     /**
-     * Store a newly created resource in storage.
+     * Accept contract.
      */
-    public function store(Request $request) {}
+    public function accept(Contract $contract)
+    {
+        $contract->accept();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Contract $contract) {}
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Contract $contract) {}
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Contract $contract) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Contract $contract) {}
+        return new ContractResource($contract);
+    }
 }

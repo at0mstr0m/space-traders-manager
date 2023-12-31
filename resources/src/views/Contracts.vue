@@ -13,6 +13,7 @@
           <v-toolbar-title>Contracts</v-toolbar-title>
         </v-toolbar>
       </template>
+
       <template #expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
@@ -22,6 +23,8 @@
                   <v-toolbar-title>Deliveries</v-toolbar-title>
                 </v-toolbar>
               </template>
+
+              <!-- eslint-disable-next-line vue/valid-v-slot -->
               <template #item.units_fulfilled="{ item, value }">
                 <v-chip :color="getColor((value / item.units_required) * 100)">
                   {{ value }}
@@ -34,12 +37,34 @@
           </td>
         </tr>
       </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.accepted="{ value }">
         <v-checkbox :model-value="value" readonly disabled />
       </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.fulfilled="{ value }">
         <v-checkbox :model-value="value" readonly disabled />
       </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
+      <template #item._accept="{ item }">
+        <v-btn
+          v-if="!item.accepted"
+          elevation="1"
+          :loading="accepting"
+          color="primary"
+          @click="acceptContract(item)"
+        >
+          Accept
+          <template v-slot:loader>
+            <v-progress-linear indeterminate />
+          </template>
+        </v-btn>
+      </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.deliveries="{ value }">
         {{ value.length }}
       </template>
@@ -48,12 +73,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
 import { useRepository } from "@/repos/repoGenerator.js";
 
 const repo = useRepository("contracts");
 const busy = ref(false);
+const accepting = ref(false);
 const contracts = ref([]);
 const contractColumns = ref([
   {
@@ -75,6 +101,10 @@ const contractColumns = ref([
   {
     title: "Fulfilled",
     key: "fulfilled",
+  },
+  {
+    title: "Accept",
+    key: "_accept",
   },
   {
     title: "Deadline",
@@ -132,5 +162,20 @@ function getColor(number) {
   else return "red";
 }
 
-fetchContracts();
+async function acceptContract(contract) {
+  console.log(JSON.stringify(contract, null, 2));
+  // return;
+  accepting.value = true;
+  try {
+    await repo.accept(contract.id);
+    accepting.value = false;
+    fetchContracts();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+onMounted(() => {
+  fetchContracts();
+});
 </script>

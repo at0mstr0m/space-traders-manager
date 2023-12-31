@@ -31,12 +31,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->controller(ShipController::class)
         ->group(function () {
             Route::get('', 'index')->name('index');
-            Route::get('show', 'show')->name('show');
             Route::get('refetch', 'refetch')->name('refetch');
             Route::post('purchase', 'purchase')->name('purchase');
         });
 
-    Route::apiResource('contracts', ContractController::class);
+    Route::prefix('contracts')
+        ->as('contracts.')
+        ->controller(ContractController::class)
+        ->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::get('refetch', 'refetch')->name('refetch');
+            Route::post('{contract}/accept', 'accept')->name('accept');
+        });
 
     Route::prefix('potential-trade-routes')
         ->as('potential-trade-routes.')
