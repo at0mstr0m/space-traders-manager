@@ -9,7 +9,16 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 class Model extends EloquentModel
 {
-    public function fillAndSave(Arrayable|array $attributes): bool
+    public static function new(array|Arrayable $attributes = []): static
+    {
+        if (!is_array($attributes)) {
+            $attributes = $attributes->toArray();
+        }
+
+        return new static($attributes);
+    }
+
+    public function fillAndSave(array|Arrayable $attributes): bool
     {
         if (!is_array($attributes)) {
             $attributes = $attributes->toArray();
@@ -18,12 +27,10 @@ class Model extends EloquentModel
         return $this->fill($attributes)->save();
     }
 
-    public static function new(Arrayable|array $attributes = []): static
+    public function pipeSave(): static
     {
-        if (!is_array($attributes)) {
-            $attributes = $attributes->toArray();
-        }
+        $this->save();
 
-        return new static($attributes);
+        return $this;
     }
 }

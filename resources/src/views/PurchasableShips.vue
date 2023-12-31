@@ -7,7 +7,7 @@
       :headers="tableColumns"
       :items="ships"
       :items-per-page="perPage"
-      item-value="id"
+      :item-value="uniqueItemId"
       show-expand
       expand-on-click
     >
@@ -183,6 +183,21 @@
         </tr>
       </template>
 
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
+      <template #item._purchase="{ item }">
+        <v-btn
+          elevation="1"
+          :loading="buying"
+          color="primary"
+          @click="purchaseShip(item)"
+        >
+          Buy
+          <template v-slot:loader>
+            <v-progress-linear indeterminate />
+          </template>
+        </v-btn>
+      </template>
+
       <template #bottom>
         <v-row align-content="center">
           <v-col>
@@ -218,6 +233,8 @@ import { VDataTable } from "vuetify/lib/components/index.mjs";
 import { useRepository } from "@/repos/repoGenerator.js";
 
 const repo = useRepository("live-data");
+const shipRepo = useRepository("ships");
+
 const tableColumns = [
   {
     title: "Type",
@@ -236,6 +253,10 @@ const tableColumns = [
     key: "waypointSymbol",
   },
   {
+    title: "Purchase",
+    key: "_purchase",
+  },
+  {
     title: "Description",
     key: "description",
   },
@@ -243,6 +264,7 @@ const tableColumns = [
 
 const expanded = ref([]);
 const busy = ref(false);
+const buying = ref(false);
 const ships = ref([]);
 const page = ref(1);
 const perPage = ref(15);
@@ -262,6 +284,22 @@ async function getShips() {
     console.error(error);
   }
   busy.value = false;
+}
+
+// needed to only expand the row that was clicked
+function uniqueItemId(item) {
+  return item.type + item.waypointSymbol;
+}
+
+async function purchaseShip(item) {
+  buying.value = true;
+  try {
+    await shipRepo.purchase(item.type, item.waypointSymbol);
+    buying.value = false;
+    getShips();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 onMounted(() => {

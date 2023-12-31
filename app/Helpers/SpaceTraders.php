@@ -23,6 +23,7 @@ use App\Data\NavigateShipData;
 use App\Data\NavigationData;
 use App\Data\PotentialTradeRouteData;
 use App\Data\PurchaseSellCargoData;
+use App\Data\PurchaseShipData;
 use App\Data\RefuelShipData;
 use App\Data\ScanShipsData;
 use App\Data\ScanSystemsData;
@@ -35,7 +36,6 @@ use App\Data\ShipyardShipData;
 use App\Data\SupplyConstructionSiteData;
 use App\Data\SystemData;
 use App\Data\TradeGoodsData;
-use App\Data\TransactionData;
 use App\Data\WaypointData;
 use App\Enums\FactionSymbols;
 use App\Enums\FlightModes;
@@ -171,22 +171,17 @@ class SpaceTraders
             : $data;
     }
 
-    public function purchaseShip(ShipTypes $shipType, string $waypointSymbol): Collection
+    public function purchaseShip(ShipTypes $shipType, string $waypointSymbol): PurchaseShipData
     {
         $payload = [
             'shipType' => $shipType->value,
             'waypointSymbol' => $waypointSymbol,
         ];
 
-        return $this->post('my/ships', $payload)
-            ->collect('data')
-            ->pipe(
-                fn (Collection $data) => collect([
-                    'agent' => AgentData::fromResponse($data['agent']),
-                    'ship' => ShipData::fromResponse($data['ship']),
-                    'transaction' => TransactionData::fromResponse($data['transaction']),
-                ])
-            );
+        return PurchaseShipData::fromResponse(
+            $this->post('my/ships', $payload)
+                ->json('data')
+        );
     }
 
     public function getShip(string $shipSymbol): ShipData

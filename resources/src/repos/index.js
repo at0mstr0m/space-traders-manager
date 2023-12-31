@@ -4,6 +4,7 @@ export class Repository {
   constructor(resource) {
     this.resource = resource;
     this._get = api.get;
+    this._post = api.post;
   }
 }
 

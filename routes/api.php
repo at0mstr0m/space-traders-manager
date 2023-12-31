@@ -30,9 +30,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->as('ships.')
         ->controller(ShipController::class)
         ->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::get('show', 'show')->name('show');
             Route::get('refetch', 'refetch')->name('refetch');
+            Route::post('purchase', 'purchase')->name('purchase');
         });
-    Route::apiResource('ships', ShipController::class);
 
     Route::apiResource('contracts', ContractController::class);
 
