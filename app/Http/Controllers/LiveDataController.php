@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Data\ShipyardShipData;
 use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Http\Requests\PaginationRequest;
@@ -25,7 +24,7 @@ class LiveDataController extends Controller
             ->map(fn (string $systemSymbol) => $this->api->listPurchasableShipsInSystem($systemSymbol))
             ->flatten();
 
-        return (new LengthAwarePaginator(
+        return new LengthAwarePaginator(
             $data,
             $data->count(),
             $request->perPage(),
@@ -33,6 +32,6 @@ class LiveDataController extends Controller
             [
                 'path' => $request->url(),
             ]
-        ));
+        );
     }
 }
