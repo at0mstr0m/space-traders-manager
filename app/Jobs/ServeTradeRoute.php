@@ -68,7 +68,7 @@ class ServeTradeRoute implements ShouldQueue
                     return;
                 }
 
-                if ($tradeRoute->profit <= 2) {
+                if ($tradeRoute->profit <= 2 && $tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
 
                     return;
