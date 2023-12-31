@@ -50,8 +50,9 @@
 <script setup>
 import { ref } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
-import api from "@/services/API.js";
+import { useRepository } from "@/repos/repoGenerator.js";
 
+const repo = useRepository("contracts");
 const busy = ref(false);
 const contracts = ref([]);
 const contractColumns = ref([
@@ -115,7 +116,7 @@ const deliveryColumns = ref([
 async function fetchContracts() {
   busy.value = true;
   try {
-    const response = await api.get("/contracts");
+    const response = await repo.index();
     contracts.value = response.data.data;
   } catch (error) {
     console.error(error);
