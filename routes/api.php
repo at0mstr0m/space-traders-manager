@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\ContractController;
+use App\Http\Controllers\LiveDataController;
 use App\Http\Controllers\PotentialTradeRouteController;
 use App\Http\Controllers\ShipController;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +18,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('live-data')
+        ->as('live-data.')
+        ->controller(LiveDataController::class)
+        ->group(function () {
+            Route::get('purchasable-ships-in-system', 'purchasableShipsInSystem')
+                ->name('purchasable-ships-in-system');
+        });
+
     Route::prefix('ships')
         ->as('ships.')
         ->controller(ShipController::class)
@@ -36,4 +44,3 @@ Route::middleware(['auth:sanctum'])->group(function () {
         });
     Route::apiResource('potential-trade-routes', PotentialTradeRouteController::class);
 });
-

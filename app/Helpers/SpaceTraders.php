@@ -31,6 +31,7 @@ use App\Data\ShipCargoData;
 use App\Data\ShipData;
 use App\Data\ShipRefineData;
 use App\Data\ShipyardData;
+use App\Data\ShipyardShipData;
 use App\Data\SupplyConstructionSiteData;
 use App\Data\SystemData;
 use App\Data\TradeGoodsData;
@@ -495,6 +496,23 @@ class SpaceTraders
                 'waypointTrait' => $waypointTrait,
             ])
             : $data;
+    }
+
+    /**
+     * @return Collection<int, ShipyardShipData>
+     */
+    public function listPurchasableShipsInSystem(string $systemSymbol): Collection
+    {
+        return $this->listWaypointsInSystem(
+            $systemSymbol,
+            waypointTrait: WaypointTraitSymbols::SHIPYARD,
+            all: true
+        )
+            ->map(fn (WaypointData $waypointData) => $this->getShipyard($waypointData->symbol))
+            ->reduce(
+                fn (Collection $carry, ShipyardData $shipyardData) => $carry->concat($shipyardData->ships),
+                collect()
+            );
     }
 
     public function getWaypoint(string $waypointSymbol): WaypointData

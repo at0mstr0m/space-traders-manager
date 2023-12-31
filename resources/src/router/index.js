@@ -39,6 +39,12 @@ const routes = [
         component: () =>
           import("@/views/PotentialTradeRoutes.vue"),
       },
+      {
+        path: "purchasable-ships",
+        name: "purchasable-ships",
+        component: () =>
+          import("@/views/PurchasableShips.vue"),
+      },
     ],
   },
   {

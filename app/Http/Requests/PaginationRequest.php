@@ -37,4 +37,14 @@ class PaginationRequest extends FormRequest
             ],
         ];
     }
+
+    public function page(): int
+    {
+        return (int) $this->validated('page', 1);
+    }
+
+    public function perPage(): int
+    {
+        return (int) $this->validated('perPage', 10);
+    }
 }

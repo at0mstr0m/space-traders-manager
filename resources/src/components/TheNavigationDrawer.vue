@@ -39,6 +39,12 @@
         value="Potential Trade Routes"
         @click="navigateTo('potential-trade-routes')"
       />
+      <v-list-item
+        prepend-icon="mdi mdi-cash-multiple"
+        title="Purchasable Ships"
+        value="Purchasable Ships"
+        @click="navigateTo('purchasable-ships')"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>
