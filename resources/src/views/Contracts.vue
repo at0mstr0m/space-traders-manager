@@ -20,6 +20,8 @@
       :items="contracts"
       :items-per-page="perPage"
       item-value="id"
+      show-expand
+      expand-on-click
     >
       <template #top>
         <v-toolbar flat>
