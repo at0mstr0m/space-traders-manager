@@ -1,12 +1,25 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-container>
+    <v-btn
+      elevation="1"
+      class="mb-4"
+      :loading="refreshing"
+      color="primary"
+      @click="refetchContracts"
+    >
+      Refresh
+      <template v-slot:loader>
+        <v-progress-linear indeterminate />
+      </template>
+    </v-btn>
     <v-data-table
+      v-model:expanded="expanded"
+      :loading="busy"
       :headers="contractColumns"
       :items="contracts"
+      :items-per-page="perPage"
       item-value="id"
-      show-expand
-      expand-on-click
     >
       <template #top>
         <v-toolbar flat>
@@ -68,6 +81,31 @@
       <template #item.deliveries="{ value }">
         {{ value.length }}
       </template>
+      <template #bottom>
+        <v-row align-content="center">
+          <v-col>
+            <v-pagination
+              v-model="page"
+              class="w-50"
+              :length="totalPages"
+              :total-visible="6"
+              @update:model-value="getContracts"
+            />
+          </v-col>
+          <!-- todo: implement -->
+          <!-- <v-col class="w-25">
+            <v-select
+              v-model="perPage"
+              class="mt-3 w-25"
+              :items="[15, 25, 50, 100]"
+              label="Items per page"
+              variant="outlined"
+              density="compact"
+              @update:model-value="getShips"
+            />
+          </v-col> -->
+        </v-row>
+      </template>
     </v-data-table>
   </v-container>
 </template>
@@ -78,7 +116,13 @@ import { VDataTable } from "vuetify/lib/components/index.mjs";
 import { useRepository } from "@/repos/repoGenerator.js";
 
 const repo = useRepository("contracts");
+const expanded = ref([]);
 const busy = ref(false);
+const page = ref(1);
+const perPage = ref(15);
+const totalItems = ref(0);
+const totalPages = ref(0);
+const refreshing = ref(false);
 const accepting = ref(false);
 const contracts = ref([]);
 const contractColumns = ref([
@@ -143,14 +187,31 @@ const deliveryColumns = ref([
   },
 ]);
 
-async function fetchContracts() {
+async function getContracts() {
   busy.value = true;
   try {
-    const response = await repo.index();
+    const {
+      data: { data, meta },
+    } = await repo.index(page.value, perPage.value);
+    contracts.value = data;
+    totalPages.value = meta.last_page;
+    totalItems.value = meta.total;
+  } catch (error) {
+    console.error(error);
+  }
+  busy.value = false;
+}
+
+async function refetchContracts() {
+  refreshing.value = true;
+  busy.value = true;
+  try {
+    const response = await repo.refetch();
     contracts.value = response.data.data;
   } catch (error) {
     console.error(error);
   }
+  refreshing.value = false;
   busy.value = false;
 }
 
@@ -163,19 +224,17 @@ function getColor(number) {
 }
 
 async function acceptContract(contract) {
-  console.log(JSON.stringify(contract, null, 2));
-  // return;
   accepting.value = true;
   try {
     await repo.accept(contract.id);
     accepting.value = false;
-    fetchContracts();
+    getContracts();
   } catch (error) {
     console.error(error);
   }
 }
 
 onMounted(() => {
-  fetchContracts();
+  getContracts();
 });
 </script>
