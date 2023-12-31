@@ -14,7 +14,6 @@
       </template>
     </v-btn>
     <v-data-table
-      v-model:expanded="expanded"
       :loading="busy"
       :headers="tableColumns"
       :items="tradeRoutes"
@@ -138,7 +137,6 @@ const tableColumns = [
   },
 ];
 
-const expanded = ref([]);
 const busy = ref(false);
 const tradeRoutes = ref([]);
 const page = ref(1);
