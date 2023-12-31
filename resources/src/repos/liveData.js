@@ -1,4 +1,4 @@
-import Repository from "@/repos/";
+import { Repository } from "@/repos/";
 
 class LiveDataRepository extends Repository {
   purchasableShipsInSystem(page = 1, perPage = 10, params = {}) {

@@ -1,11 +1,13 @@
 import api from "@/services/API.js";
 
-export default class Repository {
+export class Repository {
   constructor(resource) {
     this.resource = resource;
     this._get = api.get;
   }
+}
 
+export class ModelRepository extends Repository {
   index(page = 1, perPage = 10, params = {}) {
     return this._get(this.resource, {
       params: {
