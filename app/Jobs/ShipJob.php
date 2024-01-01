@@ -22,7 +22,7 @@ abstract class ShipJob implements ShouldQueue
 
     protected array $constructorParams = [];
 
-    private ?SpaceTraders $api = null;
+    protected ?SpaceTraders $api = null;
 
     /**
      * Create a new job instance.
