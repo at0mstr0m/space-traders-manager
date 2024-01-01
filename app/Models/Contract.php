@@ -67,15 +67,12 @@ class Contract extends Model
         );
     }
 
-    public function fulfill(): bool
+    public function fulfill(): static
     {
         /** @var SpaceTraders */
         $api = app(SpaceTraders::class);
 
-        $api->fulfillContract($this->identification);
-
-        // todo: add agent update
-
-        return $this->delete();
+        return $api->fulfillContract($this->identification)
+            ->updateContract($this);
     }
 }
