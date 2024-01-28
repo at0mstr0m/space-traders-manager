@@ -44,4 +44,11 @@ class PotentialTradeRoute extends Model
             ? ($this->sell_price - $this->purchase_price) / $this->purchase_price
             : 0;
     }
+
+    public function getProfitPerFlightAttribute(): float|int
+    {
+        return $this->sell_price && $this->purchase_price
+            ? ($this->sell_price - $this->purchase_price) * $this->trade_volume_at_origin
+            : 0;
+    }
 }

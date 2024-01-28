@@ -22,6 +22,7 @@ class PotentialTradeRouteResource extends JsonResource
             'origin' => $this->origin,
             'destination' => $this->destination,
             'profit' => $this->profit,
+            'profit_per_flight' => $this->profit_per_flight,
             'purchase_price' => $this->purchase_price,
             'supply_at_origin' => $this->supply_at_origin,
             'activity_at_origin' => $this->activity_at_origin,

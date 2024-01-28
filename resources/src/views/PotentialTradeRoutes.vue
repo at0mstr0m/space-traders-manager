@@ -104,6 +104,10 @@ const tableColumns = [
     key: "profit",
   },
   {
+    title: "Profit per Flight",
+    key: "profit_per_flight",
+  },
+  {
     title: "Purchase Price",
     key: "purchase_price",
   },
