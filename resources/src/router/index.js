@@ -12,46 +12,39 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () =>
-          import("@/views/Home.vue"),
+        component: () => import("@/views/Home.vue"),
       },
       {
         path: "ships",
         name: "ships",
-        component: () =>
-          import("@/views/Ships.vue"),
+        component: () => import("@/views/Ships.vue"),
       },
       {
         path: "map",
         name: "map",
-        component: () =>
-          import("@/views/Map.vue"),
+        component: () => import("@/views/Map.vue"),
       },
       {
         path: "contracts",
         name: "contracts",
-        component: () =>
-          import("@/views/Contracts.vue"),
+        component: () => import("@/views/Contracts.vue"),
       },
       {
         path: "potential-trade-routes",
         name: "potential-trade-routes",
-        component: () =>
-          import("@/views/PotentialTradeRoutes.vue"),
+        component: () => import("@/views/PotentialTradeRoutes.vue"),
       },
       {
         path: "purchasable-ships",
         name: "purchasable-ships",
-        component: () =>
-          import("@/views/PurchasableShips.vue"),
+        component: () => import("@/views/PurchasableShips.vue"),
       },
     ],
   },
   {
     path: "/login",
     name: "login",
-    component: () =>
-      import("@/views/Login.vue"),
+    component: () => import("@/views/Login.vue"),
   },
 ];
 

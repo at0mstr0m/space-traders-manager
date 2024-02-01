@@ -768,7 +768,7 @@ class SpaceTraders
     {
         return $this->listMarketplacesInSystem($waypointSymbol)
             ->pluck($type)
-            ->map(fn (DataCollection $exports) => $exports->toCollection())
+            ->map(fn (DataCollection $data) => $data->toCollection())
             ->flatten()
             ->unique('symbol');
     }
