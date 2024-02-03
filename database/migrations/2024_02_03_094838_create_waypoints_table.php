@@ -16,7 +16,8 @@ return new class() extends Migration {
         Schema::create('waypoints', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->tinyText('symbol');
+            $table->string('symbol')
+                ->unique();
             $table->enum('type', WaypointTypes::values());
             $table->foreignId('faction_id')->constrained();
             $table->smallInteger('x');
@@ -37,6 +38,10 @@ return new class() extends Migration {
         Schema::create('waypoint_waypoint_trait', function (Blueprint $table) {
             $table->foreignId('waypoint_id')->constrained();
             $table->foreignId('waypoint_trait_id')->constrained();
+            $table->unique(
+                ['waypoint_id', 'waypoint_trait_id'],
+                'waypoint_waypoint_trait_unique'
+            );
         });
 
         Schema::create('waypoint_modifiers', function (Blueprint $table) {
@@ -51,6 +56,10 @@ return new class() extends Migration {
         Schema::create('waypoint_waypoint_modifier', function (Blueprint $table) {
             $table->foreignId('waypoint_id')->constrained();
             $table->foreignId('waypoint_modifier_id')->constrained();
+            $table->unique(
+                ['waypoint_id', 'waypoint_modifier_id'],
+                'waypoint_waypoint_modifier_unique'
+            );
         });
     }
 

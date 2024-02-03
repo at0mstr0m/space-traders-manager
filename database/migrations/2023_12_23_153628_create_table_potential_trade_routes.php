@@ -17,8 +17,8 @@ return new class() extends Migration {
             $table->id();
             $table->timestamps();
             $table->enum('trade_symbol', TradeSymbols::values());
-            $table->tinyText('origin');
-            $table->tinyText('destination');
+            $table->string('origin');
+            $table->string('destination');
             $table->integer('purchase_price')->nullable();
             $table->enum('supply_at_origin', SupplyLevels::values())->nullable();
             $table->enum('activity_at_origin', ActivityLevels::values())->nullable();
@@ -27,6 +27,7 @@ return new class() extends Migration {
             $table->enum('supply_at_destination', SupplyLevels::values())->nullable();
             $table->enum('activity_at_destination', ActivityLevels::values())->nullable();
             $table->integer('trade_volume_at_destination')->nullable();
+            $table->unique(['trade_symbol', 'origin', 'destination']);
         });
     }
 

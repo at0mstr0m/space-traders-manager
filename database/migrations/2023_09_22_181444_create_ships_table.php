@@ -2,57 +2,34 @@
 
 declare(strict_types=1);
 
-use App\Enums\ShipRoles;
+use App\Enums\CrewRotations;
+use App\Enums\DepositSymbols;
+use App\Enums\EngineSymbols;
+use App\Enums\FactionSymbols;
+use App\Enums\FactionTraits;
 use App\Enums\FlightModes;
 use App\Enums\FrameSymbols;
-use App\Enums\MountSymbols;
-use App\Enums\CrewRotations;
-use App\Enums\EngineSymbols;
-use App\Enums\FactionTraits;
 use App\Enums\ModuleSymbols;
-use App\Enums\ShipNavStatus;
-use App\Enums\DepositSymbols;
-use App\Enums\FactionSymbols;
+use App\Enums\MountSymbols;
 use App\Enums\ReactorSymbols;
+use App\Enums\ShipNavStatus;
+use App\Enums\ShipRoles;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('factions', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->enum('symbol', FactionSymbols::values());
-            $table->tinyText('name');
-            $table->text('description');
-            $table->tinyText('headquarters'); // nav.waypointSymbol
-            $table->boolean('is_recruiting');
-        });
-
-        Schema::create('faction_traits', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->enum('symbol', FactionTraits::values());
-            $table->tinyText('name');
-            $table->text('description');
-        });
-
-        Schema::create('faction_faction_trait', function (Blueprint $table) {
-            $table->foreignId('faction_id')->constrained()->onDelete('cascade');
-            $table->foreignId('faction_trait_id')->constrained()->onDelete('cascade');
-        });
-
         Schema::create('frames', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->enum('symbol', FrameSymbols::values());
+            $table->enum('symbol', FrameSymbols::values())
+                ->unique();
             $table->tinyText('name');
             $table->text('description');
             $table->smallInteger('module_slots');
@@ -65,7 +42,8 @@ return new class extends Migration
         Schema::create('reactors', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->enum('symbol', ReactorSymbols::values());
+            $table->enum('symbol', ReactorSymbols::values())
+                ->unique();
             $table->tinyText('name');
             $table->text('description');
             $table->integer('power_output');
@@ -75,7 +53,8 @@ return new class extends Migration
         Schema::create('engines', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->enum('symbol', EngineSymbols::values());
+            $table->enum('symbol', EngineSymbols::values())
+                ->unique();
             $table->tinyText('name');
             $table->text('description');
             $table->integer('speed');
@@ -86,7 +65,8 @@ return new class extends Migration
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->enum('symbol', ModuleSymbols::values());
+            $table->enum('symbol', ModuleSymbols::values())
+                ->unique();
             $table->tinyText('name');
             $table->text('description');
             $table->smallInteger('capacity')->nullable();
@@ -99,7 +79,8 @@ return new class extends Migration
         Schema::create('mounts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->enum('symbol', MountSymbols::values());
+            $table->enum('symbol', MountSymbols::values())
+                ->unique();
             $table->tinyText('name');
             $table->text('description');
             $table->smallInteger('strength')->nullable();
@@ -110,12 +91,14 @@ return new class extends Migration
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->enum('symbol', DepositSymbols::values());
+            $table->enum('symbol', DepositSymbols::values())
+                ->unique();
         });
 
         Schema::create('deposit_mount', function (Blueprint $table) {
             $table->foreignId('mount_id')->constrained()->onDelete('cascade');
             $table->foreignId('deposit_id')->constrained()->onDelete('cascade');
+            $table->unique(['mount_id', 'deposit_id']);
         });
 
         Schema::create('ships', function (Blueprint $table) {
@@ -124,10 +107,11 @@ return new class extends Migration
             $table->foreignId('agent_id')->constrained();
             // registration
             $table->foreignId('faction_id')->constrained();
-            $table->string('symbol');
-            $table->enum('role', ShipRoles::values()); // registration.role
+            $table->string('symbol')
+                ->unique();
+            $table->enum('role', ShipRoles::values());          // registration.role
             // nav
-            $table->tinyText('waypoint_symbol');                 // nav.waypointSymbol
+            $table->tinyText('waypoint_symbol');                // nav.waypointSymbol
             $table->enum('status', ShipNavStatus::values());    // nav.status
             $table->enum('flight_mode', FlightModes::values()); // nav.flightMode
             // crew
@@ -158,15 +142,25 @@ return new class extends Migration
         }
 
         Schema::create('module_ship', function (Blueprint $table) {
-            $table->foreignId('ship_id')->constrained()->onDelete('cascade');
-            $table->foreignId('module_id')->constrained()->onDelete('cascade');
+            $table->foreignId('ship_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('module_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->smallInteger('quantity');
+            $table->unique(['ship_id', 'module_id']);
         });
 
         Schema::create('mount_ship', function (Blueprint $table) {
-            $table->foreignId('ship_id')->constrained()->onDelete('cascade');
-            $table->foreignId('mount_id')->constrained()->onDelete('cascade');
+            $table->foreignId('ship_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('mount_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->smallInteger('quantity');
+            $table->unique(['ship_id', 'mount_id']);
         });
 
         Schema::create('cargos', function (Blueprint $table) {
@@ -175,7 +169,9 @@ return new class extends Migration
             $table->tinyText('symbol');
             $table->tinyText('name');
             $table->text('description');
-            $table->foreignId('ship_id')->constrained()->onDelete('cascade');
+            $table->foreignId('ship_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->integer('units');
         });
     }
@@ -196,8 +192,5 @@ return new class extends Migration
         Schema::dropIfExists('engines');
         Schema::dropIfExists('reactors');
         Schema::dropIfExists('frames');
-        Schema::dropIfExists('faction_faction_trait');
-        Schema::dropIfExists('faction_traits');
-        Schema::dropIfExists('factions');
     }
 };

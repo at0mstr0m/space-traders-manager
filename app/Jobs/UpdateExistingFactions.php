@@ -41,7 +41,6 @@ class UpdateExistingFactions implements ShouldQueue
             $faction = Faction::updateOrCreate(
                 ['symbol' => $factionData->symbol],
                 [
-                    'symbol' => $factionData->symbol,
                     'name' => $factionData->name,
                     'description' => $factionData->description,
                     'headquarters' => $factionData->headquarters,
@@ -51,9 +50,8 @@ class UpdateExistingFactions implements ShouldQueue
 
             $factionData->traits->each(function (FactionTraitData $factionTraitData) use ($faction) {
                 $factionTrait = FactionTrait::updateOrCreate(
-                    ['symbol' => $factionTraitData->name],
+                    ['symbol' => $factionTraitData->symbol],
                     [
-                        'symbol' => $factionTraitData->symbol,
                         'name' => $factionTraitData->name,
                         'description' => $factionTraitData->description,
                     ]

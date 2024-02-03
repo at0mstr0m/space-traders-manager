@@ -3,12 +3,11 @@
 use App\Enums\ContractTypes;
 use App\Enums\FactionSymbols;
 use App\Enums\TradeSymbols;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -18,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('agent_id')->constrained();
-            $table->tinyText('identification');
+            $table->string('identification')
+                ->unique();
             $table->enum('faction_symbol', FactionSymbols::values());
             $table->enum('type', ContractTypes::values());
             $table->boolean('accepted');

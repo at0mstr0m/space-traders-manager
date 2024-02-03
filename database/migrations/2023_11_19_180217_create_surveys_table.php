@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,7 +14,8 @@ return new class extends Migration
         Schema::create('surveys', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->tinyText('signature');
+            $table->string('signature')
+                ->unique();
             $table->tinyText('waypoint_symbol');
             $table->dateTime('expiration');
             $table->enum('size', SurveySizes::values());
@@ -23,8 +23,12 @@ return new class extends Migration
         });
 
         Schema::create('deposit_survey', function (Blueprint $table) {
-            $table->foreignId('survey_id')->constrained()->onDelete('cascade');
-            $table->foreignId('deposit_id')->constrained()->onDelete('cascade');
+            $table->foreignId('survey_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('deposit_id')
+                ->constrained()
+                ->onDelete('cascade');
         });
     }
 

@@ -126,7 +126,6 @@ class UpdateShipAction
             : Frame::updateOrCreate(
                 ['symbol' => $shipData->frame->symbol],
                 [
-                    'symbol' => $shipData->frame->symbol,
                     'name' => $shipData->frame->name,
                     'description' => $shipData->frame->description,
                     'module_slots' => $shipData->frame->moduleSlots,
@@ -145,7 +144,6 @@ class UpdateShipAction
             : Reactor::updateOrCreate(
                 ['symbol' => $shipData->reactor->symbol],
                 [
-                    'symbol' => $shipData->reactor->symbol,
                     'name' => $shipData->reactor->name,
                     'description' => $shipData->reactor->description,
                     'power_output' => $shipData->reactor->powerOutput,
@@ -161,7 +159,6 @@ class UpdateShipAction
             : Engine::updateOrCreate(
                 ['symbol' => $shipData->engine->symbol],
                 [
-                    'symbol' => $shipData->engine->symbol,
                     'name' => $shipData->engine->name,
                     'description' => $shipData->engine->description,
                     'speed' => $shipData->engine->speed,
