@@ -2,21 +2,18 @@
 
 namespace App\Actions;
 
-use App\Models\Ship;
+use App\Data\CargoData;
+use App\Data\ModuleData;
+use App\Data\MountData;
+use App\Data\ShipData;
 use App\Models\Agent;
 use App\Models\Cargo;
-use App\Models\Frame;
-use App\Models\Mount;
-use App\Data\ShipData;
 use App\Models\Engine;
+use App\Models\Frame;
 use App\Models\Module;
-use App\Data\CargoData;
-use App\Data\MountData;
-use App\Models\Deposit;
+use App\Models\Mount;
 use App\Models\Reactor;
-use App\Data\ModuleData;
-use App\Data\DepositData;
-use Illuminate\Support\Collection;
+use App\Models\Ship;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class UpdateShipAction
@@ -30,7 +27,6 @@ class UpdateShipAction
             ['symbol' => $shipData->symbol],
             [
                 'faction_id' => $shipData->factionId,
-                'symbol' => $shipData->symbol,
                 'role' => $shipData->role,
                 'waypoint_symbol' => $shipData->waypointSymbol,
                 'status' => $shipData->status,
@@ -57,65 +53,60 @@ class UpdateShipAction
         );
 
         // update modules
-        $ship->modules()->sync([]);
-
-        $shipData->modules?->reduce(
-            fn (Collection $carry, ModuleData $moduleData) => $carry->push(
-                Module::updateOrCreate(
-                    ['symbol' => $moduleData->symbol],
-                    [
-                        'symbol' => $moduleData->symbol,
-                        'name' => $moduleData->name,
-                        'description' => $moduleData->description,
-                        'capacity' => $moduleData?->capacity,
-                        'range' => $moduleData?->range,
-                        'required_power' => $moduleData->requiredPower,
-                        'required_crew' => $moduleData->requiredCrew,
-                        'required_slots' => $moduleData->requiredSlots,
+        $ship->modules()->sync(
+            $shipData->modules
+                ->toCollection()
+                ->unique('symbol')
+                ->map(
+                    fn (ModuleData $moduleData) => Module::updateOrCreate(
+                        ['symbol' => $moduleData->symbol],
+                        [
+                            'name' => $moduleData->name,
+                            'description' => $moduleData->description,
+                            'capacity' => $moduleData?->capacity,
+                            'range' => $moduleData?->range,
+                            'required_power' => $moduleData->requiredPower,
+                            'required_crew' => $moduleData->requiredCrew,
+                            'required_slots' => $moduleData->requiredSlots,
+                        ]
+                    )->only(['id', 'symbol'])
+                )->mapWithKeys(
+                    fn (array $module) => [
+                        $module['id'] => [
+                            'quantity' => $shipData->modules
+                                ->where('symbol', $module['symbol']->value)
+                                ->count(),
+                        ],
                     ]
-                )->id
-            ),
-            collect()
-        )->countBy()
-            ->each(
-                fn (int $quantity, int $moduleId) =>
-                $ship->modules()->attach($moduleId, ['quantity' => $quantity])
-            );
+                )
+        );
 
         // update mounts
-        $ship->mounts()->sync([]);
-        $shipData->mounts?->reduce(
-            function (Collection $carry, MountData $mountData) {
-                $mount = Mount::updateOrCreate(
-                    ['symbol' => $mountData->symbol],
-                    [
-                        'symbol' => $mountData->symbol,
-                        'name' => $mountData->name,
-                        'description' => $mountData->description,
-                        'strength' => $mountData?->strength,
-                        'required_power' => $mountData->requiredPower,
-                        'required_crew' => $mountData->requiredCrew,
+        $ship->mounts()->sync(
+            $shipData->mounts
+                ->toCollection()
+                ->unique('symbol')
+                ->map(
+                    fn (MountData $mountData) => Mount::updateOrCreate(
+                        ['symbol' => $mountData->symbol],
+                        [
+                            'name' => $mountData->name,
+                            'description' => $mountData->description,
+                            'strength' => $mountData?->strength,
+                            'required_power' => $mountData->requiredPower,
+                            'required_crew' => $mountData->requiredCrew,
+                        ]
+                    )->only(['id', 'symbol'])
+                )->mapWithKeys(
+                    fn (array $mount) => [
+                        $mount['id'] => [
+                            'quantity' => $shipData->mounts
+                                ->where('symbol', $mount['symbol']->value)
+                                ->count(),
+                        ],
                     ]
-                );
-                $depositsData = $mountData->deposits;
-                if ($depositsData->count()) {
-                    $mount->deposits()->sync([]);
-                    $depositsData?->reduce(
-                        fn (Collection $carry, DepositData $depositData) => $carry->push(
-                            Deposit::firstOrCreate(['symbol' => $depositData->symbol])->id
-                        ),
-                        collect()
-                    )->pipe(fn (Collection $depositIds) => $mount->deposits()->sync($depositIds));
-                }
-
-                return $carry->push($mount->id);
-            },
-            collect()
-        )->countBy()
-            ->each(
-                fn (int $quantity, int $mountId) =>
-                $ship->mounts()->attach($mountId, ['quantity' => $quantity])
-            );
+                )
+        );
 
         // update inventory
         $ship->cargos()->delete();
