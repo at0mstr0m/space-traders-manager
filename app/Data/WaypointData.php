@@ -23,6 +23,8 @@ class WaypointData extends Data implements GeneratableFromResponse
         public ?DataCollection $orbitals = null,
         #[DataCollectionOf(WaypointTraitData::class)]
         public ?DataCollection $traits = null,
+        #[DataCollectionOf(WaypointModifierData::class)]
+        public ?DataCollection $modifiers = null,
         public ?string $orbits = null,
     ) {
         match (true) {
@@ -42,6 +44,7 @@ class WaypointData extends Data implements GeneratableFromResponse
             faction: $response['faction']['symbol'],
             orbitals: WaypointOrbitalData::collectionFromResponse($response['orbitals']),
             traits: WaypointTraitData::collectionFromResponse($response['traits']),
+            modifiers: WaypointModifierData::collectionFromResponse($response['modifiers']),
             orbits: data_get($response, 'orbits'),
         );
     }

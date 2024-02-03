@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Enums\WaypointTraitSymbols;
+use App\Enums\WaypointModifierSymbols;
 use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Data;
 
-class WaypointTraitData extends Data
+class WaypointModifierData extends Data
 {
     use HasCollectionFromResponse;
 
@@ -18,7 +18,7 @@ class WaypointTraitData extends Data
         public string $description,
     ) {
         match (true) {
-            !WaypointTraitSymbols::isValid($symbol) => throw new \InvalidArgumentException("Invalid waypoint trait symbol: {$symbol}"),
+            !WaypointModifierSymbols::isValid($symbol) => throw new \InvalidArgumentException("Invalid waypoint modifier symbol: {$symbol}"),
             default => null,
         };
     }
