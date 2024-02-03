@@ -46,8 +46,12 @@ return new class() extends Migration {
         });
 
         Schema::create('faction_faction_trait', function (Blueprint $table) {
-            $table->foreignId('faction_id')->constrained()->onDelete('cascade');
-            $table->foreignId('faction_trait_id')->constrained()->onDelete('cascade');
+            $table->foreignId('faction_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('faction_trait_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->unique(['faction_id', 'faction_trait_id']);
         });
     }

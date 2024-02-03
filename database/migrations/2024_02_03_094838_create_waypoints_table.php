@@ -36,8 +36,12 @@ return new class() extends Migration {
         });
 
         Schema::create('waypoint_waypoint_trait', function (Blueprint $table) {
-            $table->foreignId('waypoint_id')->constrained();
-            $table->foreignId('waypoint_trait_id')->constrained();
+            $table->foreignId('waypoint_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('waypoint_trait_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->unique(
                 ['waypoint_id', 'waypoint_trait_id'],
                 'waypoint_waypoint_trait_unique'
@@ -54,8 +58,12 @@ return new class() extends Migration {
         });
 
         Schema::create('waypoint_waypoint_modifier', function (Blueprint $table) {
-            $table->foreignId('waypoint_id')->constrained();
-            $table->foreignId('waypoint_modifier_id')->constrained();
+            $table->foreignId('waypoint_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignId('waypoint_modifier_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->unique(
                 ['waypoint_id', 'waypoint_modifier_id'],
                 'waypoint_waypoint_modifier_unique'
