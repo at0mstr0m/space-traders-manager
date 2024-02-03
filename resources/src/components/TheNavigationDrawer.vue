@@ -45,6 +45,12 @@
         value="Purchasable Ships"
         @click="navigateTo('purchasable-ships')"
       />
+      <v-list-item
+        prepend-icon="mdi mdi-storefront-outline"
+        title="Markets"
+        value="Markets"
+        @click="navigateTo('markets')"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>

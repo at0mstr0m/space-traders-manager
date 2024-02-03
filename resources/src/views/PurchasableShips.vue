@@ -241,7 +241,7 @@ const tableColumns = [
     key: "type",
   },
   {
-    title: "name",
+    title: "Name",
     key: "name",
   },
   {

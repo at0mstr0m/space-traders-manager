@@ -680,6 +680,18 @@ class SpaceTraders
         })->flatten();
     }
 
+    /**
+     * @return Collection<string, Collection<TradeGoodsData>>
+     */
+    public function listTradeGoodsInSystem(string $waypointSymbol): Collection
+    {
+        return $this->listMarketplacesInSystem($waypointSymbol)
+            ->mapWithKeys(fn (MarketData $marketData) => [
+                $marketData->symbol => $marketData->tradeGoods->toCollection(),
+            ])
+            ->reject(fn (Collection $data) => $data->isEmpty());
+    }
+
     public function getShipyard(string $waypointSymbol): ShipyardData
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
@@ -790,7 +802,7 @@ class SpaceTraders
     {
         $this->avoidRateLimit();
 
-        return HTTP::withToken($this->token);
+        return Http::withToken($this->token);
     }
 
     private function get(string $path = '', array $query = []): Response

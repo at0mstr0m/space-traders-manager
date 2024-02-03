@@ -17,6 +17,7 @@ class ImportExportExchangeGoodData extends Data implements GeneratableFromRespon
         public string $symbol,
         public string $name,
         public string $description,
+        public string $waypointSymbol,
     ) {
         match (true) {
             !TradeSymbols::isValid($symbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$symbol}"),
@@ -30,6 +31,7 @@ class ImportExportExchangeGoodData extends Data implements GeneratableFromRespon
             symbol: $response['symbol'],
             name: $response['name'],
             description: $response['description'],
+            waypointSymbol: $response['waypointSymbol'],
         );
     }
 }

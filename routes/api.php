@@ -4,6 +4,7 @@ use App\Http\Controllers\ContractController;
 use App\Http\Controllers\LiveDataController;
 use App\Http\Controllers\PotentialTradeRouteController;
 use App\Http\Controllers\ShipController;
+use App\Http\Controllers\TradeOpportunityController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,4 +52,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('refetch', 'refetch')->name('refetch');
         });
     Route::apiResource('potential-trade-routes', PotentialTradeRouteController::class);
+
+    Route::prefix('trade-opportunities')
+        ->as('trade-opportunities.')
+        ->controller(TradeOpportunityController::class)
+        ->group(function () {
+            Route::get('refetch', 'refetch')->name('refetch');
+        });
+    Route::apiResource('trade-opportunities', TradeOpportunityController::class);
 });

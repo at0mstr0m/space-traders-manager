@@ -9,6 +9,7 @@ use App\Http\Requests\PurchaseShipRequest;
 use App\Http\Resources\ShipResource;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ShipController extends Controller
 {
@@ -22,7 +23,7 @@ class ShipController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResource
     {
         return ShipResource::collection(Ship::paginate());
     }
@@ -30,7 +31,7 @@ class ShipController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Ship $ship)
+    public function show(Ship $ship): JsonResource
     {
         return new ShipResource($ship);
     }

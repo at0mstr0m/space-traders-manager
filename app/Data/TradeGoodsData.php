@@ -6,6 +6,7 @@ namespace App\Data;
 
 use App\Enums\ActivityLevels;
 use App\Enums\SupplyLevels;
+use App\Enums\TradeGoodTypes;
 use App\Interfaces\GeneratableFromResponse;
 use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Data;
@@ -16,6 +17,7 @@ class TradeGoodsData extends Data implements GeneratableFromResponse
 
     public function __construct(
         public string $symbol,
+        public string $tradeGoodType,
         public int $tradeVolume,
         public string $supplyLevel,
         public ?string $activity,
@@ -23,6 +25,7 @@ class TradeGoodsData extends Data implements GeneratableFromResponse
         public int $sellPrice,
     ) {
         match (true) {
+            !TradeGoodTypes::isValid($tradeGoodType) => throw new \InvalidArgumentException("Invalid type: {$tradeGoodType}"),
             !SupplyLevels::isValid($supplyLevel) => throw new \InvalidArgumentException("Invalid supply: {$supplyLevel}"),
             $activity && !ActivityLevels::isValid($activity) => throw new \InvalidArgumentException("Invalid activity: {$activity}"),
             default => null,
@@ -33,6 +36,7 @@ class TradeGoodsData extends Data implements GeneratableFromResponse
     {
         return new static(
             symbol: $response['symbol'],
+            tradeGoodType: $response['type'],
             tradeVolume: $response['tradeVolume'],
             supplyLevel: $response['supply'],
             activity: data_get($response, 'activity'),
