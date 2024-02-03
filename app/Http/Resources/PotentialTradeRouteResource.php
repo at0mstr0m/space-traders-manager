@@ -31,6 +31,7 @@ class PotentialTradeRouteResource extends JsonResource
             'supply_at_destination' => $this->supply_at_destination,
             'activity_at_destination' => $this->activity_at_destination,
             'trade_volume_at_destination' => $this->trade_volume_at_destination,
+            'distance' => $this->distance,
         ];
     }
 }

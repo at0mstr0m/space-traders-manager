@@ -29,23 +29,29 @@ class UpdateOrRemovePotentialTradeRoutesAction
                 ),
                 collect()
             )->each(
-                fn (PotentialTradeRouteData $potentialTradeRoute) => $changedIds->add(PotentialTradeRoute::updateOrCreate(
-                    [
-                        'trade_symbol' => $potentialTradeRoute->tradeSymbol,
-                        'origin' => $potentialTradeRoute->origin,
-                        'destination' => $potentialTradeRoute->destination,
-                    ],
-                    [
-                        'purchase_price' => $potentialTradeRoute->purchasePrice,
-                        'supply_at_origin' => $potentialTradeRoute->supplyAtOrigin,
-                        'activity_at_origin' => $potentialTradeRoute->activityAtOrigin,
-                        'trade_volume_at_origin' => $potentialTradeRoute->tradeVolumeAtOrigin,
-                        'sell_price' => $potentialTradeRoute->sellPrice,
-                        'supply_at_destination' => $potentialTradeRoute->supplyAtDestination,
-                        'activity_at_destination' => $potentialTradeRoute->activityAtDestination,
-                        'trade_volume_at_destination' => $potentialTradeRoute->tradeVolumeAtDestination,
-                    ],
-                )->id),
+                fn (PotentialTradeRouteData $potentialTradeRoute) => $changedIds->add(
+                    PotentialTradeRoute::updateOrCreate(
+                        [
+                            'trade_symbol' => $potentialTradeRoute->tradeSymbol,
+                            'origin' => $potentialTradeRoute->origin,
+                            'destination' => $potentialTradeRoute->destination,
+                        ],
+                        [
+                            'purchase_price' => $potentialTradeRoute->purchasePrice,
+                            'supply_at_origin' => $potentialTradeRoute->supplyAtOrigin,
+                            'activity_at_origin' => $potentialTradeRoute->activityAtOrigin,
+                            'trade_volume_at_origin' => $potentialTradeRoute->tradeVolumeAtOrigin,
+                            'sell_price' => $potentialTradeRoute->sellPrice,
+                            'supply_at_destination' => $potentialTradeRoute->supplyAtDestination,
+                            'activity_at_destination' => $potentialTradeRoute->activityAtDestination,
+                            'trade_volume_at_destination' => $potentialTradeRoute->tradeVolumeAtDestination,
+                            'distance' => LocationHelper::distance(
+                                $potentialTradeRoute->origin,
+                                $potentialTradeRoute->destination,
+                            ),
+                        ],
+                    )->id
+                ),
             );
 
         PotentialTradeRoute::whereNotIn('id', $changedIds)->delete();

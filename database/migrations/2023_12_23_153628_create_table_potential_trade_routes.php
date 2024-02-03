@@ -27,6 +27,7 @@ return new class() extends Migration {
             $table->enum('supply_at_destination', SupplyLevels::values())->nullable();
             $table->enum('activity_at_destination', ActivityLevels::values())->nullable();
             $table->integer('trade_volume_at_destination')->nullable();
+            $table->integer('distance');
             $table->unique(['trade_symbol', 'origin', 'destination']);
         });
     }

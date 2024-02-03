@@ -22,6 +22,7 @@ class PotentialTradeRoute extends Model
         'supply_at_destination',
         'activity_at_destination',
         'trade_volume_at_destination',
+        'distance',
     ];
 
     protected $casts = [
@@ -36,6 +37,7 @@ class PotentialTradeRoute extends Model
         'supply_at_destination' => SupplyLevels::class,
         'activity_at_destination' => ActivityLevels::class,
         'trade_volume_at_destination' => 'integer',
+        'distance' => 'integer',
     ];
 
     public function getProfitAttribute(): float|int
