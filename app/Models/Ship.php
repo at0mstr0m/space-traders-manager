@@ -12,6 +12,7 @@ use App\Enums\FlightModes;
 use App\Enums\ShipNavStatus;
 use App\Enums\ShipRoles;
 use App\Enums\TradeSymbols;
+use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -378,6 +379,14 @@ class Ship extends Model
             ->save();
 
         return $this;
+    }
+
+    public function distanceTo(string $waypointSymbol): int
+    {
+        return LocationHelper::distance(
+            $this->waypoint_symbol,
+            $waypointSymbol
+        );
     }
 
     private function useApi(): SpaceTraders

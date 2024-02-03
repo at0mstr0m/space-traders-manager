@@ -7,6 +7,7 @@ namespace App\Helpers;
 use App\Enums\ShipNavStatus;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
+use App\Models\Waypoint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -54,5 +55,29 @@ class LocationHelper
             ->pluck('waypoint_symbol')
             ->map(fn (string $waypointSymbol) => static::parseSystemSymbol($waypointSymbol))
             ->unique();
+    }
+
+    /**
+     * @link https://en.wikipedia.org/wiki/Euclidean_distance
+     */
+    public static function distance(
+        int|string|Waypoint $x1orFirstWaypoint,
+        int|string|Waypoint $y1orSecondWaypoint,
+        ?int $x2 = null,
+        ?int $y2 = null
+    ): int {
+        return match (true) {
+            $x1orFirstWaypoint instanceof Waypoint && $y1orSecondWaypoint instanceof Waypoint => static::distance(
+                $x1orFirstWaypoint->x,
+                $x1orFirstWaypoint->y,
+                $y1orSecondWaypoint->x,
+                $y1orSecondWaypoint->y
+            ),
+            is_string($x1orFirstWaypoint) && is_string($y1orSecondWaypoint) => static::distance(
+                Waypoint::findBySymbol($x1orFirstWaypoint),
+                Waypoint::findBySymbol($y1orSecondWaypoint)
+            ),
+            default => (int) round(sqrt(pow($x2 - $x1orFirstWaypoint, 2) + pow($y2 - $y1orSecondWaypoint, 2))),
+        };
     }
 }

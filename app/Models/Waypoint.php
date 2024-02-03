@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WaypointTypes;
+use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Waypoint extends Model
 {
+    use FindableBySymbol;
+
     protected $fillable = [
         'symbol',
         'type',
