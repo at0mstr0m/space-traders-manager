@@ -26,6 +26,8 @@ class PotentialTradeRoute extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'trade_symbol' => TradeSymbols::class,
         'origin' => 'string',
         'destination' => 'string',

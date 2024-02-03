@@ -22,6 +22,8 @@ class Engine extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => EngineSymbols::class,
         'name' => 'string',
         'description' => 'string',

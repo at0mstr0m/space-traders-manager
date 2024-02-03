@@ -16,6 +16,8 @@ class WaypointTrait extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => WaypointTraitSymbols::class,
         'name' => 'string',
         'description' => 'string',

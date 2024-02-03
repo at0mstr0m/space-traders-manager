@@ -25,6 +25,8 @@ class Contract extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'identification' => 'string',
         'faction_symbol' => FactionSymbols::class,
         'type' => ContractTypes::class,

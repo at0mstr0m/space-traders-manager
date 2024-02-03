@@ -16,6 +16,8 @@ class Delivery extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'trade_symbol' => TradeSymbols::class,
         'destination_symbol' => 'string',
         'units_required' => 'integer',

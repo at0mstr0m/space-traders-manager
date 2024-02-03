@@ -16,6 +16,8 @@ class WaypointModifier extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => WaypointModifierSymbols::class,
         'name' => 'string',
         'description' => 'string',

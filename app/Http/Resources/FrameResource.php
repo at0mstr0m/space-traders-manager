@@ -16,6 +16,8 @@ class FrameResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString(),
             'symbol' => $this->symbol,
             'name' => $this->name,
             'description' => $this->description,

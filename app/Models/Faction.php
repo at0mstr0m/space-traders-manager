@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\FactionSymbols;
 use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -20,6 +21,12 @@ class Faction extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'symbol' => FactionSymbols::class,
+        'name' => 'string',
+        'headquarters' => 'string',
+        'description' => 'string',
         'is_recruiting' => 'boolean',
     ];
 

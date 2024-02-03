@@ -20,6 +20,8 @@ class Cargo extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => TradeSymbols::class,
         'name' => 'string',
         'description' => 'string',

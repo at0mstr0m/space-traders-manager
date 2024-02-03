@@ -23,6 +23,8 @@ class Mount extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => MountSymbols::class,
         'name' => 'string',
         'description' => 'string',

@@ -21,6 +21,8 @@ class Module extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => ModuleSymbols::class,
         'name' => 'string',
         'description' => 'string',

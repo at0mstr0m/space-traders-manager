@@ -24,6 +24,8 @@ class Frame extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => FrameSymbols::class,
         'name' => 'string',
         'description' => 'string',

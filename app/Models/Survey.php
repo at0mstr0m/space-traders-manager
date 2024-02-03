@@ -18,6 +18,8 @@ class Survey extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'signature' => 'string',
         'waypoint_symbol' => 'string',
         'expiration' => 'datetime',

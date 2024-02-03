@@ -56,6 +56,8 @@ class Ship extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => 'string',
         'role' => ShipRoles::class,
         'waypoint_symbol' => 'string',

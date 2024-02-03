@@ -23,6 +23,8 @@ class TradeOpportunity extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'waypoint_symbol' => 'string',
         'symbol' => TradeSymbols::class,
         'purchase_price' => 'integer',

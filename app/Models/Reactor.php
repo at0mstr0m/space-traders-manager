@@ -21,6 +21,8 @@ class Reactor extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'symbol' => ReactorSymbols::class,
         'name' => 'string',
         'description' => 'string',
