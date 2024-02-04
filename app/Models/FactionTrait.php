@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\FactionTraits;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class FactionTrait extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'symbol',
         'name',

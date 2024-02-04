@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\FrameSymbols;
 use App\Traits\FindableBySymbol;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Frame extends Model
 {
