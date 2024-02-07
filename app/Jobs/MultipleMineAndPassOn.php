@@ -120,18 +120,18 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
             return;
         }
-
         dump("companion: {$companion->symbol}");
-
-        $companion = $companion->refetch();
+        $companion = $companion->refresh();
 
         if ($companion->is_fully_loaded) {
             WaitAndSell::dispatch($companion->symbol);
             $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
+
+            return;
         }
 
         $ship->transferCargoTo($companion, $cargo);
-        $companion = $companion->refetch();
+        $companion = $companion->refresh();
 
         if ($companion->is_fully_loaded) {
             WaitAndSell::dispatch($companion->symbol);

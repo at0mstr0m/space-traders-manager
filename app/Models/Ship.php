@@ -15,7 +15,6 @@ use App\Enums\TradeSymbols;
 use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Traits\FindableBySymbol;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -111,7 +110,7 @@ class Ship extends Model
         return $this->cargo_capacity - $this->cargo_units;
     }
 
-    public function isLoadedWith(TradeSymbols|string $tradeSymbol): bool
+    public function isLoadedWith(string|TradeSymbols $tradeSymbol): bool
     {
         return $this->cargos()
             ->where('symbol', TradeSymbols::fromName($tradeSymbol))
@@ -338,6 +337,7 @@ class Ship extends Model
 
     /**
      * @template TWaypointSymbol string
+     *
      * @return Collection<TWaypointSymbol, MarketData>
      */
     public function getMarketplacesForCargos(): Collection
@@ -351,24 +351,28 @@ class Ship extends Model
         Cargo|string|TradeSymbols $tradeSymbol,
         int $units = 0
     ): static {
+        if ($receivingShip instanceof static && $tradeSymbol instanceof Cargo) {
+            return $this->transferCargoTo(
+                $receivingShip,
+                $tradeSymbol->symbol,
+                $units ?: min($tradeSymbol->units, $receivingShip->available_cargo_capacity)
+            );
+        }
+
         /** @var Ship */
         $receivingShip = is_string($receivingShip)
-            ? Ship::findBySymbol($receivingShip)->symbol
+            ? Ship::findBySymbol($receivingShip)
             : $receivingShip;
-        $_tradeSymbol = is_string($tradeSymbol)
-            ? TradeSymbols::fromName($tradeSymbol)
-            : (
-                $tradeSymbol instanceof Cargo
-                    ? $tradeSymbol->symbol
-                    : $tradeSymbol
-            );
+
+        /** @var TradeSymbols */
+        $_tradeSymbol = TradeSymbols::fromName($tradeSymbol);
+
+        /** @var int */
         $units = $units ?: min(
             $receivingShip->available_cargo_capacity,
-            $tradeSymbol instanceof Cargo
-                ? $tradeSymbol->units
-                : $this->cargos()
-                    ->firstWhere('symbol', $_tradeSymbol)
-                    ->units,
+            $this->cargos()
+                ->firstWhere('symbol', $_tradeSymbol)
+                ->units
         );
 
         $this->useApi()
@@ -379,6 +383,8 @@ class Ship extends Model
                 $units
             )->updateShip($this)
             ->save();
+
+        $receivingShip->update(['cargo_units' => $receivingShip->cargo_units + $units]);
 
         return $this;
     }
