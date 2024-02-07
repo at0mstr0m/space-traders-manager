@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+use App\Traits\EnumUtils;
+
+enum TaskTypes: string
+{
+    use EnumUtils;
+
+    case COLLECTIVE_MINING = 'COLLECTIVE_MINING';
+    CASE SUPPORT_COLLECTIVE_MINERS = 'SUPPORT_COLLECTIVE_MINERS';
+}

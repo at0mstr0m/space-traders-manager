@@ -77,7 +77,16 @@ class LocationHelper
                 Waypoint::findBySymbol($x1orFirstWaypoint),
                 Waypoint::findBySymbol($y1orSecondWaypoint)
             ),
-            default => (int) round(sqrt(pow($x2 - $x1orFirstWaypoint, 2) + pow($y2 - $y1orSecondWaypoint, 2))),
+            // Euclidean distance is always >= 1
+            default => max(
+                1,
+                (int) round(
+                    sqrt(
+                        pow($x2 - $x1orFirstWaypoint, 2)
+                        + pow($y2 - $y1orSecondWaypoint, 2)
+                    )
+                )
+            ),
         };
     }
 }

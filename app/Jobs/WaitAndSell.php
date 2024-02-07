@@ -2,154 +2,115 @@
 
 namespace App\Jobs;
 
-use App\Data\MarketData;
-use App\Helpers\SpaceTraders;
-use App\Models\Ship;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Bus\PendingDispatch;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use App\Models\Cargo;
+use App\Models\TradeOpportunity;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Support\Collection;
 
-class WaitAndSell implements ShouldQueue
+class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
-
-    private SpaceTraders $api;
+    private array $closestTradeOpportunity = [];
 
     /**
      * Create a new job instance.
-     *
-     * @template TTradeSymbolString string
-     * @template TMarketPlaceWaypointSymbolString string
-     *
-     * @param Collection|null $markets <TTradeSymbolString, TMarketPlaceWaypointSymbolString> $markets
      */
-    public function __construct(
-        private string $shipSymbol,
-        private ?string $waitingLocation = null,
-        private ?Ship $ship = null,
-        private ?Collection $markets = null,
-    ) {
-        $this->api = app(SpaceTraders::class);
-        $this->markets ??= collect();
+    public function __construct(protected string $shipSymbol)
+    {
+        $this->constructorArguments = func_get_args();
+    }
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return static::class . ':' . $this->shipSymbol;
     }
 
     /**
      * Execute the job.
      */
-    public function handle(): void
+    protected function handleShip(): void
     {
-        $this->initShip();
-
-        if ($this->ship->is_in_transit || $this->ship->cooldown) {
-            $this->selfDispatch()->delay($this->ship->cooldown);
-        }
-
+        $this->initApi();
         $currentLocation = $this->ship->waypoint_symbol;
-        dump("current location: {$currentLocation}");
+        if (!$this->ship->task?->payload) {
+            dump("{$this->ship->symbol} no longer has this task");
+            return;
+        }
+        $waitingLocation = $this->ship->task->payload['waiting_location'];
+        dump("{$this->ship->symbol} current location: {$currentLocation}");
 
         if ($this->ship->cargo_is_empty) {
             dump('cargo is empty');
-            if ($currentLocation !== $this->waitingLocation) {
+            if ($currentLocation !== $waitingLocation) {
                 dump('nothing to sell, fly to waiting location');
-                $this->flyToLocation($this->waitingLocation);
+                $this->flyToLocation($waitingLocation);
             }
 
             return;
         }
 
-        $this->markets = $this->ship
-            ->getMarketplacesForCargos()
-            ->each(function (?MarketData $marketData, string $tradeSymbol) {
-                // no place in System to sell => move cargo to COMMAND Ship waiting
-                if (!$marketData) {
-                    dump('no place in System to sell');
-                    $this->ship->jettisonCargo($tradeSymbol);
-                }
-            })->filter()    // remove items without Market found in System
-            ->map(fn (MarketData $marketData) => $marketData->symbol)
-            ->sort();
+        $markets = TradeOpportunity::bestMarketplacesForCargos($this->ship)
+            ->pipe(function (Collection $marketData) {
+                $this->ship
+                    ->cargos()
+                    ->whereNotIn('symbol', $marketData->keys()->all())
+                    ->get()
+                    ->each(fn (Cargo $cargo) => $this->ship->jettisonCargo($cargo->symbol));
 
-        dump($this->markets);
+                return $marketData;
+            })
+            ->sortBy('distance');
 
-        if ($this->markets->isEmpty()) {
+        $this->closestTradeOpportunity = $markets->first();
+
+        dump($markets);
+        dump($this->closestTradeOpportunity);
+
+        if ($markets->isEmpty()) {
             dump('no markets, fly to waiting location');
-            $this->flyToLocation($this->waitingLocation);
+            $this->flyToLocation($waitingLocation);
 
             return;
         }
 
-        $marketSymbol = $this->markets->first();
-        // fly to first market
-        if ($currentLocation !== $marketSymbol) {
-            dump("fly to market at {$marketSymbol}");
-            $this->flyToLocation($marketSymbol);
+        $waypointSymbol = $this->closestTradeOpportunity['waypoint_symbol'];
+
+        // fly to market
+        if ($currentLocation !== $waypointSymbol) {
+            dump("fly to market at {$waypointSymbol}");
+            $this->flyToLocation($waypointSymbol);
 
             return;
         }
 
         // sell all cargos that can be sold at this market
         dump('sell cargo');
-        $this->markets
-            ->filter(
-                fn (string $marketSymbol) => $marketSymbol === $currentLocation
-            )->each(
-                function (string $marketSymbol, string $tradeSymbol) {
-                    dump("selling cargo {$tradeSymbol} at {$marketSymbol}");
-                    $this->ship->sellCargo($tradeSymbol);
-                }
-            );
+        $markets->filter(
+            fn (array $market) => $market['waypoint_symbol'] === $currentLocation
+        )->each(
+            function (array $market) {
+                dump("selling cargo {$market['symbol']->value} at {$market['waypoint_symbol']}");
+                $this->ship->sellCargo($market['symbol']);
+            }
+        );
 
         // remove sold items from market list
-        $this->markets = $this->markets
-            ->filter(
-                fn (string $marketSymbol) => $marketSymbol !== $currentLocation
-            );
+        $markets = $markets->reject(
+            fn (array $market) => $market['waypoint_symbol'] === $currentLocation
+        );
 
-        if ($this->markets->isEmpty()) {
-            $this->flyToLocation($this->waitingLocation);
+        if ($markets->isEmpty()) {
+            dump('markets empty, fly to waiting location');
+            $this->flyToLocation($waitingLocation);
         } else {
             dump('markets still not empty');
-            $this->selfDispatch();
+            $this->flyToLocation($markets->first()['waypoint_symbol']);
 
             return;
         }
 
         dump('done');
-    }
-
-    private function initShip(): void
-    {
-        $this->ship ??= Ship::findBySymbol($this->shipSymbol);
-        if (!$this->ship) {
-            throw new \Exception("Ship not found: {$this->shipSymbol}");
-        }
-        $this->ship = $this->ship->refetch();
-    }
-
-    private function selfDispatch(): PendingDispatch
-    {
-        return static::dispatch(
-            $this->shipSymbol,
-            $this->waitingLocation,
-            $this->ship,
-            $this->markets,
-        );
-    }
-
-    private function flyToLocation(string $waypointSymbol): void
-    {
-        dump("fly to {$waypointSymbol}");
-        $cooldown = $this->ship
-            ->refuel()
-            ->navigateTo($waypointSymbol)
-            ->cooldown;
-        $this->selfDispatch()->delay($cooldown);
     }
 }

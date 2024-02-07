@@ -30,8 +30,11 @@ trait EnumUtils
     }
 
     // https://stackoverflow.com/a/71002493
-    public static function fromName(string $name): static
+    public static function fromName(self|string $name): static
     {
+        if ($name instanceof static) {
+            return $name;
+        }
         foreach (static::cases() as $case) {
             if ($name === $case->name) {
                 return $case;

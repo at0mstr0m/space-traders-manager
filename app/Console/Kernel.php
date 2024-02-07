@@ -2,9 +2,10 @@
 
 namespace App\Console;
 
-use App\Models\User;
+use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
 use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
+use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -17,6 +18,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->job(new UpdateExistingFactions())->dailyAt('00:05');
+        $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTenMinutes();
         $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
     }
 

@@ -20,7 +20,7 @@ abstract class ShipJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    protected array $constructorParams = [];
+    protected array $constructorArguments = [];
 
     protected ?SpaceTraders $api = null;
 
@@ -31,7 +31,7 @@ abstract class ShipJob implements ShouldQueue
         protected string $shipSymbol,
         protected ?Ship $ship = null,
     ) {
-        $this->constructorParams = func_get_args();
+        $this->constructorArguments = func_get_args();
     }
 
     /**
@@ -53,12 +53,12 @@ abstract class ShipJob implements ShouldQueue
 
     abstract protected function handleShip(): void;
 
-    protected function selfDispatch(array $params = []): PendingDispatch
+    protected function selfDispatch(array $arguments = []): PendingDispatch
     {
-        return static::dispatch(
-            ...$this->constructorParams,
-            ...$params
-        );
+        return static::dispatch(...[
+            ...$this->constructorArguments,
+            ...$arguments,
+        ]);
     }
 
     protected function flyToLocation(string $waypointSymbol): void

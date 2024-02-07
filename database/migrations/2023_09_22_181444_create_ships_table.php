@@ -5,8 +5,6 @@ declare(strict_types=1);
 use App\Enums\CrewRotations;
 use App\Enums\DepositSymbols;
 use App\Enums\EngineSymbols;
-use App\Enums\FactionSymbols;
-use App\Enums\FactionTraits;
 use App\Enums\FlightModes;
 use App\Enums\FrameSymbols;
 use App\Enums\ModuleSymbols;
@@ -105,15 +103,18 @@ return new class() extends Migration {
             $table->id();
             $table->timestamps();
             $table->foreignId('agent_id')->constrained();
+
             // registration
             $table->foreignId('faction_id')->constrained();
             $table->string('symbol')
                 ->unique();
             $table->enum('role', ShipRoles::values());          // registration.role
+
             // nav
             $table->tinyText('waypoint_symbol');                // nav.waypointSymbol
             $table->enum('status', ShipNavStatus::values());    // nav.status
             $table->enum('flight_mode', FlightModes::values()); // nav.flightMode
+
             // crew
             $table->smallInteger('crew_current');       // crew.current
             $table->smallInteger('crew_capacity');      // crew.capacity
@@ -121,6 +122,7 @@ return new class() extends Migration {
             $table->enum('crew_rotation', CrewRotations::values()); // crew.rotation
             $table->tinyInteger('crew_morale');         // crew.morale
             $table->integer('crew_wages');              // crew.wages
+
             // fuel
             $table->integer('fuel_current');            // fuel.current
             $table->integer('fuel_capacity');           // fuel.capacity
@@ -132,6 +134,7 @@ return new class() extends Migration {
             $table->tinyInteger('reactor_condition');   // reactor.condition
             $table->foreignId('engine_id')->constrained();
             $table->tinyInteger('engine_condition');    // engine.condition
+
             // cargo
             $table->smallInteger('cargo_capacity');     // cargo.capacity
             $table->integer('cargo_units');             // cargo.units

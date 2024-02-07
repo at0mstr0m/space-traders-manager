@@ -123,8 +123,8 @@ class ExtractAndTransferToCompanion implements ShouldQueue
             return;
         }
 
-        $companionShip->moveIntoOrbit();
         // move into orbit to enable transfer
+        $companionShip->moveIntoOrbit();
         dump('ship is fully loaded');
         $this->ship->cargos->each(function (Cargo $cargo) {
             dump("transfer cargo {$cargo->symbol->value}");

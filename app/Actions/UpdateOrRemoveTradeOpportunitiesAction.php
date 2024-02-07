@@ -8,10 +8,12 @@ use App\Data\TradeGoodsData;
 use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Models\TradeOpportunity;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class UpdateOrRemoveTradeOpportunitiesAction
+class UpdateOrRemoveTradeOpportunitiesAction implements ShouldQueue, ShouldBeUnique
 {
     use AsAction;
 

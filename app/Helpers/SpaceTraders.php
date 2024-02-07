@@ -61,6 +61,8 @@ class SpaceTraders
 
     private const LIMITER_TWO = 'REQUEST_COUNT_2';
 
+    private const MAX_PER_PAGE = 20;
+
     public function __construct(
         private string $token,
         private string $url = 'https://api.spacetraders.io/v2/',
@@ -78,7 +80,10 @@ class SpaceTraders
 
     public function listAgents(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
-        $response = $this->get('agents', ['limit' => $perPage, 'page' => $page]);
+        $response = $this->get(
+            'agents',
+            static::paginationParams($perPage, $page, $all)
+        );
         $data = AgentData::collection($response->json('data'))->toCollection();
 
         return $all
@@ -93,7 +98,10 @@ class SpaceTraders
 
     public function listContracts(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
-        $response = $this->get('my/contracts', ['limit' => $perPage, 'page' => $page]);
+        $response = $this->get(
+            'my/contracts',
+            static::paginationParams($perPage, $page, $all)
+        );
         $data = ContractData::collection($response->json('data'))->toCollection();
 
         return $all
@@ -145,7 +153,10 @@ class SpaceTraders
 
     public function listFactions(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
-        $response = $this->get('factions', ['limit' => $perPage, 'page' => $page]);
+        $response = $this->get(
+            'factions',
+            static::paginationParams($perPage, $page, $all)
+        );
         $data = FactionData::collection($response->json('data'))->toCollection();
 
         return $all
@@ -163,7 +174,10 @@ class SpaceTraders
 
     public function listShips(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
-        $response = $this->get('my/ships', ['limit' => $perPage, 'page' => $page]);
+        $response = $this->get(
+            'my/ships',
+            static::paginationParams($perPage, $page, $all)
+        );
         $data = ShipData::collection($response->json('data'))->toCollection();
 
         return $all
@@ -446,7 +460,10 @@ class SpaceTraders
 
     public function listSystems(int $perPage = 10, int $page = 1, bool $all = false): Collection
     {
-        $response = $this->get('systems', ['limit' => $perPage, 'page' => $page]);
+        $response = $this->get(
+            'systems',
+            static::paginationParams($perPage, $page, $all)
+        );
         $data = SystemData::collection($response->json('data'))->toCollection();
 
         return $all
@@ -476,8 +493,7 @@ class SpaceTraders
         $response = $this->get(
             'systems/' . $systemSymbol . '/waypoints',
             [
-                'limit' => $perPage,
-                'page' => $page,
+                ...static::paginationParams($perPage, $page, $all),
                 ...($waypointType ? ['type' => $waypointType->value] : []),
                 ...($waypointTrait ? ['traits' => $waypointTrait->value] : []),
             ]
@@ -863,5 +879,13 @@ class SpaceTraders
                     fn (ImportExportExchangeGoodData|TradeGoodsData $data) => $data->symbol === $tradeSymbol->value
                 )->isNotEmpty()
         );
+    }
+
+    private static function paginationParams(int $perPage, int $page, bool $all): array
+    {
+        return [
+            'limit' => $all ? static::MAX_PER_PAGE : $perPage,
+            'page' => $page,
+        ];
     }
 }
