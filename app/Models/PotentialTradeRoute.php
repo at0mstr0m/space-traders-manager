@@ -47,7 +47,7 @@ class PotentialTradeRoute extends Model
         'destination_x' => 'integer',
         'destination_y' => 'integer',
         'distance' => 'integer',
-        'profit' => 'integer',
+        'profit' => 'float',
         'profit_per_flight' => 'integer',
     ];
 }
