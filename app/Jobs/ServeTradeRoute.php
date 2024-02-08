@@ -21,12 +21,22 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
      */
     public function __construct(
         protected string $shipSymbol,
-        private string $origin,
-        private string $destination,
-        private TradeSymbols $tradedGood,
+        private PotentialTradeRoute|string $origin,
+        private ?string $destination = null,
+        private ?TradeSymbols $tradedGood = null,
         protected ?Ship $ship = null,
     ) {
-        $this->constructorArguments = func_get_args();
+        if (is_string($origin)) {
+            $this->constructorArguments = func_get_args();
+
+            return;
+        }
+        static::__construct(
+            $shipSymbol,
+            $origin->origin,
+            $origin->destination,
+            $origin->trade_symbol,
+        );
     }
 
     /**
@@ -62,12 +72,12 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 
                 if ($tradeRoute->profit <= static::MIN_PROFIT && $tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
-                    $newRoute = PotentialTradeRoute::all()
-                        ->where('profit', '>', static::MIN_PROFIT)
-                        ->where('profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT)
-                        ->where('distance', '<', 300)
-                        ->sortByDesc('profit_per_flight')
-                        ->first();
+                    $newRoute = PotentialTradeRoute::orderByDesc('profit_per_flight')
+                        ->firstWhere([
+                            ['profit', '>', static::MIN_PROFIT],
+                            ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
+                            ['distance', '<', 300],
+                        ]);
 
                     if (!$newRoute) {
                         dump("{$this->ship->symbol} no new trade route found");
@@ -76,11 +86,13 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
                     }
 
                     dump(
-                        PotentialTradeRoute::all()
-                            ->where('profit', '>', static::MIN_PROFIT)
-                            ->where('profit_per_flight', '>', 0)
-                            ->where('distance', '<', 300)
-                            ->sortByDesc('profit_per_flight')
+                        PotentialTradeRoute::orderByDesc('profit_per_flight')
+                            ->where([
+                                ['profit', '>', static::MIN_PROFIT],
+                                ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
+                                ['distance', '<', 300],
+                            ])
+                            ->get()
                             ->map(fn (PotentialTradeRoute $potentialTradeRoute) => $potentialTradeRoute->only(['origin', 'destination', 'trade_symbol', 'profit_per_flight', 'profit']))
                     );
 

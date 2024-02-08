@@ -39,13 +39,14 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
     protected function handleShips(): void
     {
         $this->extractionLocation = $this->task->payload['extraction_location'];
-        dump("extraction location: {$this->extractionLocation}");
+        dump(now()->toTimeString() . ' ' . "extraction location: {$this->extractionLocation}");
         /** @var Task */
         $companionTask = Task::firstWhere([
             'type' => TaskTypes::SUPPORT_COLLECTIVE_MINERS,
             'payload->waiting_location' => $this->extractionLocation,
         ]);
 
+        dump(now()->toTimeString());
         dump($companionTask->attributesToArray());
 
         $this->companions = $companionTask->ships
@@ -56,44 +57,44 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
                     || $companion->waypoint_symbol !== $this->extractionLocation;
 
                 if ($result) {
-                    dump("companion {$companion->symbol} is not available");
+                    dump(now()->toTimeString() . ' ' . "companion {$companion->symbol} is not available");
                     WaitAndSell::dispatch($companion->symbol);
                 }
 
                 return $result;
             });
         $this->ships->each(fn (Ship $ship) => $this->handleShip($ship));
-        dump('done handling ships, self dispatching...');
+        dump(now()->toTimeString() . ' ' . 'done handling ships, self dispatching...');
         $this->selfDispatch()->delay($this->ships->max('cooldown'));
-        dump("cooldown: {$this->ships->max('cooldown')}");
+        dump(now()->toTimeString() . ' ' . "cooldown: {$this->ships->max('cooldown')}");
     }
 
     private function handleShip(Ship $ship): void
     {
-        dump("handling {$ship->symbol}");
+        dump(now()->toTimeString() . ' ' . "handling {$ship->symbol}");
         if ($ship->waypoint_symbol !== $this->extractionLocation) {
             $ship->navigateTo($this->extractionLocation);
-            dump("navigate {$ship->symbol} to {$this->extractionLocation}");
+            dump(now()->toTimeString() . ' ' . "navigate {$ship->symbol} to {$this->extractionLocation}");
 
             return;
         }
         $this->transferCargoToCompanionShip($ship);
         if ($ship->is_fully_loaded) {
-            dump("{$ship->symbol} is fully loaded, cannot extract resources");
+            dump(now()->toTimeString() . ' ' . "{$ship->symbol} is fully loaded, cannot extract resources");
 
             return;
         }
-        dump("{$ship->symbol} extracting resources");
+        dump(now()->toTimeString() . ' ' . "{$ship->symbol} extracting resources");
         $ship = $ship->extractResources()->refresh();
-        dump("{$ship->symbol} done extracting resources");
+        dump(now()->toTimeString() . ' ' . "{$ship->symbol} done extracting resources");
         $this->transferCargoToCompanionShip($ship);
     }
 
     private function transferCargoToCompanionShip(Ship $ship): void
     {
-        dump("{$ship->symbol} transferring cargo to companion");
+        dump(now()->toTimeString() . ' ' . "{$ship->symbol} transferring cargo to companion");
         if ($this->noCompanionPresent()) {
-            dump("{$ship->symbol} no companion present");
+            dump(now()->toTimeString() . ' ' . "{$ship->symbol} no companion present");
 
             return;
         }
@@ -103,9 +104,9 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
     private function handleTransferCargoToCompanionShip(Ship $ship, Cargo $cargo): void
     {
-        dump("handling cargo {$cargo->symbol->value} for {$ship->symbol}");
+        dump(now()->toTimeString() . ' ' . "handling cargo {$cargo->symbol->value} for {$ship->symbol}");
         if ($this->noCompanionPresent()) {
-            dump("{$ship->symbol} no companion present");
+            dump(now()->toTimeString() . ' ' . "{$ship->symbol} no companion present");
 
             return;
         }
@@ -116,14 +117,15 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
             ->first();
 
         if (!$companion) {
-            dump("{$ship->symbol} no companion present");
+            dump(now()->toTimeString() . ' ' . "{$ship->symbol} no companion present");
 
             return;
         }
-        dump("companion: {$companion->symbol}");
+        dump(now()->toTimeString() . ' ' . "companion: {$companion->symbol}");
         $companion = $companion->refresh();
 
         if ($companion->is_fully_loaded) {
+            dump(now()->toTimeString() . ' ' . "companion {$companion->symbol} is fully loaded already");
             WaitAndSell::dispatch($companion->symbol);
             $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
 
@@ -134,6 +136,7 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
         $companion = $companion->refresh();
 
         if ($companion->is_fully_loaded) {
+            dump(now()->toTimeString() . ' ' . "companion {$companion->symbol} is fully loaded now");
             WaitAndSell::dispatch($companion->symbol);
             $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
         }

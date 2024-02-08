@@ -2,13 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Jobs\UpdateContracts;
-use Illuminate\Database\Seeder;
 use App\Actions\RelateAgentToUser;
+use App\Actions\UpdateOrRemovePotentialTradeRoutesAction;
+use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
 use App\Actions\UpdateWaypointsAction;
+use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
 use App\Jobs\UpdateShips;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
 class DevelopmentEnvironmentSeeder extends Seeder
 {
@@ -22,5 +23,6 @@ class DevelopmentEnvironmentSeeder extends Seeder
         UpdateContracts::dispatchSync();
         UpdateShips::dispatchSync();
         UpdateWaypointsAction::run();
+        UpdateOrRemoveTradeOpportunitiesAction::run();
     }
 }

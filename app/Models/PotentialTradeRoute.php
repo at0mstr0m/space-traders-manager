@@ -22,7 +22,10 @@ class PotentialTradeRoute extends Model
         'supply_at_destination',
         'activity_at_destination',
         'trade_volume_at_destination',
-        'distance',
+        'origin_x',
+        'origin_y',
+        'destination_x',
+        'destination_y',
     ];
 
     protected $casts = [
@@ -39,20 +42,12 @@ class PotentialTradeRoute extends Model
         'supply_at_destination' => SupplyLevels::class,
         'activity_at_destination' => ActivityLevels::class,
         'trade_volume_at_destination' => 'integer',
+        'origin_x' => 'integer',
+        'origin_y' => 'integer',
+        'destination_x' => 'integer',
+        'destination_y' => 'integer',
         'distance' => 'integer',
+        'profit' => 'integer',
+        'profit_per_flight' => 'integer',
     ];
-
-    public function getProfitAttribute(): float|int
-    {
-        return $this->purchase_price
-            ? ($this->sell_price - $this->purchase_price) / $this->purchase_price
-            : 0;
-    }
-
-    public function getProfitPerFlightAttribute(): float|int
-    {
-        return $this->sell_price && $this->purchase_price
-            ? ($this->sell_price - $this->purchase_price) * $this->trade_volume_at_origin
-            : 0;
-    }
 }

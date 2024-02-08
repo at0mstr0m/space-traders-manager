@@ -42,6 +42,6 @@ class Module extends Model
 
     public function deposits(): BelongsToMany
     {
-        return $this->belongsToMany(Deposits::class);
+        return $this->belongsToMany(Deposit::class);
     }
 }

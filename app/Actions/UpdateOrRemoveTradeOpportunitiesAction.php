@@ -52,5 +52,8 @@ class UpdateOrRemoveTradeOpportunitiesAction implements ShouldQueue, ShouldBeUni
             );
 
         TradeOpportunity::whereNotIn('id', $changedIds)->delete();
+
+        // relies solely on the data just fetched
+        UpdateOrRemovePotentialTradeRoutesAction::dispatchSync();
     }
 }
