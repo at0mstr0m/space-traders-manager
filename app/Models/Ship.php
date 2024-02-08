@@ -9,12 +9,14 @@ use App\Actions\UpdateSurveyAction;
 use App\Data\SurveyData;
 use App\Enums\CrewRotations;
 use App\Enums\FlightModes;
+use App\Enums\MountSymbols;
 use App\Enums\ShipNavStatus;
 use App\Enums\ShipRoles;
 use App\Enums\TradeSymbols;
 use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Traits\FindableBySymbol;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -424,6 +426,29 @@ class Ship extends Model
             $this->waypoint_symbol,
             $waypointSymbol
         );
+    }
+
+    public function scopeOnlyMiners(Builder $query): Builder
+    {
+        return $query->where('role', ShipRoles::EXCAVATOR)
+            ->whereHas('mounts', fn (Builder $query) => $query->whereIn(
+                'symbol',
+                MountSymbols::miningLasers()
+            ));
+    }
+
+    public function scopeOnlySiphoners(Builder $query): Builder
+    {
+        return $query->where('role', ShipRoles::EXCAVATOR)
+            ->whereHas('mounts', fn (Builder $query) => $query->whereIn(
+                'symbol',
+                MountSymbols::gasSiphons()
+            ));
+    }
+
+    public function scopeOnlyHaulers(Builder $query): Builder
+    {
+        return $query->where('role', ShipRoles::HAULER);
     }
 
     private function useApi(): SpaceTraders

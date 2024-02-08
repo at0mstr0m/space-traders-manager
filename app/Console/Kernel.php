@@ -18,8 +18,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->job(new UpdateExistingFactions())->dailyAt('00:05');
-        $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTenMinutes();
         $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
+        $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyFiveMinutes();
     }
 
     /**
