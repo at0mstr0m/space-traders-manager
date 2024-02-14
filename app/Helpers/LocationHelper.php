@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Enums\ShipNavStatus;
-use App\Jobs\UpdateShips;
 use App\Models\Ship;
+use App\Enums\ShipRoles;
 use App\Models\Waypoint;
-use Illuminate\Support\Collection;
+use App\Jobs\UpdateShips;
 use Illuminate\Support\Str;
+use App\Enums\ShipNavStatus;
+use Illuminate\Support\Collection;
+use App\Enums\WaypointTraitSymbols;
 
 class LocationHelper
 {
@@ -88,5 +90,15 @@ class LocationHelper
                 )
             ),
         };
+    }
+
+    public static function marketplacesWithoutSatellite(): Collection
+    {
+        $satelliteLocations = Ship::where('role', ShipRoles::SATELLITE)
+            ->pluck('waypoint_symbol');
+
+        return Waypoint::whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
+            ->whereNotIn('symbol', $satelliteLocations)
+            ->pluck('symbol');
     }
 }
