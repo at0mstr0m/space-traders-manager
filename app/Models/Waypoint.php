@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TradeSymbols;
 use App\Enums\WaypointTypes;
+use App\Enums\TradeGoodTypes;
 use App\Traits\FindableBySymbol;
+use App\Enums\WaypointTraitSymbols;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Waypoint
@@ -92,5 +96,35 @@ class Waypoint extends Model
     public function orbitals(): HasMany
     {
         return $this->hasMany(static::class, 'symbol', 'orbits');
+    }
+
+    public function tradeOpportunities(): HasMany
+    {
+        return $this->hasMany(TradeOpportunity::class, 'waypoint_symbol', 'symbol');
+    }
+
+    public function scopeCanRefuel(Builder $query): Builder
+    {
+        return $query->whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
+            ->whereRelation(
+                'tradeOpportunities',
+                fn (Builder $query) => $query->where('symbol', TradeSymbols::FUEL)
+                    ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+            );
+    }
+
+    public function closestRefuelingStation(Waypoint|string $waypoint): ?Waypoint
+    {
+        if ($waypoint instanceof Waypoint) {
+            $waypoint = $waypoint->symbol;
+        }
+
+        $refuelingStations = static::canRefuel()->get();
+
+        if ($refuelingStations->pluck('symbol')->contains($waypoint)) {
+            return $waypoint;
+        }
+
+        return $this->canRefuel();
     }
 }

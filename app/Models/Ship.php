@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Actions\UpdateShipAction;
-use App\Actions\UpdateSurveyAction;
 use App\Data\SurveyData;
-use App\Enums\CrewRotations;
+use App\Enums\ShipRoles;
 use App\Enums\FlightModes;
 use App\Enums\MountSymbols;
-use App\Enums\ShipNavStatus;
-use App\Enums\ShipRoles;
 use App\Enums\TradeSymbols;
-use App\Helpers\LocationHelper;
+use App\Enums\CrewRotations;
+use App\Enums\ShipNavStatus;
+use App\Enums\TradeGoodTypes;
 use App\Helpers\SpaceTraders;
+use App\Helpers\LocationHelper;
 use App\Traits\FindableBySymbol;
+use App\Actions\UpdateShipAction;
+use Illuminate\Support\Collection;
+use App\Actions\UpdateSurveyAction;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection;
 
 /**
  * App\Models\Ship
@@ -262,6 +264,11 @@ class Ship extends Model
         return $this->hasMany(Cargo::class);
     }
 
+    public function waypoint(): HasOne
+    {
+        return $this->hasOne(Waypoint::class, 'symbol', 'waypoint_symbol');
+    }
+
     public function refetch(): static
     {
         return UpdateShipAction::run(
@@ -313,6 +320,18 @@ class Ship extends Model
         return $this;
     }
 
+
+    public function extractResources(): static
+    {
+        $this->moveIntoOrbit()
+            ->useApi()
+            ->extractResources($this->symbol)
+            ->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
     public function extractResourcesWithSurvey(Survey $survey): static
     {
         $this->moveIntoOrbit()
@@ -325,22 +344,22 @@ class Ship extends Model
         return $this;
     }
 
-    public function refuel(): static
+    public function siphonResources(): static
     {
-        $this->dock()
+        $this->moveIntoOrbit()
             ->useApi()
-            ->refuelShip($this->symbol)
+            ->siphonResources($this->symbol)
             ->updateShip($this)
             ->save();
 
         return $this;
     }
 
-    public function extractResources(): static
+    public function refuel(): static
     {
-        $this->moveIntoOrbit()
+        $this->dock()
             ->useApi()
-            ->extractResources($this->symbol)
+            ->refuelShip($this->symbol)
             ->updateShip($this)
             ->save();
 
@@ -536,6 +555,33 @@ class Ship extends Model
     public function scopeOnlyHaulers(Builder $query): Builder
     {
         return $query->where('role', ShipRoles::HAULER);
+    }
+
+
+    public function canRefuelAtCurrentLocation(): bool
+    {
+        return Waypoint::canRefuel()
+            ->where('symbol', $this->waypoint_symbol)
+            ->exists();
+    }
+
+    public function closestRefuelingStation(): string
+    {
+        if ($this->canRefuelAtCurrentLocation()) {
+            return $this->waypoint_symbol;
+        }
+
+        return data_get(
+            Waypoint::canRefuel()
+            ->get()
+            ->map(fn (Waypoint $waypoint) => [
+                'waypoint_symbol' => $waypoint->symbol,
+                'distance' => $this->distanceTo($waypoint->symbol),
+            ])
+            ->sortBy('distance')
+            ->first(),
+            'waypoint_symbol',
+        );
     }
 
     private function useApi(): SpaceTraders

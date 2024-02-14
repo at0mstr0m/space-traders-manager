@@ -33,6 +33,7 @@ use App\Data\ShipData;
 use App\Data\ShipRefineData;
 use App\Data\ShipyardData;
 use App\Data\ShipyardShipData;
+use App\Data\SiphonData;
 use App\Data\SupplyConstructionSiteData;
 use App\Data\SystemData;
 use App\Data\TradeGoodsData;
@@ -267,6 +268,14 @@ class SpaceTraders
         );
     }
 
+    public function extractResources(string $shipSymbol): ExtractionData
+    {
+        return ExtractionData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/extract')
+                ->json('data')
+        );
+    }
+
     public function extractResourcesWithSurvey(string $shipSymbol, array $surveyData): ExtractionData
     {
         return ExtractionData::fromResponse(
@@ -277,10 +286,10 @@ class SpaceTraders
         );
     }
 
-    public function extractResources(string $shipSymbol): ExtractionData
+    public function siphonResources(string $shipSymbol): SiphonData
     {
-        return ExtractionData::fromResponse(
-            $this->post('my/ships/' . $shipSymbol . '/extract')
+        return SiphonData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/siphon')
                 ->json('data')
         );
     }

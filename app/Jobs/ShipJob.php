@@ -64,8 +64,14 @@ abstract class ShipJob implements ShouldQueue
     protected function flyToLocation(string $waypointSymbol): void
     {
         dump("fly to {$waypointSymbol}");
+
+        if ($this->ship->canRefuelAtCurrentLocation()) {
+            $this->ship = $this->ship->refuel();
+        } else {
+            $waypointSymbol = $this->ship->closestRefuelingStation();
+        }
+
         $cooldown = $this->ship
-            ->refuel()
             ->navigateTo($waypointSymbol)
             ->cooldown;
         $this->selfDispatch()->delay($cooldown);

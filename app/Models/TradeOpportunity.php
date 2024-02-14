@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\ActivityLevels;
 use App\Enums\SupplyLevels;
-use App\Enums\TradeGoodTypes;
 use App\Enums\TradeSymbols;
+use App\Enums\ActivityLevels;
+use App\Enums\TradeGoodTypes;
 use App\Helpers\LocationHelper;
 use App\Traits\FindableBySymbol;
-use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\TradeOpportunity
@@ -75,6 +76,11 @@ class TradeOpportunity extends Model
         'supply' => SupplyLevels::class,
         'activity' => ActivityLevels::class,
     ];
+
+    public function waypoint(): BelongsTo
+    {
+        return $this->belongsTo(Waypoint::class, 'symbol', 'waypoint_symbol');
+    }
 
     public function scopeExports(Builder $query): Builder
     {

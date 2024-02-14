@@ -4,25 +4,18 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Enums\ShipNavStatus;
-use App\Enums\ShipRoles;
-use App\Enums\SurveySizes;
 use App\Enums\TaskTypes;
 use App\Models\Cargo;
 use App\Models\Ship;
-use App\Models\Survey;
 use App\Models\Task;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Database\Query\Builder;
 
-class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUntilProcessing
+class MultipleSiphonAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUntilProcessing
 {
     protected ?EloquentCollection $companions = null;
 
     private string $extractionLocation = '';
-
-    private ?Survey $survey = null;
 
     /**
      * Create a new job instance.
@@ -46,7 +39,6 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
     protected function handleShips(): void
     {
         $this->extractionLocation = $this->task->payload['extraction_location'];
-        $this->initSurveyor();
         dump(now()->toTimeString() . " extraction location: {$this->extractionLocation}");
         /** @var Task */
         $companionTask = Task::firstWhere([
@@ -71,6 +63,14 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
                 return $result;
             });
+
+        if ($this->noCompanionPresent() && $this->ships->every(fn (Ship $ship) => $ship->is_fully_loaded)) {
+            dump(now()->toTimeString() . ' no companion present and all ships are fully loaded, self dispatching...');
+            $this->selfDispatch()->delay(60);
+
+            return;
+        }
+
         $this->ships->each(fn (Ship $ship) => $this->handleShip($ship));
         dump(now()->toTimeString() . ' done handling ships, self dispatching...');
         $this->selfDispatch()->delay($this->ships->max('cooldown'));
@@ -93,14 +93,11 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
             return;
         }
-        if ($this->survey) {
-            dump(now()->toTimeString() . " {$ship->symbol} extracting resources with survey {$this->survey->id}");
-            $ship->extractResourcesWithSurvey($this->survey)->refresh();
-        } else {
-            dump(now()->toTimeString() . " {$ship->symbol} extracting resources normally");
-            $ship = $ship->extractResources()->refresh();
-        }
+
+        dump(now()->toTimeString() . " {$ship->symbol} siphoning resources");
+        $ship = $ship->siphonResources()->refresh();
         dump(now()->toTimeString() . " {$ship->symbol} done extracting resources");
+
         $this->transferCargoToCompanionShip($ship);
     }
 
@@ -159,39 +156,5 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
     private function noCompanionPresent(): bool
     {
         return $this->companions->isEmpty();
-    }
-
-    private function initSurveyor(): void
-    {
-        $surveyor = Ship::firstWhere([
-            'waypoint_symbol' => $this->extractionLocation,
-            'role' => ShipRoles::SURVEYOR,
-            'status' => ShipNavStatus::IN_ORBIT,
-            'cooldown' => 0,
-        ]);
-
-        if ($surveyor) {
-            dump(now()->toTimeString() . " surveyor {$surveyor->symbol} is available");
-            $surveyor->survey();
-        } else {
-            dump(now()->toTimeString() . ' no surveyor available');
-        }
-
-        /** @var Builder */
-        $query = Survey::orderBy('expiration');
-
-        $this->survey = $query->clone()
-            ->firstwhere([
-                'waypoint_symbol' => $this->extractionLocation,
-                'size' => SurveySizes::LARGE,
-            ])
-            ?? $query->clone()->firstwhere([
-                'waypoint_symbol' => $this->extractionLocation,
-                'size' => SurveySizes::MODERATE,
-            ])
-            ?? $query->clone()->firstwhere([
-                'waypoint_symbol' => $this->extractionLocation,
-                'size' => SurveySizes::SMALL,
-            ]);
     }
 }
