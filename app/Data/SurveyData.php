@@ -16,11 +16,11 @@ class SurveyData extends Data implements GeneratableFromResponse
     public function __construct(
         public string $waypointSymbol,
         public string $signature,
-        #[DataCollectionOf(DepositData::class)]
-        public ?DataCollection $deposits = null,
         public Carbon $expiration,
         public string $size,
         public string $rawResponse,
+        #[DataCollectionOf(DepositData::class)]
+        public ?DataCollection $deposits = null,
     ) {}
 
     public static function fromResponse(array $response): static
@@ -28,10 +28,10 @@ class SurveyData extends Data implements GeneratableFromResponse
         return new static(
             waypointSymbol: $response['symbol'],
             signature: $response['signature'],
-            deposits: DepositData::collectionFromResponse(data_get($response, 'deposits', [])),
             expiration: Carbon::parse($response['expiration']),
             size: $response['size'],
             rawResponse: $response['raw_response'],
+            deposits: DepositData::collectionFromResponse(data_get($response, 'deposits', [])),
         );
     }
 }

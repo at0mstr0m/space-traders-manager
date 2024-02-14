@@ -11,19 +11,19 @@ class InstallRemoveMountData extends Data implements GeneratableFromResponse
 {
     public function __construct(
         public AgentData $agent,
-        #[DataCollectionOf(MountData::class)]
-        public ?DataCollection $mounts = null,
         public ShipCargoData $cargo,
         public ShipModificationTransactionData $transaction,
+        #[DataCollectionOf(MountData::class)]
+        public ?DataCollection $mounts = null,
     ) {}
 
     public static function fromResponse(array $response): static
     {
         return new static(
             agent: AgentData::fromResponse($response['agent']),
-            mounts: MountData::collectionFromResponse($response['mounts']),
             cargo: ShipCargoData::fromResponse($response['cargo']),
             transaction: ShipModificationTransactionData::fromResponse($response['transaction']),
+            mounts: MountData::collectionFromResponse($response['mounts']),
         );
     }
 }

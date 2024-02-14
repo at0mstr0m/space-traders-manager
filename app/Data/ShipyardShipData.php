@@ -24,12 +24,12 @@ class ShipyardShipData extends Data implements GeneratableFromResponse
         public FrameData $frame,
         public ReactorData $reactor,
         public EngineData $engine,
+        public int $crewCapacity,
+        public int $crewRequired,
         #[DataCollectionOf(ModuleData::class)]
         public ?DataCollection $modules = null,
         #[DataCollectionOf(MountData::class)]
         public ?DataCollection $mounts = null,
-        public int $crewCapacity,
-        public int $crewRequired,
     ) {
         if (!ShipTypes::isValid($type)) {
             throw new \InvalidArgumentException("Invalid ship type: {$type}");
@@ -47,10 +47,10 @@ class ShipyardShipData extends Data implements GeneratableFromResponse
             frame: FrameData::fromResponse($response['frame']),
             reactor: ReactorData::fromResponse($response['reactor']),
             engine: EngineData::fromResponse($response['engine']),
-            modules: ModuleData::collectionFromResponse($response['modules']),
-            mounts: MountData::collectionFromResponse($response['mounts']),
             crewCapacity: $response['crew']['capacity'],
             crewRequired: $response['crew']['required'],
+            modules: ModuleData::collectionFromResponse($response['modules']),
+            mounts: MountData::collectionFromResponse($response['mounts']),
         );
     }
 }

@@ -9,11 +9,11 @@ use App\Models\Ship;
 class DeliverToContract extends ShipJob
 {
     public function __construct(
-        private string $shipSymbol,
+        protected string $shipSymbol,
         private string $waitingLocation,
         private Delivery $delivery,
         private TradeSymbols $tradedGood,
-        private ?Ship $ship = null,
+        protected ?Ship $ship = null,
     ) {}
 
     /**

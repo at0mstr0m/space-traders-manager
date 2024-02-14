@@ -11,17 +11,17 @@ class ConstructionSiteData extends Data implements GeneratableFromResponse
 {
     public function __construct(
         public string $waypointSymbol,
+        public bool $isComplete,
         #[DataCollectionOf(ConstructionMaterialData::class)]
         public ?DataCollection $constructionMaterial = null,
-        public bool $isComplete,
     ) {}
 
     public static function fromResponse(array $response): static
     {
         return new static(
             waypointSymbol: $response['symbol'],
-            constructionMaterial: ConstructionMaterialData::collectionFromResponse($response['materials']),
             isComplete: $response['isComplete'],
+            constructionMaterial: ConstructionMaterialData::collectionFromResponse($response['materials']),
         );
     }
 }

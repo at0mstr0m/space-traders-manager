@@ -20,9 +20,9 @@ class SystemData extends Data implements GeneratableFromResponse
         public string $type,
         public int $x,
         public int $y,
+        public array $factions,
         #[DataCollectionOf(SystemWaypointData::class)]
         public ?DataCollection $waypoints = null,
-        public array $factions,
     ) {
         match (true) {
             !SystemTypes::isValid($type) => throw new \InvalidArgumentException("Invalid system type: {$type}"),
@@ -37,8 +37,8 @@ class SystemData extends Data implements GeneratableFromResponse
             type: $response['type'],
             x: $response['x'],
             y: $response['y'],
-            waypoints: SystemWaypointData::collectionFromResponse($response['waypoints']),
             factions: $response['factions'],
+            waypoints: SystemWaypointData::collectionFromResponse($response['waypoints']),
         );
     }
 }
