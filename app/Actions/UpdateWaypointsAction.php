@@ -46,6 +46,7 @@ class UpdateWaypointsAction
                     'y' => $waypointData->y,
                     'faction_id' => Faction::findBySymbol($waypointData->faction)->id,
                     'orbits' => $waypointData->orbits,
+                    'is_under_construction' => $waypointData->isUnderConstruction,
                 ]
             );
 

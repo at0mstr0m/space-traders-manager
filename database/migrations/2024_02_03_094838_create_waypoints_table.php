@@ -24,6 +24,8 @@ return new class() extends Migration {
             $table->smallInteger('y');
             $table->tinyText('orbits')
                 ->nullable();
+            $table->boolean('is_under_construction')
+                ->nullable();
         });
 
         Schema::create('waypoint_traits', function (Blueprint $table) {

@@ -21,6 +21,7 @@ class Waypoint extends Model
         'y',
         'faction_id',
         'orbits',
+        'is_under_construction',
     ];
 
     protected $casts = [
@@ -30,6 +31,7 @@ class Waypoint extends Model
         'type' => WaypointTypes::class,
         'x' => 'integer',
         'y' => 'integer',
+        'is_under_construction' => 'boolean',
     ];
 
     public function faction(): BelongsTo

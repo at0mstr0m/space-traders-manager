@@ -26,6 +26,7 @@ class WaypointData extends Data implements GeneratableFromResponse
         #[DataCollectionOf(WaypointModifierData::class)]
         public ?DataCollection $modifiers = null,
         public ?string $orbits = null,
+        public ?bool $isUnderConstruction = null,
     ) {
         match (true) {
             !WaypointTypes::isValid($type) => throw new \InvalidArgumentException("Invalid waypoint type: {$type}"),
@@ -46,6 +47,7 @@ class WaypointData extends Data implements GeneratableFromResponse
             traits: WaypointTraitData::collectionFromResponse($response['traits']),
             modifiers: WaypointModifierData::collectionFromResponse($response['modifiers']),
             orbits: data_get($response, 'orbits'),
+            isUnderConstruction: data_get($response, 'isUnderConstruction'),
         );
     }
 }
