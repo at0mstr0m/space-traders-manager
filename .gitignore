@@ -18,3 +18,4 @@ yarn-error.log
 /.idea
 /.vscode
 /routes/dev.php
+_ide_helper.php
