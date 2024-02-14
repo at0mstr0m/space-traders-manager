@@ -11,7 +11,7 @@ import { fileURLToPath, URL } from "node:url";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    laravel(["resources/src/store/app.js"]),
+    laravel(["resources/src/main.js"]),
     vue({
       template: { transformAssetUrls },
     }),
