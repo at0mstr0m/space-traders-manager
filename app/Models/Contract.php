@@ -11,6 +11,43 @@ use App\Helpers\SpaceTraders;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * App\Models\Contract
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $agent_id
+ * @property string $identification
+ * @property FactionSymbols $faction_symbol
+ * @property ContractTypes $type
+ * @property bool $accepted
+ * @property bool $fulfilled
+ * @property \Illuminate\Support\Carbon $deadline
+ * @property string $deadline_to_accept
+ * @property int $payment_on_accepted
+ * @property int $payment_on_fulfilled
+ * @property-read \App\Models\Agent $agent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $deliveries
+ * @property-read int|null $deliveries_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereAccepted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereAgentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereDeadline($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereDeadlineToAccept($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereFactionSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereFulfilled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereIdentification($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract wherePaymentOnAccepted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract wherePaymentOnFulfilled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Contract extends Model
 {
     protected $fillable = [

@@ -7,6 +7,41 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * App\Models\Agent
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $account_id
+ * @property string $symbol
+ * @property string $headquarters
+ * @property int $credits
+ * @property string $starting_faction
+ * @property int $ship_count
+ * @property int $user_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contract> $contracts
+ * @property-read int|null $contracts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
+ * @property-read int|null $ships_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Survey> $surveys
+ * @property-read int|null $surveys_count
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereCredits($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereHeadquarters($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereShipCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereStartingFaction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Agent extends Model
 {
     protected $fillable = [

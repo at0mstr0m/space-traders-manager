@@ -7,6 +7,38 @@ namespace App\Models;
 use App\Enums\FrameSymbols;
 use App\Traits\FindableBySymbol;
 
+/**
+ * App\Models\Frame
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property FrameSymbols $symbol
+ * @property string $name
+ * @property string $description
+ * @property int $module_slots
+ * @property int $mounting_points
+ * @property int $fuel_capacity
+ * @property int $required_power
+ * @property int $required_crew
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
+ * @property-read int|null $ships_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereFuelCapacity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereModuleSlots($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereMountingPoints($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereRequiredCrew($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereRequiredPower($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Frame extends Model
 {
     use FindableBySymbol;

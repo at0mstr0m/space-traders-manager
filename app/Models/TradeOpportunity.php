@@ -13,6 +13,41 @@ use App\Traits\FindableBySymbol;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
+/**
+ * App\Models\TradeOpportunity
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property TradeSymbols $symbol
+ * @property string $waypoint_symbol
+ * @property int $purchase_price
+ * @property int $sell_price
+ * @property TradeGoodTypes $type
+ * @property int $trade_volume
+ * @property SupplyLevels $supply
+ * @property ActivityLevels|null $activity
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity bySymbol(\App\Enums\TradeSymbols|string $symbol)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity exchanges()
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity exports()
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity forCargos(\App\Models\Ship $ship)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity imports()
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity query()
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereActivity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity wherePurchasePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereSellPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereSupply($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereTradeVolume($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereWaypointSymbol($value)
+ * @mixin \Eloquent
+ */
 class TradeOpportunity extends Model
 {
     use FindableBySymbol;

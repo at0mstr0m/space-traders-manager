@@ -8,6 +8,31 @@ use App\Enums\TradeSymbols;
 use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * App\Models\Cargo
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property TradeSymbols $symbol
+ * @property string $name
+ * @property string $description
+ * @property int $ship_id
+ * @property int $units
+ * @property-read \App\Models\Ship $ship
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereShipId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereUnits($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Cargo extends Model
 {
     use FindableBySymbol;

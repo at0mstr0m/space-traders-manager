@@ -7,6 +7,36 @@ namespace App\Models;
 use App\Enums\MountSymbols;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * App\Models\Mount
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property MountSymbols $symbol
+ * @property string $name
+ * @property string $description
+ * @property int|null $strength
+ * @property int $required_power
+ * @property int $required_crew
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Deposit> $deposits
+ * @property-read int|null $deposits_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
+ * @property-read int|null $ships_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereRequiredCrew($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereRequiredPower($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereStrength($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Mount whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Mount extends Model
 {
     protected $with = [

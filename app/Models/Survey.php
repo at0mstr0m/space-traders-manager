@@ -10,6 +10,35 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * App\Models\Survey
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $signature
+ * @property string $waypoint_symbol
+ * @property \Illuminate\Support\Carbon $expiration
+ * @property SurveySizes $size
+ * @property int $agent_id
+ * @property string $raw_response
+ * @property-read \App\Models\Deposit $agent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Deposit> $deposits
+ * @property-read int|null $deposits_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereAgentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereExpiration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereRawResponse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereSignature($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Survey whereWaypointSymbol($value)
+ * @mixin \Eloquent
+ */
 class Survey extends Model
 {
     use Prunable;

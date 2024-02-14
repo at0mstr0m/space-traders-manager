@@ -7,6 +7,28 @@ namespace App\Models;
 use App\Enums\WaypointTraitSymbols;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * App\Models\WaypointTrait
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property WaypointTraitSymbols $symbol
+ * @property string $name
+ * @property string $description
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Waypoint> $waypoints
+ * @property-read int|null $waypoints_count
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait query()
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereSymbol($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class WaypointTrait extends Model
 {
     protected $fillable = [
