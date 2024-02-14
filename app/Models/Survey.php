@@ -19,6 +19,7 @@ class Survey extends Model
         'waypoint_symbol',
         'expiration',
         'size',
+        'raw_response',
     ];
 
     protected $casts = [
@@ -28,6 +29,7 @@ class Survey extends Model
         'waypoint_symbol' => 'string',
         'expiration' => 'datetime',
         'size' => SurveySizes::class,
+        'raw_response' => 'string',
     ];
 
     public function agent(): BelongsTo
@@ -45,12 +47,12 @@ class Survey extends Model
         return [
             'signature' => $this->signature,
             'symbol' => $this->waypoint_symbol,
-            'expiration' => $this->expiration->toDateTimeString(),
-            'size' => $this->size->value,
             'deposits' => $this->deposits
                 ->map(
                     fn (Deposit $deposit) => ['symbol' => $deposit->symbol->value]
                 )->all(),
+            'expiration' => $this->expiration->toIsoString(),
+            'size' => $this->size->value,
         ];
     }
 

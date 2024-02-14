@@ -5,6 +5,7 @@ namespace App\Data;
 use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
+use Illuminate\Support\Arr;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
@@ -19,9 +20,17 @@ class CreateSurveyData extends Data implements GeneratableFromResponse, UpdatesS
 
     public static function fromResponse(array $response): static
     {
+        $surveys = Arr::map(
+            data_get($response, 'surveys', []),
+            fn (array $survey) => $survey = [
+                ...$survey,
+                'raw_response' => json_encode($survey),
+            ]
+        );
+
         return new static(
             cooldown: $response['cooldown']['remainingSeconds'],
-            surveys: SurveyData::collectionFromResponse(data_get($response, 'surveys', [])),
+            surveys: SurveyData::collectionFromResponse($surveys),
         );
     }
 

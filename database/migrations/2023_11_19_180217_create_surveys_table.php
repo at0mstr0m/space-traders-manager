@@ -20,6 +20,7 @@ return new class() extends Migration {
             $table->dateTime('expiration');
             $table->enum('size', SurveySizes::values());
             $table->foreignId('agent_id')->constrained();
+            $table->text('raw_response');
         });
 
         Schema::create('deposit_survey', function (Blueprint $table) {

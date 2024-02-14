@@ -20,6 +20,7 @@ class SurveyData extends Data implements GeneratableFromResponse
         public ?DataCollection $deposits = null,
         public Carbon $expiration,
         public string $size,
+        public string $rawResponse,
     ) {}
 
     public static function fromResponse(array $response): static
@@ -30,6 +31,7 @@ class SurveyData extends Data implements GeneratableFromResponse
             deposits: DepositData::collectionFromResponse(data_get($response, 'deposits', [])),
             expiration: Carbon::parse($response['expiration']),
             size: $response['size'],
+            rawResponse: $response['raw_response'],
         );
     }
 }

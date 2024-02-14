@@ -19,10 +19,10 @@ class UpdateSurveyAction
         $survey = $agent->surveys()->updateOrCreate(
             ['signature' => $surveyData->signature],
             [
-                'signature' => $surveyData->signature,
                 'waypoint_symbol' => $surveyData->waypointSymbol,
                 'expiration' => $surveyData->expiration,
                 'size' => $surveyData->size,
+                'raw_response' => $surveyData->rawResponse,
             ]
         );
 
@@ -31,8 +31,5 @@ class UpdateSurveyAction
             ->map(fn (DepositData $depositData) => Deposit::firstOrCreate(['symbol' => $depositData->symbol])->id)
             ->unique()
             ->pipe(fn ($depositIds) => $survey->deposits()->sync($depositIds));
-
-        // delete expired
-        Survey::where('expiration', '<', now())->delete();
     }
 }

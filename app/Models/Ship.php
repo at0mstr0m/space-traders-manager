@@ -232,7 +232,7 @@ class Ship extends Model
             ->useApi()
             ->extractResourcesWithSurvey(
                 $this->symbol,
-                $survey->toRequestableObject()
+                json_decode($survey->raw_response, true)
             );
 
         return $this;

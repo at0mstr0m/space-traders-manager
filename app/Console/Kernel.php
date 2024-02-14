@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new UpdateExistingFactions())->dailyAt('00:05');
         $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
         $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyFiveMinutes();
-        $schedule->command('model:prune --model=' . Survey::class)->everyMinute();
+        $schedule->command('model:prune')->everyMinute();
     }
 
     /**
