@@ -51,7 +51,7 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
             return;
         }
 
-        $markets = TradeOpportunity::bestMarketplacesForCargos($this->ship)
+        $markets = TradeOpportunity::randomMarketplacesForCargos($this->ship)
             ->pipe(function (Collection $marketData) {
                 $this->ship
                     ->cargos()

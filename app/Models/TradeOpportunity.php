@@ -113,7 +113,7 @@ class TradeOpportunity extends Model
      *
      * @return Collection<TWaypointSymbol, array>
      */
-    public static function bestMarketplacesForCargos(Ship $ship): Collection
+    public static function marketplacesForCargos(Ship $ship): Collection
     {
         return static::forCargos($ship)
             ->get()
@@ -129,6 +129,24 @@ class TradeOpportunity extends Model
                 ),
             ])
             ->groupBy('symbol')
+            ->when(
+                $ship->fuel_capacity > 0,
+                fn (Collection $tradeOpportunities) => $tradeOpportunities->map(
+                    fn (Collection $tradeOpportunities) => $tradeOpportunities
+                        ->filter(fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $ship->fuel_capacity)
+                )
+            );
+
+    }
+
+    /**
+     * @template TWaypointSymbol string
+     *
+     * @return Collection<TWaypointSymbol, array>
+     */
+    public static function bestMarketplacesForCargos(Ship $ship): Collection
+    {
+        return static::marketplacesForCargos($ship)
             ->map(
                 fn (Collection $tradeOpportunities) => $tradeOpportunities
                     ->sortBy(
@@ -137,5 +155,16 @@ class TradeOpportunity extends Model
                     )
                     ->first()
             );
+    }
+
+    /**
+     * @template TWaypointSymbol string
+     *
+     * @return Collection<TWaypointSymbol, array>
+     */
+    public static function randomMarketplacesForCargos(Ship $ship): Collection
+    {
+        return static::marketplacesForCargos($ship)
+            ->map(fn (Collection $tradeOpportunities) => $tradeOpportunities->random());
     }
 }
