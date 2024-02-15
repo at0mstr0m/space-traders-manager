@@ -122,6 +122,7 @@ class TradeOpportunity extends Model
                     'symbol',
                     'waypoint_symbol',
                     'purchase_price',
+                    'trade_volume',
                 ]),
                 'distance' => LocationHelper::distance(
                     $ship->waypoint_symbol,

@@ -16,6 +16,9 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 
     private const MIN_PROFIT_PER_FLIGHT = 50_000;
 
+    // could change between executions
+    private ?PotentialTradeRoute $tradeRoute = null;
+
     /**
      * Create a new job instance.
      */
@@ -54,23 +57,18 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
     {
         dump("{$this->ship->symbol} serving trade route {$this->origin} -> {$this->destination} with {$this->tradedGood->value}");
 
+        $this->initTradeRoute();
+
         if ($this->ship->cargo_is_empty) {
             dump("{$this->ship->symbol} cargo is empty");
             if ($this->ship->waypoint_symbol === $this->origin) {
-                UpdateOrRemovePotentialTradeRoutesAction::run();
-                /** @var PotentialTradeRoute */
-                $tradeRoute = PotentialTradeRoute::firstWhere([
-                    'trade_symbol' => $this->tradedGood->value,
-                    'origin' => $this->origin,
-                    'destination' => $this->destination,
-                ]);
-                if (!$tradeRoute) {
+                if (!$this->tradeRoute) {
                     dump("{$this->ship->symbol} trade route does not exist anymore");
 
                     return;
                 }
 
-                if ($tradeRoute->profit <= static::MIN_PROFIT && $tradeRoute->profit !== 0) {
+                if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
                     $newRoute = PotentialTradeRoute::orderByDesc('profit_per_flight')
                         ->firstWhere([
@@ -111,12 +109,13 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
                 }
 
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
-                $this->ship->purchaseCargo(
-                    $this->tradedGood,
-                    $this->ship->cargo_capacity > $tradeRoute->trade_volume_at_origin
-                        ? $tradeRoute->trade_volume_at_origin
-                        : $this->ship->cargo_capacity
-                );
+
+                while (!$this->ship->refresh()->is_fully_loaded) {
+                    $this->ship->purchaseCargo(
+                        $this->tradedGood,
+                        min($this->tradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
+                    );
+                }
                 dump("{$this->ship->symbol} fly to {$this->destination}");
                 $this->flyToLocation($this->destination);
 
@@ -130,7 +129,13 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
         dump("{$this->ship->symbol} cargo is not empty");
         if ($this->ship->waypoint_symbol === $this->destination) {
             dump("{$this->ship->symbol} sell cargo {$this->tradedGood->value}");
-            $this->ship->sellCargo($this->tradedGood);
+            while (!$this->ship->refresh()->cargo_is_empty) {
+                $cargo = $this->ship->cargos()->firstWhere('symbol', $this->tradedGood);
+                $this->ship->sellCargo(
+                    $this->tradedGood,
+                    min($this->tradeRoute->trade_volume_at_destination, $cargo->units)
+                );
+            }
             dump("{$this->ship->symbol} fly to {$this->origin}");
             $this->flyToLocation($this->origin);
 
@@ -142,5 +147,17 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
         return;
 
         dump('did not match any conditions');
+    }
+
+    private function initTradeRoute(): void
+    {
+        UpdateOrRemovePotentialTradeRoutesAction::run();
+        /** @var PotentialTradeRoute */
+        $this->tradeRoute = PotentialTradeRoute::firstWhere([
+            'trade_symbol' => $this->tradedGood->value,
+            'origin' => $this->origin,
+            'destination' => $this->destination,
+        ]);
+
     }
 }

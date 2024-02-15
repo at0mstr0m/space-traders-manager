@@ -92,7 +92,13 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
         )->each(
             function (array $market) {
                 dump("selling cargo {$market['symbol']->value} at {$market['waypoint_symbol']}");
-                $this->ship->sellCargo($market['symbol']);
+
+                while ($cargo = $this->ship->refresh()->cargos()->firstWhere('symbol', $market['symbol'])) {
+                    $this->ship->sellCargo(
+                        $market['symbol'],
+                        min($market['trade_volume'], $cargo->units)
+                    );
+                }
             }
         );
 
