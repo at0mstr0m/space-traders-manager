@@ -71,6 +71,14 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
                 return $result;
             });
+
+        if ($this->noCompanionPresent() && $this->ships->every(fn (Ship $ship) => $ship->is_fully_loaded)) {
+            dump(now()->toTimeString() . ' no companion present and all ships are fully loaded, self dispatching...');
+            $this->selfDispatch()->delay(60);
+
+            return;
+        }
+
         $this->ships->each(fn (Ship $ship) => $this->handleShip($ship));
         dump(now()->toTimeString() . ' done handling ships, self dispatching...');
         $this->selfDispatch()->delay($this->ships->max('cooldown'));

@@ -5,7 +5,6 @@ namespace App\Console;
 use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
 use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
-use App\Models\Survey;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
