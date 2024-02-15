@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from 'vue-router'
 import useUserStore from "@/store/user";
 
@@ -89,4 +89,10 @@ async function login() {
   }
   router.push({ name: "home" });
 }
+
+onMounted(() => {
+  if (userStore.isAuthenticated()) {
+    router.push({ name: "home" });
+  }
+});
 </script>
