@@ -3,8 +3,12 @@
 namespace App\Console;
 
 use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
+use App\Enums\TaskTypes;
+use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
+use App\Models\Ship;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -16,8 +20,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->job(new UpdateExistingFactions())->dailyAt('00:05');
+        $schedule->job(new UpdateExistingFactions())->daily();
+        $schedule->call(function () {
+            Task::where('type', TaskTypes::SERVE_TRADE_ROUTE)
+                ->each(
+                    fn (Task $task) => $task->ships->each(
+                        fn (Ship $ship) => ServeRandomTradeRoute::dispatch($ship->symbol)
+                    )
+                );
+        })->everySixHours();
         $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
         $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTwoMinutes();
         $schedule->command('model:prune')->everyMinute();

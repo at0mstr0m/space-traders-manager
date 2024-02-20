@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\SupplyLevels;
 use App\Enums\TradeSymbols;
+use Illuminate\Support\Arr;
 use App\Enums\ActivityLevels;
 use App\Enums\TradeGoodTypes;
 use App\Helpers\LocationHelper;
@@ -105,6 +106,7 @@ class TradeOpportunity extends Model
     public function scopeForCargos(Builder $query, Ship $ship): Builder
     {
         return $query->imports()
+            ->whereNotIn('supply', [SupplyLevels::ABUNDANT, SupplyLevels::HIGH])
             ->whereIn('symbol', $ship->cargos()->pluck('symbol'));
     }
 
@@ -136,8 +138,8 @@ class TradeOpportunity extends Model
                     fn (Collection $tradeOpportunities) => $tradeOpportunities
                         ->filter(fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $ship->fuel_capacity)
                 )
-            );
-
+            )
+            ->reject(fn (Collection $tradeOpportunities) => $tradeOpportunities->isEmpty());
     }
 
     /**

@@ -10,7 +10,7 @@ use App\Models\PotentialTradeRoute;
 use App\Models\Ship;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
-class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
+class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 {
     private const MIN_PROFIT = 1.7;
 
@@ -70,40 +70,7 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 
                 if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
-                    $newRoute = PotentialTradeRoute::orderByDesc('profit_per_flight')
-                        ->firstWhere([
-                            ['profit', '>', static::MIN_PROFIT],
-                            ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
-                            ['distance', '<', 300],
-                        ]);
-
-                    if (!$newRoute) {
-                        dump("{$this->ship->symbol} no new trade route found");
-
-                        return;
-                    }
-
-                    dump(
-                        PotentialTradeRoute::orderByDesc('profit_per_flight')
-                            ->where([
-                                ['profit', '>', static::MIN_PROFIT],
-                                ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
-                                ['distance', '<', 300],
-                            ])
-                            ->get()
-                            ->map(fn (PotentialTradeRoute $potentialTradeRoute) => $potentialTradeRoute->only(['origin', 'destination', 'trade_symbol', 'profit_per_flight', 'profit']))
-                    );
-
-                    dump("{$this->ship->symbol} new trade route {$newRoute->origin} -> {$newRoute->destination} with {$newRoute->trade_symbol->value} profit per flight {$newRoute->profit_per_flight}");
-
-                    static::dispatch(
-                        $this->ship->symbol,
-                        $newRoute->origin,
-                        $newRoute->destination,
-                        $newRoute->trade_symbol
-                    )->delay(1);
-
-                    dump("{$this->ship->symbol} will serve new route now.");
+                    $this->chooseNewRoute();
 
                     return;
                 }
@@ -136,6 +103,14 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
                     min($this->tradeRoute->trade_volume_at_destination, $cargo->units)
                 );
             }
+
+            if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
+                dump("{$this->ship->symbol} trade route is not profitable enough");
+                $this->chooseNewRoute();
+
+                return;
+            }
+
             dump("{$this->ship->symbol} fly to {$this->origin}");
             $this->flyToLocation($this->origin);
 
@@ -158,6 +133,43 @@ class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
             'origin' => $this->origin,
             'destination' => $this->destination,
         ]);
+    }
 
+    private function chooseNewRoute(): void
+    {
+        $newRoute = PotentialTradeRoute::orderByDesc('profit_per_flight')
+            ->firstWhere([
+                ['profit', '>', static::MIN_PROFIT],
+                ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
+                ['distance', '<', 300],
+            ]);
+
+        if (!$newRoute) {
+            dump("{$this->ship->symbol} no new trade route found");
+
+            return;
+        }
+
+        dump(
+            PotentialTradeRoute::orderByDesc('profit_per_flight')
+                ->where([
+                    ['profit', '>', static::MIN_PROFIT],
+                    ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
+                    ['distance', '<', 300],
+                ])
+                ->get()
+                ->map(fn (PotentialTradeRoute $potentialTradeRoute) => $potentialTradeRoute->only(['origin', 'destination', 'trade_symbol', 'profit_per_flight', 'profit']))
+        );
+
+        dump("{$this->ship->symbol} new trade route {$newRoute->origin} -> {$newRoute->destination} with {$newRoute->trade_symbol->value} profit per flight {$newRoute->profit_per_flight}");
+
+        static::dispatch(
+            $this->ship->symbol,
+            $newRoute->origin,
+            $newRoute->destination,
+            $newRoute->trade_symbol
+        )->delay(1);
+
+        dump("{$this->ship->symbol} will serve new route now.");
     }
 }

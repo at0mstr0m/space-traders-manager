@@ -48,29 +48,7 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
         $this->extractionLocation = $this->task->payload['extraction_location'];
         $this->initSurveyor();
         dump(now()->toTimeString() . " extraction location: {$this->extractionLocation}");
-        /** @var Task */
-        $companionTask = Task::firstWhere([
-            'type' => TaskTypes::SUPPORT_COLLECTIVE_MINERS,
-            'payload->waiting_location' => $this->extractionLocation,
-        ]);
-
-        dump(now()->toTimeString());
-        dump($companionTask->attributesToArray());
-
-        $this->companions = $companionTask->ships
-            ->reject(function (Ship $companion) {
-                $result = $companion->is_fully_loaded
-                    || $companion->is_in_transit
-                    || $companion->cooldown
-                    || $companion->waypoint_symbol !== $this->extractionLocation;
-
-                if ($result) {
-                    dump(now()->toTimeString() . " companion {$companion->symbol} is not available");
-                    WaitAndSell::dispatch($companion->symbol);
-                }
-
-                return $result;
-            });
+        $this->initCompanions();
 
         if ($this->noCompanionPresent() && $this->ships->every(fn (Ship $ship) => $ship->is_fully_loaded)) {
             dump(now()->toTimeString() . ' no companion present and all ships are fully loaded, self dispatching...');
@@ -162,6 +140,38 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
             WaitAndSell::dispatch($companion->symbol);
             $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
         }
+    }
+
+    private function initCompanions(): void
+    {
+        /** @var ?Task */
+        $companionTask = Task::firstWhere([
+            'type' => TaskTypes::SUPPORT_COLLECTIVE_MINERS,
+            'payload->waiting_location' => $this->extractionLocation,
+        ]);
+
+        if (!$companionTask) {
+            dump(now()->toTimeString() . ' no companion task available');
+
+            $this->companions = new EloquentCollection();
+
+            return;
+        }
+
+        $this->companions = $companionTask->ships
+            ->reject(function (Ship $companion) {
+                $result = $companion->is_fully_loaded
+                    || $companion->is_in_transit
+                    || $companion->cooldown
+                    || $companion->waypoint_symbol !== $this->extractionLocation;
+
+                if ($result) {
+                    dump(now()->toTimeString() . " companion {$companion->symbol} is not available");
+                    WaitAndSell::dispatch($companion->symbol);
+                }
+
+                return $result;
+            });
     }
 
     private function noCompanionPresent(): bool
