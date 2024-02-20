@@ -63,7 +63,18 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
             })
             ->sortBy('distance');
 
+        /// todo: handle if is null
         $this->closestTradeOpportunity = $markets->first();
+
+        if (!$this->closestTradeOpportunity) {
+            dump('no trade opportunities');
+            if ($currentLocation !== $waitingLocation) {
+                dump('no trade opportunities, fly to waiting location');
+                $this->flyToLocation($waitingLocation);
+            }
+
+            return;
+        }
 
         dump($markets);
         dump($this->closestTradeOpportunity);
