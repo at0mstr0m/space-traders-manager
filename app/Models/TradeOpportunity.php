@@ -48,6 +48,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereWaypointSymbol($value)
+ * @property-read \App\Models\Waypoint|null $waypoint
  * @mixin \Eloquent
  */
 class TradeOpportunity extends Model
@@ -100,7 +101,7 @@ class TradeOpportunity extends Model
 
     public function scopeBySymbol(Builder $query, string|TradeSymbols $symbol): Builder
     {
-        return $query->where('symbol', TradeGoodTypes::fromName($symbol));
+        return $query->where('symbol', TradeSymbols::fromName($symbol));
     }
 
     public function scopeForCargos(Builder $query, Ship $ship): Builder

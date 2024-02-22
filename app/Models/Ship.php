@@ -109,6 +109,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static Builder|Ship whereTaskId($value)
  * @method static Builder|Ship whereUpdatedAt($value)
  * @method static Builder|Ship whereWaypointSymbol($value)
+ * @property-read \App\Models\Waypoint|null $waypoint
  * @mixin \Eloquent
  */
 class Ship extends Model
@@ -507,13 +508,15 @@ class Ship extends Model
         return $this;
     }
 
-    public function supplyCargoToConstructionSite(string|TradeSymbols $tradeSymbol, int $units = 0): static
+    public function supplyCargoToConstructionSite(string|TradeSymbols|null $tradeSymbol = null, int $units = 0): static
     {
+        $tradeSymbol = is_null($tradeSymbol) ? $this->cargos()->first()->symbol : $tradeSymbol;
         $tradeSymbol = is_string($tradeSymbol) ? TradeSymbols::fromName($tradeSymbol) : $tradeSymbol;
         // supply all available cargo of this type if no units specified
         $units = $units ?: $this->cargos()->firstWhere('symbol', $tradeSymbol)->units;
 
-        $this->useApi()
+        $this->dock()
+            ->useApi()
             ->supplyConstructionSite(
                 $this->waypoint_symbol,
                 $this->symbol,

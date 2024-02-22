@@ -60,6 +60,8 @@ use App\Enums\TradeSymbols;
  */
 class PotentialTradeRoute extends Model
 {
+    public const CACHE_TAG = 'CURRENTLY_SERVED';
+
     protected $fillable = [
         'trade_symbol',
         'origin',

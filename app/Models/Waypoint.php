@@ -47,6 +47,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereY($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TradeOpportunity> $tradeOpportunities
+ * @property-read int|null $trade_opportunities_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint bySystem(string $systemSymbol)
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint canRefuel()
  * @mixin \Eloquent
  */
 class Waypoint extends Model
@@ -111,6 +115,11 @@ class Waypoint extends Model
                 fn (Builder $query) => $query->where('symbol', TradeSymbols::FUEL)
                     ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
             );
+    }
+
+    public function scopeBySystem(Builder $query, string $systemSymbol): Builder
+    {
+        return $query->where('symbol', 'like', $systemSymbol . '-%');
     }
 
     public function closestRefuelingStation(Waypoint|string $waypoint): ?Waypoint

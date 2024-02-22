@@ -7,11 +7,13 @@ use App\Enums\TaskTypes;
 use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
+use App\Models\PotentialTradeRoute;
 use App\Models\Ship;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Cache;
 
 class Kernel extends ConsoleKernel
 {
@@ -22,6 +24,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->job(new UpdateExistingFactions())->daily();
         $schedule->call(function () {
+            Cache::tags([PotentialTradeRoute::CACHE_TAG])->flush();
             Task::where('type', TaskTypes::SERVE_TRADE_ROUTE)
                 ->each(
                     fn (Task $task) => $task->ships->each(

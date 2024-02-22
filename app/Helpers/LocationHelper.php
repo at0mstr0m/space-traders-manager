@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Models\Ship;
-use App\Enums\ShipRoles;
-use App\Models\Waypoint;
-use App\Jobs\UpdateShips;
-use Illuminate\Support\Str;
+use App\Data\ConstructionSiteData;
 use App\Enums\ShipNavStatus;
-use Illuminate\Support\Collection;
+use App\Enums\ShipRoles;
 use App\Enums\WaypointTraitSymbols;
+use App\Jobs\UpdateShips;
+use App\Models\Ship;
+use App\Models\Waypoint;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class LocationHelper
 {
@@ -100,5 +101,19 @@ class LocationHelper
         return Waypoint::whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
             ->whereNotIn('symbol', $satelliteLocations)
             ->pluck('symbol');
+    }
+
+    public static function getWaypointUnderConstructionInSystem(string $systemSymbol): ?ConstructionSiteData
+    {
+        /** @var SpaceTraders $api */
+        $api = app(SpaceTraders::class);
+
+        $waypointSymbol = Waypoint::bySystem($systemSymbol)
+            ->firstWhere('is_under_construction', true)
+            ?->symbol;
+
+        return $waypointSymbol
+            ? $api->getConstructionSite($waypointSymbol)
+            : null;
     }
 }

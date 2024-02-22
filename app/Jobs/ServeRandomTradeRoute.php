@@ -17,8 +17,6 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
 {
     private const MIN_PROFIT = 1.7;
 
-    private const CURRENTLY_SERVED = 'CURRENTLY_SERVED';
-
     // could change between executions
     private ?PotentialTradeRoute $tradeRoute = null;
 
@@ -60,6 +58,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
      */
     public function handleShip(): void
     {
+        dump("{$this->ship->symbol} serving random trade route, currently located at {$this->ship->waypoint_symbol}");
         if (!$this->origin) {
             dump("{$this->ship->symbol} has no route yet, choosing a new one.");
             $this->chooseNewRoute();
@@ -83,7 +82,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
                     // forget the current trade route
-                    Cache::tags([static::CURRENTLY_SERVED])->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
+                    Cache::tags([PotentialTradeRoute::CACHE_TAG])->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
                     $this->chooseNewRoute();
 
                     return;
@@ -121,7 +120,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
             if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
                 dump("{$this->ship->symbol} trade route is not profitable enough");
                 // forget the current trade route
-                Cache::tags([static::CURRENTLY_SERVED])->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
+                Cache::tags([PotentialTradeRoute::CACHE_TAG])->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
                 $this->chooseNewRoute();
 
                 return;
@@ -191,10 +190,10 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
         for ($_ = 0; $_ < $count; ++$_) {
             $newRoute = $possibleNewRoutes->pop();
             $cacheKey = implode(':', array_values(Arr::only($newRoute, ['origin', 'destination', 'trade_symbol'])));
-            if (Cache::tags([static::CURRENTLY_SERVED])->has($cacheKey)) {
+            if (Cache::tags([PotentialTradeRoute::CACHE_TAG])->has($cacheKey)) {
                 continue;
             }
-            Cache::tags([static::CURRENTLY_SERVED])->put($cacheKey, true);
+            Cache::tags([PotentialTradeRoute::CACHE_TAG])->put($cacheKey, true);
 
             dump("{$this->ship->symbol} new trade route {$newRoute['origin']} -> {$newRoute['destination']} with {$newRoute['trade_symbol']} profit per flight {$newRoute['profit_per_flight']}");
 
