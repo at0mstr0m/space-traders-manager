@@ -1,11 +1,16 @@
 <template>
-  <v-navigation-drawer expand-on-hover rail>
+  <!-- permanent -->
+  <v-navigation-drawer
+    :rail="!navDrawerIsOpen"
+    :expand-on-hover="!navDrawerIsOpen"
+    :permanent="navDrawerIsOpen"
+  >
     <v-list>
       <v-list-item
         prepend-avatar="https://spacetraders.io/logo/logo-over-black.svg"
         :title="user.name"
         :subtitle="user.email"
-      ></v-list-item>
+      />
     </v-list>
     <v-divider />
     <v-list density="compact" nav>
@@ -57,14 +62,19 @@
 
 <script setup>
 import useUserStore from "@/store/user";
+import useGlobalsStore from "@/store/globals";
 import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
 const userStore = useUserStore();
+const globalsStore = useGlobalsStore();
+const { navDrawerIsOpen } = storeToRefs(globalsStore);
 
 const user = userStore.getUser();
 
 function navigateTo(routeName) {
+  globalsStore.closeNavDrawer();
   router.push({ name: routeName });
 }
 </script>

@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-container>
+  <v-container fluid>
     <v-data-table
       v-model:expanded="expanded"
       :loading="busy"

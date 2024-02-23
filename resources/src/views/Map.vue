@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-container>
+  <v-container fluid>
     <iframe
       src="https://docs.spacetraders.io/playground"
       :style="{

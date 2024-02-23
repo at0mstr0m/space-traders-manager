@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-container>
+  <v-container fluid>
     <v-btn
       elevation="1"
       class="mb-4"
