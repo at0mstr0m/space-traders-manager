@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 {
-    private const MIN_PROFIT = 1.7;
+    private const MIN_PROFIT = 1.5;
 
     // could change between executions
     private ?PotentialTradeRoute $tradeRoute = null;
@@ -90,12 +90,12 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
 
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
 
-                while (!$this->ship->refresh()->is_fully_loaded) {
+                // while (!$this->ship->refresh()->is_fully_loaded) {
                     $this->ship->purchaseCargo(
                         $this->tradedGood,
                         min($this->tradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
                     );
-                }
+                // }
                 dump("{$this->ship->symbol} fly to {$this->destination}");
                 $this->flyToLocation($this->destination);
 
@@ -163,7 +163,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 'distance',
             ])
             ->where([
-                ['profit', '>', 1.7],
+                ['profit', '>', 1.0],
                 ['distance', '<=', $this->ship->fuel_capacity],
             ])
             ->get()

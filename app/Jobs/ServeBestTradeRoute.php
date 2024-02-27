@@ -77,12 +77,12 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
 
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
 
-                while (!$this->ship->refresh()->is_fully_loaded) {
+                // while (!$this->ship->refresh()->is_fully_loaded) {
                     $this->ship->purchaseCargo(
                         $this->tradedGood,
                         min($this->tradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
                     );
-                }
+                // }
                 dump("{$this->ship->symbol} fly to {$this->destination}");
                 $this->flyToLocation($this->destination);
 

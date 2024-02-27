@@ -59,8 +59,12 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
         $this->ships->each(fn (Ship $ship) => $this->handleShip($ship));
         dump(now()->toTimeString() . ' done handling ships, self dispatching...');
-        $this->selfDispatch()->delay($this->ships->max('cooldown'));
-        dump(now()->toTimeString() . " cooldown: {$this->ships->max('cooldown')}");
+        $cooldown = $this->ships
+            ->first()
+            ?->refresh()
+            ?->cooldown ?? 60;
+        $this->selfDispatch()->delay($cooldown);
+        dump(now()->toTimeString() . " cooldown: {$cooldown}");
     }
 
     private function handleShip(Ship $ship): void
