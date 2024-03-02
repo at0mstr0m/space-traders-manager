@@ -69,6 +69,15 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 
             return;
         }
+
+        if ($this->ship->waypoint_symbol !== $this->constructionSite->waypointSymbol) {
+            dump("{$this->ship->symbol} is loaded, flying to construction site");
+            $this->flyToLocation($this->constructionSite->waypointSymbol);
+
+            return;
+        }
+
+        dump("{$this->ship->symbol} did nothing.");
     }
 
     private function initSupplyRouteData(): void

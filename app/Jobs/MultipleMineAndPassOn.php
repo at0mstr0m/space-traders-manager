@@ -62,7 +62,8 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
         $cooldown = $this->ships
             ->first()
             ?->refresh()
-            ?->cooldown ?? 60;
+            ?->cooldown
+            ?: 69;
         $this->selfDispatch()->delay($cooldown);
         dump(now()->toTimeString() . " cooldown: {$cooldown}");
     }

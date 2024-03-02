@@ -24,7 +24,7 @@
         :style="{
           border: '0',
           width: '100%',
-          height: '100%',
+          height: dynamicHeight + 'px',
         }"
       />
     </v-card>
@@ -32,13 +32,31 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onBeforeMount, onBeforeUnmount } from "vue";
 import useGlobalsStore from "@/store/globals";
 
 const { toggleNavDrawer } = useGlobalsStore();
 const mapVisible = ref(false);
+const dynamicHeight = ref(calculateDynamicHeight());
 
 function toggleMap() {
   mapVisible.value = !mapVisible.value;
 }
+
+
+function calculateDynamicHeight() {
+  return Math.floor(window.innerHeight * 0.97);
+}
+
+function onResize() {
+  dynamicHeight.value = calculateDynamicHeight();
+}
+
+onBeforeMount(() => {
+  window.addEventListener("resize", onResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", onResize);
+});
 </script>

@@ -17,7 +17,7 @@ import { ref, onBeforeMount, onBeforeUnmount } from "vue";
 const dynamicHeight = ref(calculateDynamicHeight());
 
 function calculateDynamicHeight() {
-  return Math.floor(window.innerHeight * 0.97);
+  return Math.floor(window.innerHeight * 0.93);
 }
 
 function onResize() {

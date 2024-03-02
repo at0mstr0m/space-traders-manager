@@ -33,7 +33,13 @@
           <td :colspan="columns.length">
             <v-row>
               <v-col cols="4">
-                <v-card class="ma-3" title="Frame" :subtitle="item.frame.name">
+                <v-card
+                  variant="tonal"
+                  color="primary"
+                  class="ma-3"
+                  title="Frame"
+                  :subtitle="item.frame.name"
+                >
                   <template #text>
                     <v-row>
                       <v-col>
@@ -60,6 +66,8 @@
               </v-col>
               <v-col cols="4">
                 <v-card
+                  variant="tonal"
+                  color="primary"
                   class="ma-3"
                   title="Reactor"
                   :subtitle="item.reactor.name"
@@ -81,6 +89,8 @@
               </v-col>
               <v-col cols="4">
                 <v-card
+                  variant="tonal"
+                  color="primary"
                   class="ma-3"
                   title="Engine"
                   :subtitle="item.engine.name"
@@ -106,12 +116,16 @@
               <v-col>
                 <v-card
                   v-if="item.modules?.length > 0"
+                  variant="tonal"
+                  color="primary"
                   class="ma-3"
                   title="Modules"
                   :subtitle="'Quantity: ' + item.modules.length"
                 >
                   <v-card
                     v-for="module in item.modules"
+                    variant="tonal"
+                    color="primary"
                     :key="'module_' + module.id"
                     class="ma-3"
                     :title="module.name"
@@ -145,12 +159,16 @@
               <v-col>
                 <v-card
                   v-if="item.mounts?.length > 0"
+                  variant="tonal"
+                  color="primary"
                   class="ma-3"
                   title="Mounts"
                   :subtitle="'Quantity: ' + item.mounts.length"
                 >
                   <v-card
                     v-for="mount in item.mounts"
+                    variant="tonal"
+                    color="primary"
                     :key="'mount_' + mount.id"
                     class="ma-3"
                     :title="mount.name"
