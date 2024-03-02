@@ -43,7 +43,6 @@ function toggleMap() {
   mapVisible.value = !mapVisible.value;
 }
 
-
 function calculateDynamicHeight() {
   return Math.floor(window.innerHeight * 0.97);
 }
