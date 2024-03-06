@@ -6,10 +6,11 @@ use App\Actions\UpdateShipAction;
 use App\Enums\ShipTypes;
 use App\Helpers\SpaceTraders;
 use App\Http\Requests\PurchaseShipRequest;
+use App\Http\Requests\UpdateFlightModeRequest;
 use App\Http\Resources\ShipResource;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ShipController extends Controller
 {
@@ -23,7 +24,7 @@ class ShipController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResource
+    public function index(): AnonymousResourceCollection
     {
         return ShipResource::collection(Ship::paginate());
     }
@@ -31,7 +32,7 @@ class ShipController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Ship $ship): JsonResource
+    public function show(Ship $ship): ShipResource
     {
         return new ShipResource($ship);
     }
@@ -39,7 +40,7 @@ class ShipController extends Controller
     /**
      * Refetch all ships.
      */
-    public function refetch()
+    public function refetch(): AnonymousResourceCollection
     {
         UpdateShips::dispatchSync();
 
@@ -49,7 +50,7 @@ class ShipController extends Controller
     /**
      * Purchase ship.
      */
-    public function purchase(PurchaseShipRequest $request)
+    public function purchase(PurchaseShipRequest $request): ShipResource
     {
         $validated = $request->validated();
         $purchaseShipData = $this->api->purchaseShip(
@@ -63,5 +64,15 @@ class ShipController extends Controller
                 $request->user()->agent
             )
         );
+    }
+
+    /**
+     * Update ship's Flight Mode.
+     */
+    public function updateFlightMode(Ship $ship, UpdateFlightModeRequest $request): ShipResource
+    {
+        $flightMode = $request->validated('flightMode');
+
+        return $this->show($ship->setFlightMode($flightMode));
     }
 }

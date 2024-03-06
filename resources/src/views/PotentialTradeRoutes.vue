@@ -9,7 +9,7 @@
       @click="refetchTradeRoutes"
     >
       Refresh
-      <template v-slot:loader>
+      <template #loader>
         <v-progress-linear indeterminate />
       </template>
     </v-btn>
@@ -205,7 +205,5 @@ async function refetchTradeRoutes() {
   busy.value = false;
 }
 
-onMounted(() => {
-  getTradeRoutes();
-});
+onMounted(getTradeRoutes);
 </script>

@@ -9,7 +9,7 @@
       @click="refetchContracts"
     >
       Refresh
-      <template v-slot:loader>
+      <template #loader>
         <v-progress-linear indeterminate />
       </template>
     </v-btn>
@@ -73,7 +73,7 @@
           @click="acceptContract(item)"
         >
           Accept
-          <template v-slot:loader>
+          <template #loader>
             <v-progress-linear indeterminate />
           </template>
         </v-btn>
@@ -236,7 +236,5 @@ async function acceptContract(contract) {
   }
 }
 
-onMounted(() => {
-  getContracts();
-});
+onMounted(getContracts);
 </script>

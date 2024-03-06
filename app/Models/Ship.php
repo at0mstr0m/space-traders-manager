@@ -498,10 +498,10 @@ class Ship extends Model
         return $this;
     }
 
-    public function setFlightMode(FlightModes $flightMode): static
+    public function setFlightMode(FlightModes|string $flightMode): static
     {
         $this->useApi()
-            ->patchShipNav($this->symbol, $flightMode)
+            ->patchShipNav($this->symbol, FlightModes::fromName($flightMode))
             ->updateShip($this)
             ->save();
 

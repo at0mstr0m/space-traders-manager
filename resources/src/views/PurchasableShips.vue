@@ -192,7 +192,7 @@
           @click="purchaseShip(item)"
         >
           Buy
-          <template v-slot:loader>
+          <template #loader>
             <v-progress-linear indeterminate />
           </template>
         </v-btn>
@@ -302,7 +302,5 @@ async function purchaseShip(item) {
   }
 }
 
-onMounted(() => {
-  getShips();
-});
+onMounted(getShips);
 </script>

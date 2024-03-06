@@ -83,7 +83,27 @@ export default function useShipUtils() {
     },
   ];
 
+  const flightModes = [
+    {
+      title: "DRIFT",
+      value: "DRIFT",
+    },
+    {
+      title: "STEALTH",
+      value: "STEALTH",
+    },
+    {
+      title: "CRUISE",
+      value: "CRUISE",
+    },
+    {
+      title: "BURN",
+      value: "BURN",
+    },
+  ];
+
   return {
     tableColumns,
+    flightModes,
   };
 }

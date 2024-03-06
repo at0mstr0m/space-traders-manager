@@ -31,9 +31,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->as('ships.')
         ->controller(ShipController::class)
         ->group(function () {
-            Route::get('', 'index')->name('index');
             Route::get('refetch', 'refetch')->name('refetch');
             Route::post('purchase', 'purchase')->name('purchase');
+        });
+
+    Route::apiResource('ships', ShipController::class);
+
+    Route::prefix('ships/{ship}')
+        ->as('ships.')
+        ->controller(ShipController::class)
+        ->group(function () {
+            Route::patch('update-flight-mode', 'updateFlightMode')->name('update-flight-mode');
         });
 
     Route::prefix('contracts')

@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ShipTypes;
-use App\Rules\IsValidWaypointSymbol;
+use App\Enums\FlightModes;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PurchaseShipRequest extends FormRequest
+class UpdateFlightModeRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -17,15 +16,10 @@ class PurchaseShipRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shipType' => [
+            'flightMode' => [
                 'required',
                 'string',
-                Rule::enum(ShipTypes::class),
-            ],
-            'waypointSymbol' => [
-                'required',
-                'string',
-                new IsValidWaypointSymbol(),
+                Rule::enum(FlightModes::class),
             ],
         ];
     }

@@ -9,7 +9,7 @@
       @click="refetchShips"
     >
       Refresh
-      <template v-slot:loader>
+      <template #loader>
         <v-progress-linear indeterminate />
       </template>
     </v-btn>
@@ -31,6 +31,24 @@
       <template #expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
+            <v-row>
+              <v-col cols="4">
+                <v-card
+                  variant="tonal"
+                  color="primary"
+                  class="ma-3"
+                  title="Options"
+                >
+                  <template #text>
+                    <v-update-flight-mode
+                      :ship="item"
+                      @update="handleFlightModeUpdate"
+                    />
+                  </template>
+                </v-card>
+              </v-col>
+            </v-row>
+
             <v-row>
               <v-col cols="4">
                 <v-card
@@ -288,6 +306,7 @@ import { ref, onMounted } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
 import useShipUtils from "@/utils/ships.js";
 import { useRepository } from "@/repos/repoGenerator.js";
+import VUpdateFlightMode from '@/components/VUpdateFlightMode.vue';
 
 const repo = useRepository("ships");
 const { tableColumns } = useShipUtils();
@@ -337,7 +356,10 @@ async function refetchShips() {
   busy.value = false;
 }
 
-onMounted(() => {
-  getShips();
-});
+function handleFlightModeUpdate(updatedShip) {
+  const index = ships.value.findIndex((ship) => ship.id === updatedShip.id);
+  ships.value.splice(index, 1, updatedShip);
+}
+
+onMounted(getShips);
 </script>
