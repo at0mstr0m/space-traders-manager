@@ -21,10 +21,10 @@ export default createVuetify({
           background: '#031d44',
           surface: '#04395e',
           primary: '#70a288',
-          'primary-darken-1': '##4D8267',
+          'primary-darken-1': '#4D8267',
           secondary: '#DAB785',
-          'secondary-darken-1': '##CFA263',
-          'surface-light': '##065289',
+          'secondary-darken-1': '#CFA263',
+          'surface-light': '#065289',
 
           'surface-bright': '#FFFFFF',
           'surface-variant': '#424242',
