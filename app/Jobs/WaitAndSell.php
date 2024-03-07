@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
 {
-    private array $closestTradeOpportunity = [];
+    private ?array $closestTradeOpportunity = [];
 
     /**
      * Create a new job instance.

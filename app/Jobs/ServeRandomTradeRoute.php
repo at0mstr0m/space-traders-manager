@@ -82,7 +82,13 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
                     // forget the current trade route
-                    Cache::tags([PotentialTradeRoute::CACHE_TAG])->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
+                    Cache::tags([PotentialTradeRoute::CACHE_TAG])
+                        // ->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
+                        ->forget($this->generateCacheKey([
+                            'destination' => $this->destination,
+                            'origin' => $this->origin,
+                            'tradedGood' => $this->tradedGood,
+                        ]));
                     $this->chooseNewRoute();
 
                     return;
@@ -91,10 +97,10 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
 
                 // while (!$this->ship->refresh()->is_fully_loaded) {
-                    $this->ship->purchaseCargo(
-                        $this->tradedGood,
-                        min($this->tradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
-                    );
+                $this->ship->purchaseCargo(
+                    $this->tradedGood,
+                    min($this->tradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
+                );
                 // }
                 dump("{$this->ship->symbol} fly to {$this->destination}");
                 $this->flyToLocation($this->destination);
@@ -120,7 +126,13 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
             if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
                 dump("{$this->ship->symbol} trade route is not profitable enough");
                 // forget the current trade route
-                Cache::tags([PotentialTradeRoute::CACHE_TAG])->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
+                Cache::tags([PotentialTradeRoute::CACHE_TAG])
+                    // ->forget($this->destination . ':' . $this->origin . ':' . $this->tradedGood->value);
+                    ->forget($this->generateCacheKey([
+                        'destination' => $this->destination,
+                        'origin' => $this->origin,
+                        'tradedGood' => $this->tradedGood,
+                    ]));
                 $this->chooseNewRoute();
 
                 return;
@@ -163,7 +175,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 'distance',
             ])
             ->where([
-                ['profit', '>', 1.0],
+                ['profit', '>', static::MIN_PROFIT],
                 ['distance', '<=', $this->ship->fuel_capacity],
             ])
             ->get()
@@ -189,7 +201,8 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
 
         for ($_ = 0; $_ < $count; ++$_) {
             $newRoute = $possibleNewRoutes->pop();
-            $cacheKey = implode(':', array_values(Arr::only($newRoute, ['origin', 'destination', 'trade_symbol'])));
+            $cacheKey = $this->generateCacheKey(Arr::only($newRoute, ['origin', 'destination', 'trade_symbol']));
+
             if (Cache::tags([PotentialTradeRoute::CACHE_TAG])->has($cacheKey)) {
                 continue;
             }
@@ -206,5 +219,14 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
         }
 
         dump("{$this->ship->symbol} no unserved trade route found!");
+    }
+
+    private function generateCacheKey(array $route): string
+    {
+        if (Arr::has($route, 'trade_symbol')) {
+            $route['tradedGood'] = TradeSymbols::fromName($route['trade_symbol']);
+        }
+
+        return $route['destination'] . ':' . $route['origin'] . ':' . $route['tradedGood']->value;
     }
 }
