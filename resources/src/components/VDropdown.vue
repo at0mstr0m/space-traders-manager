@@ -1,6 +1,7 @@
 <template>
   <v-autocomplete
     v-model="selected"
+    v-bind="{...$attrs, ...$props}"
     :items="items"
     :item-title="props.itemTitle"
     :item-value="props.itemValue"
@@ -8,14 +9,22 @@
     no-filter
     hide-selected
   >
+    <template
+      v-for="(index, name) in $slots"
+      #[name]="data"
+    >
+      <slot
+        :name="name"
+        v-bind="data"
+      />
+    </template>
+
     <template #append-item>
       <div
         v-if="page < lastPage"
         v-intersect="{
           handler: fetchItems,
-          options: {
-            threshold: [1.0]
-          }
+          options: { threshold: [1.0] }
         }"
         class="pa-4 teal--text"
       >
@@ -26,8 +35,9 @@
 </template>
 
 <script setup>
-import { ref, defineModel } from 'vue';
+import { ref, defineModel, onMounted } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
+import uniqBy from "lodash/uniqBy";
 
 const selected = defineModel('selected', { required: false, type: [String, Number, Object, Array, Boolean]});
 const items = ref([]);
@@ -65,6 +75,23 @@ async function fetchItems() {
   }
   const response = await repo.index(page.value, 15);
   lastPage.value = response.data.meta.last_page;
-  items.value = items.value.concat(response.data.data);
+  items.value = uniqBy(items.value.concat(response.data.data), 'id');
 }
+
+async function fetchPreviouslySelected() {
+  const response = await repo.show(selected.value);
+  items.value.push(response.data.data);
+}
+
+onMounted(() => {
+  if (
+    selected.value
+    && Number.isInteger(selected.value)
+    && items.value.length === 0
+    && page.value === 0
+    && props.repoName
+  ) {
+    fetchPreviouslySelected();
+  }
+});
 </script>

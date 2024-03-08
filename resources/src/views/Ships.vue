@@ -28,6 +28,7 @@
           <v-toolbar-title>Ships</v-toolbar-title>
         </v-toolbar>
       </template>
+
       <template #expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
@@ -37,12 +38,28 @@
                   variant="tonal"
                   color="primary"
                   class="ma-3"
-                  title="Options"
+                  title="Task"
+                >
+                  <template #text>
+                    <v-update-ship-task
+                      :ship="item"
+                      @update="updateRow"
+                    />
+                  </template>
+                </v-card>
+              </v-col>
+
+              <v-col cols="4">
+                <v-card
+                  variant="tonal"
+                  color="primary"
+                  class="ma-3"
+                  title="Flight Mode"
                 >
                   <template #text>
                     <v-update-flight-mode
                       :ship="item"
-                      @update="handleFlightModeUpdate"
+                      @update="updateRow"
                     />
                   </template>
                 </v-card>
@@ -302,11 +319,12 @@
 </template>
 
 <script setup>
+import VUpdateFlightMode from '@/components/VUpdateFlightMode.vue';
+import VUpdateShipTask from '@/components/VUpdateShipTask.vue';
 import { ref, onMounted } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
 import useShipUtils from "@/utils/ships.js";
 import { useRepository } from "@/repos/repoGenerator.js";
-import VUpdateFlightMode from '@/components/VUpdateFlightMode.vue';
 
 const repo = useRepository("ships");
 const { tableColumns } = useShipUtils();
@@ -356,7 +374,7 @@ async function refetchShips() {
   busy.value = false;
 }
 
-function handleFlightModeUpdate(updatedShip) {
+function updateRow(updatedShip) {
   const index = ships.value.findIndex((ship) => ship.id === updatedShip.id);
   ships.value.splice(index, 1, updatedShip);
 }

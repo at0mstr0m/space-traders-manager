@@ -47,6 +47,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->controller(ShipController::class)
         ->group(function () {
             Route::patch('update-flight-mode', 'updateFlightMode')->name('update-flight-mode');
+            Route::patch('update-task', 'updateTask')->name('update-task');
         });
 
     Route::prefix('contracts')

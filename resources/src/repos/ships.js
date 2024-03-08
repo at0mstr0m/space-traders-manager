@@ -17,6 +17,12 @@ class ShipsRepository extends ModelRepository {
       flightMode: flightMode,
     });
   }
+
+  updateTask(shipId, taskId) {
+    return this._patch(this.resource + "/" + shipId + "/update-task", {
+      taskId: taskId,
+    });
+  }
 }
 
 export default new ShipsRepository("ships");

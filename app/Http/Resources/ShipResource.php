@@ -44,6 +44,7 @@ class ShipResource extends JsonResource
             'modules' => ShipModuleResource::collection($this->loadMissing('modules')->modules),
             'mounts' => ShipMountResource::collection($this->loadMissing('mounts')->mounts),
             'cargos' => CargoResource::collection($this->loadMissing('cargos')->cargos),
+            'task' => TaskResource::make($this->loadMissing('task')->task),
         ];
     }
 }

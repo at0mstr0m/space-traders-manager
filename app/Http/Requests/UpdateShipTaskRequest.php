@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Enums\FlightModes;
+use App\Models\Task;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateFlightModeRequest extends FormRequest
+class UpdateShipTaskRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -18,10 +18,10 @@ class UpdateFlightModeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'flightMode' => [
-                'required',
-                'string',
-                Rule::enum(FlightModes::class),
+            'taskId' => [
+                'nullable',
+                'integer',
+                Rule::exists(Task::class, 'id'),
             ],
         ];
     }

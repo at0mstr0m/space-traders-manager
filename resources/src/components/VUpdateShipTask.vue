@@ -1,12 +1,25 @@
 <template>
   <v-row>
     <v-col>
-      <v-autocomplete
-        v-model="selected"
-        label="Flight Modes"
-        :items="flightModes"
+      <v-dropdown
+        v-model:selected="selected"
+        repo-name="tasks"
+        label="Select Task"
         variant="outlined"
-      />
+        item-title="type"
+        clearable
+      >
+        <template #item="{ item, props: _props }">
+          <v-list-item
+            v-bind="_props"
+            :title="item.raw.type + ' ' + JSON.stringify(item.raw.payload)"
+          />
+        </template>
+
+        <template #selection="{ item }">
+          {{ item.raw.type + ' ' + JSON.stringify(item.raw.payload) }}
+        </template>
+      </v-dropdown>
     </v-col>
   </v-row>
   <v-row>
@@ -15,9 +28,9 @@
         elevation="1"
         :loading="sending"
         color="primary"
-        @click="updateFlightMode"
+        @click="updateShipTask"
       >
-        Update Flight Mode
+        Update Task
         <template #loader>
           <v-progress-linear indeterminate />
         </template>
@@ -27,11 +40,10 @@
 </template>
 
 <script setup>
+import VDropdown from '@/components/VDropdown.vue';
 import { ref, computed, defineProps } from 'vue';
-import useShipUtils from "@/utils/ships.js";
 import { useRepository } from "@/repos/repoGenerator.js";
 
-const { flightModes } = useShipUtils();
 const repo = useRepository("ships");
 
 const props = defineProps({
@@ -45,14 +57,14 @@ const emit = defineEmits(['update']);
 
 const shipId = computed(() => props.ship.id);
 const sending = ref(false);
-const selected = ref(props.ship.flight_mode);
+const selected = ref(props.ship?.task?.id);
 
-async function updateFlightMode() {
+async function updateShipTask() {
   sending.value = true;
 
   let response;
   try {
-    response = await repo.updateFlightMode(shipId.value, selected.value);
+    response = await repo.updateTask(shipId.value, selected.value);
   } catch (error) {
     console.error(error);
     sending.value = false;
@@ -61,5 +73,4 @@ async function updateFlightMode() {
   emit('update', response.data.data);
   sending.value = false;
 }
-
 </script>

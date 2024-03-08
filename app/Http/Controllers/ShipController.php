@@ -9,9 +9,11 @@ use App\Enums\ShipTypes;
 use App\Helpers\SpaceTraders;
 use App\Http\Requests\PurchaseShipRequest;
 use App\Http\Requests\UpdateFlightModeRequest;
+use App\Http\Requests\UpdateShipTaskRequest;
 use App\Http\Resources\ShipResource;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
+use App\Models\Task;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ShipController extends Controller
@@ -76,5 +78,17 @@ class ShipController extends Controller
         $flightMode = $request->validated('flightMode');
 
         return $this->show($ship->setFlightMode($flightMode));
+    }
+
+    /**
+     * Update ship's Task.
+     */
+    public function updateTask(Ship $ship, UpdateShipTaskRequest $request): ShipResource
+    {
+        $taskId = $request->integer('taskId');
+
+        $ship->task()->associate(Task::find($taskId))->save();
+
+        return $this->show($ship);
     }
 }

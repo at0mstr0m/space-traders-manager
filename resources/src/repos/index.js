@@ -21,4 +21,8 @@ export class ModelRepository extends Repository {
       },
     });
   }
+
+  show(id) {
+    return this._get(this.resource + "/" + id);
+  }
 }
