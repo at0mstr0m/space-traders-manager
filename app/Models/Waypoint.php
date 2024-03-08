@@ -92,14 +92,14 @@ class Waypoint extends Model
         return $this->belongsToMany(WaypointModifier::class);
     }
 
-    public function orbits(): BelongsTo
+    public function orbitedWaypoint(): BelongsTo
     {
         return $this->belongsTo(static::class, 'orbits', 'symbol');
     }
 
     public function orbitals(): HasMany
     {
-        return $this->hasMany(static::class, 'symbol', 'orbits');
+        return $this->hasMany(static::class, 'orbits', 'symbol');
     }
 
     public function tradeOpportunities(): HasMany

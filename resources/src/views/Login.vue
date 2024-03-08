@@ -84,7 +84,7 @@ async function login() {
   try {
     console.log(await userStore.login(email.value, password.value));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return;
   }
   router.push({ name: "home" });

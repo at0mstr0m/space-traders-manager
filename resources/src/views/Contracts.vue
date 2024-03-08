@@ -13,6 +13,7 @@
         <v-progress-linear indeterminate />
       </template>
     </v-btn>
+
     <v-data-table
       v-model:expanded="expanded"
       :loading="busy"
@@ -83,6 +84,7 @@
       <template #item.deliveries="{ value }">
         {{ value.length }}
       </template>
+
       <template #bottom>
         <v-row align-content="center">
           <v-col>

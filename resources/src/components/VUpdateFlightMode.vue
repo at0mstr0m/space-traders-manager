@@ -50,7 +50,6 @@ const selected = ref(props.ship.flight_mode);
 
 async function updateFlightMode() {
   sending.value = true;
-  console.log('Updating flight mode to: ', selected.value);
 
   let response;
   try {

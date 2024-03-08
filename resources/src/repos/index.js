@@ -6,6 +6,8 @@ export class Repository {
     this._get = api.get;
     this._post = api.post;
     this._patch = api.patch;
+    this._put = api.put;
+    this._delete = api.delete;
   }
 }
 

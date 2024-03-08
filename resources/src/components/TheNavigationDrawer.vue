@@ -56,6 +56,12 @@
         value="Markets"
         @click="navigateTo('markets')"
       />
+      <v-list-item
+        prepend-icon="mdi mdi-account-hard-hat-outline"
+        title="Tasks"
+        value="Tasks"
+        @click="navigateTo('tasks')"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>

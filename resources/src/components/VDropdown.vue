@@ -26,10 +26,10 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineModel } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 
-const selected = ref(null);
+const selected = defineModel('selected', { required: false, type: [String, Number, Object, Array, Boolean]});
 const items = ref([]);
 const page = ref(0);
 const lastPage = ref(1);
@@ -60,10 +60,11 @@ const repo = useRepository(props.repoName);
 
 async function fetchItems() {
   page.value++;
-  if (page.value > lastPage.value) return;
+  if (page.value > lastPage.value) {
+    return;
+  }
   const response = await repo.index(page.value, 15);
   lastPage.value = response.data.meta.last_page;
-  console.log(response.data.meta);
   items.value = items.value.concat(response.data.data);
 }
 </script>

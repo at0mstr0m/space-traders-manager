@@ -3,6 +3,8 @@ import potentialTradeRouteRepository from "@/repos/potentialTradeRoutes.js";
 import shipRepository from "@/repos/ships.js";
 import contractRepository from "@/repos/contracts.js";
 import tradeOpportunitiesRepository from "@/repos/tradeOpportunities.js";
+import tasksRepository from "@/repos/tasks.js";
+import waypointsRepository from "@/repos/waypoints.js";
 
 export function useRepository(resource) {
   switch (resource) {
@@ -14,8 +16,12 @@ export function useRepository(resource) {
       return potentialTradeRouteRepository;
     case "ships":
       return shipRepository;
+    case "tasks":
+      return tasksRepository;
     case "trade-opportunities":
       return tradeOpportunitiesRepository;
+    case "waypoints":
+      return waypointsRepository;
     default:
       throw new Error(`No repository found for resource: ${resource}`);
   }

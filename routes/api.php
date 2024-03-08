@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\LiveDataController;
 use App\Http\Controllers\PotentialTradeRouteController;
 use App\Http\Controllers\ShipController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TradeOpportunityController;
+use App\Http\Controllers\WaypointController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,7 +39,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::post('purchase', 'purchase')->name('purchase');
         });
 
-    Route::apiResource('ships', ShipController::class);
+    Route::apiResource('ships', ShipController::class)
+        ->only(['index', 'show']);
 
     Route::prefix('ships/{ship}')
         ->as('ships.')
@@ -59,6 +64,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->group(function () {
             Route::get('refetch', 'refetch')->name('refetch');
         });
+
     Route::apiResource('potential-trade-routes', PotentialTradeRouteController::class);
 
     Route::prefix('trade-opportunities')
@@ -68,4 +74,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('refetch', 'refetch')->name('refetch');
         });
     Route::apiResource('trade-opportunities', TradeOpportunityController::class);
+
+    Route::apiResource('tasks', TaskController::class);
+
+    Route::apiResource('waypoints', WaypointController::class)
+        ->only(['index', 'show']);
 });
