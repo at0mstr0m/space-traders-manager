@@ -90,6 +90,6 @@ class Survey extends Model
      */
     public function prunable(): Builder
     {
-        return static::where('expiration', '<=', now()->addMinute());
+        return static::where('expiration', '<=', now()->addMinutes(2));
     }
 }
