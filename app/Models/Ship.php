@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\UpdateShipAction;
+use App\Actions\UpdateSurveyAction;
 use App\Data\SurveyData;
-use App\Enums\ShipRoles;
+use App\Enums\CrewRotations;
 use App\Enums\FlightModes;
 use App\Enums\MountSymbols;
-use App\Enums\TradeSymbols;
-use App\Enums\CrewRotations;
 use App\Enums\ShipNavStatus;
-use App\Enums\TradeGoodTypes;
-use App\Helpers\SpaceTraders;
+use App\Enums\ShipRoles;
+use App\Enums\TradeSymbols;
 use App\Helpers\LocationHelper;
+use App\Helpers\SpaceTraders;
 use App\Traits\FindableBySymbol;
-use App\Actions\UpdateShipAction;
-use Illuminate\Support\Collection;
-use App\Actions\UpdateSurveyAction;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
- * App\Models\Ship
+ * App\Models\Ship.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $agent_id
  * @property int $faction_id
  * @property string $symbol
@@ -56,12 +56,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $cargo_capacity
  * @property int $cargo_units
  * @property int|null $task_id
- * @property-read \App\Models\Agent $agent
+ * @property-read Agent $agent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Cargo> $cargos
  * @property-read int|null $cargos_count
- * @property-read \App\Models\Engine $engine
- * @property-read \App\Models\Faction $faction
- * @property-read \App\Models\Frame $frame
+ * @property-read Engine $engine
+ * @property-read Faction $faction
+ * @property-read Frame $frame
  * @property-read int $available_cargo_capacity
  * @property-read bool $cargo_is_empty
  * @property-read bool $is_docked
@@ -72,8 +72,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int|null $modules_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Mount> $mounts
  * @property-read int|null $mounts_count
- * @property-read \App\Models\Reactor $reactor
- * @property-read \App\Models\Task|null $task
+ * @property-read Reactor $reactor
+ * @property-read Task|null $task
+ *
  * @method static Builder|Ship newModelQuery()
  * @method static Builder|Ship newQuery()
  * @method static Builder|Ship onlyHaulers()
@@ -109,7 +110,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static Builder|Ship whereTaskId($value)
  * @method static Builder|Ship whereUpdatedAt($value)
  * @method static Builder|Ship whereWaypointSymbol($value)
- * @property-read \App\Models\Waypoint|null $waypoint
+ *
+ * @property-read Waypoint|null $waypoint
+ *
  * @mixin \Eloquent
  */
 class Ship extends Model
@@ -321,7 +324,6 @@ class Ship extends Model
         return $this;
     }
 
-
     public function extractResources(): static
     {
         $this->moveIntoOrbit()
@@ -508,7 +510,7 @@ class Ship extends Model
         return $this;
     }
 
-    public function supplyCargoToConstructionSite(string|TradeSymbols|null $tradeSymbol = null, int $units = 0): static
+    public function supplyCargoToConstructionSite(null|string|TradeSymbols $tradeSymbol = null, int $units = 0): static
     {
         $tradeSymbol = is_null($tradeSymbol) ? $this->cargos()->first()->symbol : $tradeSymbol;
         $tradeSymbol = is_string($tradeSymbol) ? TradeSymbols::fromName($tradeSymbol) : $tradeSymbol;
@@ -560,7 +562,6 @@ class Ship extends Model
         return $query->where('role', ShipRoles::HAULER);
     }
 
-
     public function canRefuelAtCurrentLocation(): bool
     {
         return Waypoint::canRefuel()
@@ -576,13 +577,13 @@ class Ship extends Model
 
         return data_get(
             Waypoint::canRefuel()
-            ->get()
-            ->map(fn (Waypoint $waypoint) => [
-                'waypoint_symbol' => $waypoint->symbol,
-                'distance' => $this->distanceTo($waypoint->symbol),
-            ])
-            ->sortBy('distance')
-            ->first(),
+                ->get()
+                ->map(fn (Waypoint $waypoint) => [
+                    'waypoint_symbol' => $waypoint->symbol,
+                    'distance' => $this->distanceTo($waypoint->symbol),
+                ])
+                ->sortBy('distance')
+                ->first(),
             'waypoint_symbol',
         );
     }
