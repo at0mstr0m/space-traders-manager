@@ -13,19 +13,12 @@
         <v-progress-linear indeterminate />
       </template>
     </v-btn>
-    <v-data-table
-      :loading="busy"
-      :headers="tableColumns"
-      :items="tradeRoutes"
-      :items-per-page="perPage"
-      item-value="id"
+    <v-table
+      ref="table"
+      title="Potential Trade Routes"
+      :columns="columns"
+      repo-name="potential-trade-routes"
     >
-      <template #top>
-        <v-toolbar flat>
-          <v-toolbar-title>Potential Trade Routes</v-toolbar-title>
-        </v-toolbar>
-      </template>
-
       <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.profit="{ value }">
         <v-chip :color="getProfitColor(value)">
@@ -46,47 +39,19 @@
           {{ value }}
         </v-chip>
       </template>
-
-      <template #bottom>
-        <v-row align-content="center">
-          <v-col>
-            <v-pagination
-              v-model="page"
-              class="w-50"
-              :length="totalPages"
-              :total-visible="6"
-              @update:model-value="getTradeRoutes"
-            />
-          </v-col>
-          <!-- todo: implement -->
-          <!-- <v-col class="w-25">
-            <v-select
-              v-model="perPage"
-              class="mt-3 w-25"
-              :items="[15, 25, 50, 100]"
-              label="Items per page"
-              variant="outlined"
-              density="compact"
-              @update:model-value="getShips"
-            />
-          </v-col> -->
-        </v-row>
-      </template>
-    </v-data-table>
+    </v-table>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { VDataTable } from "vuetify/lib/components/index.mjs";
+import VTable from "@/components/VTable.vue";
+import { ref } from "vue";
 import useStringify from "@/utils/stringify";
 import Supplies from "@/enums/supplies";
-import { useRepository } from "@/repos/repoGenerator.js";
 
 const { decimal } = useStringify();
-const repo = useRepository("potential-trade-routes");
 
-const tableColumns = [
+const columns = [
   {
     title: "Trade Symbol",
     key: "trade_symbol",
@@ -145,28 +110,8 @@ const tableColumns = [
   },
 ];
 
-const busy = ref(false);
-const tradeRoutes = ref([]);
-const page = ref(1);
-const perPage = ref(15);
-const totalItems = ref(0);
-const totalPages = ref(0);
+const table = ref(null);
 const refreshing = ref(false);
-
-async function getTradeRoutes() {
-  busy.value = true;
-  try {
-    const {
-      data: { data, meta },
-    } = await repo.index(page.value, perPage.value);
-    tradeRoutes.value = data;
-    totalPages.value = meta.last_page;
-    totalItems.value = meta.total;
-  } catch (error) {
-    console.error(error);
-  }
-  busy.value = false;
-}
 
 function getProfitColor(value) {
   if (parseFloat(value) > 4) return "green";
@@ -194,16 +139,13 @@ function getSupplyAtDestinationColor(supply) {
 
 async function refetchTradeRoutes() {
   refreshing.value = true;
-  busy.value = true;
+  table.value.setIsBusy();
   try {
-    const response = await repo.refetch();
-    tradeRoutes.value = response.data.data;
+    await table.value.repo.refetch();
   } catch (error) {
     console.error(error);
   }
   refreshing.value = false;
-  busy.value = false;
+  table.value.setIsBusy();
 }
-
-onMounted(getTradeRoutes);
 </script>

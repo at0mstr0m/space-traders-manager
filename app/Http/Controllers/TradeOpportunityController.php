@@ -9,6 +9,7 @@ use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\TradeOpportunityResource;
 use App\Models\TradeOpportunity;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TradeOpportunityController extends Controller
@@ -16,7 +17,7 @@ class TradeOpportunityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(PaginationRequest $request): JsonResource
+    public function index(PaginationRequest $request): AnonymousResourceCollection
     {
         return TradeOpportunityResource::collection(
             TradeOpportunity::when(

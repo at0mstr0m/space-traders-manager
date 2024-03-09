@@ -103,5 +103,4 @@ async function refetchTradeOpportunities() {
   refreshing.value = false;
   table.value.setIsBusy();
 }
-
 </script>

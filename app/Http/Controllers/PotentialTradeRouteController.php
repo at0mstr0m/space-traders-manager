@@ -3,18 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Actions\UpdateOrRemovePotentialTradeRoutesAction;
+use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\PotentialTradeRouteResource;
 use App\Models\PotentialTradeRoute;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PotentialTradeRouteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(PaginationRequest $request): AnonymousResourceCollection
     {
-        return PotentialTradeRouteResource::collection(PotentialTradeRoute::paginate());
+        return PotentialTradeRouteResource::collection(
+            PotentialTradeRoute::when(
+                $request->hasSort(),
+                fn (Builder $query) => $query->orderBy(
+                    $request->sortBy(),
+                    $request->sortDirection()
+                )
+            )->paginate(
+                $request->perPage(),
+                page: $request->page()
+            )
+        );
     }
 
     /**
@@ -40,10 +54,10 @@ class PotentialTradeRouteController extends Controller
     /**
      * Refetch all potential trade routes.
      */
-    public function refetch()
+    public function refetch(PaginationRequest $request)
     {
         UpdateOrRemovePotentialTradeRoutesAction::run();
 
-        return $this->index();
+        return $this->index($request);
     }
 }
