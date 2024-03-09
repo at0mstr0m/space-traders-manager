@@ -1,0 +1,106 @@
+<template>
+  <v-data-table-server
+    v-bind="{...$attrs, ...$props}"
+    :loading="busy"
+    :headers="columns"
+    :items="items"
+    :items-length="totalItems"
+    :items-per-page="perPage"
+    item-value="id"
+    :items-per-page-options="itemsPerPageOptions"
+    @update:options="fetchItems"
+  >
+    <template
+      v-for="(index, name) in $slots"
+      #[name]="data"
+    >
+      <slot
+        :name="name"
+        v-bind="data"
+      />
+    </template>
+
+    <template
+      v-if="props.title"
+      #top
+    >
+      <v-toolbar flat>
+        <v-toolbar-title :text="props.title" />
+      </v-toolbar>
+    </template>
+  </v-data-table-server>
+</template>
+
+<script setup>
+import { VDataTableServer } from "vuetify/lib/components/index.mjs";
+import { ref, computed } from 'vue';
+import { useRepository } from "@/repos/repoGenerator.js";
+import _first from "lodash/first";
+
+const itemsPerPageOptions = [15, 25, 50, 100];
+
+const props = defineProps({
+  title: {
+    type: String,
+    required: false,
+    default: '',
+  },
+  columns: {
+    type: Array,
+    required: true,
+  },
+  repoName: {
+    type: String,
+    required: true,
+  },
+});
+
+const busy = ref(false);
+const items = ref([]);
+const perPage = ref(15);
+const totalItems = ref(0);
+const page = ref(1);
+const totalPages = ref(0);
+const repo = computed(() => useRepository(props.repoName));
+
+async function fetchItems(options) {
+  // options === { groupBy, itemsPerPage, page, search, sortBy }
+  busy.value = true;
+  console.log('options', JSON.stringify(options, null, 2));
+  page.value = options.page;
+  perPage.value = options.itemsPerPage;
+  const sortBy = _first(options.sortBy);
+
+  try {
+    const { data: { data, meta } } = await repo.value
+      .index(
+        page.value,
+        perPage.value,
+        {
+          sortBy: sortBy?.key,
+          sortDirection: sortBy?.order,
+        }
+      );
+    items.value = data;
+    totalPages.value = meta.last_page;
+    totalItems.value = meta.total;
+  } catch (error) {
+    console.error(error);
+  }
+  busy.value = false;
+}
+
+function setIsBusy(value) {
+  busy.value = value;
+}
+
+function setNotBusy() {
+  busy.value = false;
+}
+
+defineExpose({
+  setIsBusy,
+  setNotBusy,
+  repo,
+})
+</script>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PaginationRequest extends FormRequest
 {
@@ -27,6 +28,15 @@ class PaginationRequest extends FormRequest
                 'min:1',
                 'max:100',
             ],
+            'sortBy' => [
+                'required_with:sortDirection',
+                'string',
+            ],
+            'sortDirection' => [
+                'required_with:sortBy',
+                'string',
+                Rule::in(['asc', 'desc']),
+            ],
         ];
     }
 
@@ -38,5 +48,20 @@ class PaginationRequest extends FormRequest
     public function perPage(): int
     {
         return (int) $this->validated('perPage', 10);
+    }
+
+    public function hasSort(): bool
+    {
+        return $this->has('sortBy') && $this->has('sortDirection');
+    }
+
+    public function sortBy(): string
+    {
+        return (string) $this->validated('sortBy');
+    }
+
+    public function sortDirection(): string
+    {
+        return (string) $this->validated('sortDirection');
     }
 }
