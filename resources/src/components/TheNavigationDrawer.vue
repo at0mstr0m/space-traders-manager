@@ -1,6 +1,7 @@
 <template>
   <!-- permanent -->
   <v-navigation-drawer
+    ref="drawer"
     :rail="!navDrawerIsOpen"
     :expand-on-hover="!navDrawerIsOpen"
     :permanent="navDrawerIsOpen"
@@ -8,12 +9,17 @@
     <v-list>
       <v-list-item
         prepend-avatar="https://spacetraders.io/logo/logo-over-black.svg"
-        :title="user.name"
+        :title="user.agent.symbol"
         :subtitle="user.email"
-      />
+      >
+        $ {{ integer(user.agent.credits) }}
+      </v-list-item>
     </v-list>
     <v-divider />
-    <v-list density="compact" nav>
+    <v-list
+      density="compact"
+      nav
+    >
       <v-list-item
         prepend-icon="mdi-home"
         title="Home"
@@ -71,11 +77,13 @@ import useUserStore from "@/store/user";
 import useGlobalsStore from "@/store/globals";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
+import useStringify from "@/utils/stringify";
 
 const router = useRouter();
 const userStore = useUserStore();
 const globalsStore = useGlobalsStore();
 const { navDrawerIsOpen } = storeToRefs(globalsStore);
+const { integer } = useStringify();
 
 const user = userStore.getUser();
 
