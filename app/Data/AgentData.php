@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Interfaces\GeneratableFromResponse;
+use App\Interfaces\UpdatesAgent;
 use App\Interfaces\WithModelInstance;
+use App\Models\Agent;
 use App\Models\Model;
 use App\Traits\DataHasModel;
 use App\Traits\HasCollectionFromResponse;
 use Spatie\LaravelData\Data;
 
-class AgentData extends Data implements WithModelInstance, GeneratableFromResponse
+class AgentData extends Data implements WithModelInstance, GeneratableFromResponse, UpdatesAgent
 {
     use DataHasModel;
     use HasCollectionFromResponse;
@@ -51,5 +53,15 @@ class AgentData extends Data implements WithModelInstance, GeneratableFromRespon
             'starting_faction' => $this->startingFaction,
             'ship_count' => $this->shipCount,
         ]);
+    }
+
+    public function updateAgent(Agent $agent): Agent
+    {
+        $agent->fill([
+            'credits' => $this->credits,
+            'ship_count' => $this->shipCount,
+        ]);
+
+        return $agent;
     }
 }

@@ -28,6 +28,8 @@ class PurchaseSellCargoData extends Data implements GeneratableFromResponse, Upd
 
     public function updateShip(Ship $ship): Ship
     {
+        $this->agent->updateAgent($ship->agent)->save();
+
         return $this->cargo->updateShip($ship);
     }
 }

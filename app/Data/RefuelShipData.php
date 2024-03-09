@@ -28,6 +28,8 @@ class RefuelShipData extends Data implements GeneratableFromResponse, UpdatesShi
 
     public function updateShip(Ship $ship): Ship
     {
+        $this->agent->updateAgent($ship->agent)->save();
+
         return $this->fuel->updateShip($ship);
     }
 }
