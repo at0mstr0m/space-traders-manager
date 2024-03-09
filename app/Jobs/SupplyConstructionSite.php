@@ -16,7 +16,7 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 {
     private ?ConstructionSiteData $constructionSite = null;
 
-    private array $supplyRouteData = [];
+    private ?array $supplyRouteData = [];
 
     /**
      * Create a new job instance.
@@ -41,6 +41,11 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
     {
         $this->constructionSite = LocationHelper::getWaypointUnderConstructionInSystem($this->systemSymbol);
         $this->initSupplyRouteData();
+
+        if (!$this->supplyRouteData) {
+            dump("{$this->ship->symbol} no Supply Route available.");
+            return;
+        }
 
         if ($this->ship->cargo_is_empty) {
             if ($this->ship->waypoint_symbol === $this->supplyRouteData['waypoint_symbol']) {
