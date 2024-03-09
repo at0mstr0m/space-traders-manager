@@ -13,22 +13,14 @@
         <v-progress-linear indeterminate />
       </template>
     </v-btn>
-    <v-data-table
-      v-model:expanded="expanded"
-      :loading="busy"
-      :headers="tableColumns"
-      :items="ships"
-      :items-per-page="perPage"
-      item-value="id"
-      show-expand
-      expand-on-click
-    >
-      <template #top>
-        <v-toolbar flat>
-          <v-toolbar-title>Ships</v-toolbar-title>
-        </v-toolbar>
-      </template>
 
+    <v-table
+      ref="table"
+      title="Ships"
+      :columns="tableColumns"
+      repo-name="ships"
+      expandable
+    >
       <template #expanded-row="{ columns, item }">
         <tr>
           <td :colspan="columns.length">
@@ -159,9 +151,9 @@
                 >
                   <v-card
                     v-for="module in item.modules"
+                    :key="'module_' + module.id"
                     variant="tonal"
                     color="primary"
-                    :key="'module_' + module.id"
                     class="ma-3"
                     :title="module.name"
                     :subtitle="'Quantity: ' + module.quantity"
@@ -288,70 +280,21 @@
           {{ value }}
         </v-chip>
       </template>
-
-      <template #bottom>
-        <v-row align-content="center">
-          <v-col>
-            <v-pagination
-              v-model="page"
-              class="w-50"
-              :length="totalPages"
-              :total-visible="6"
-              @update:model-value="getShips"
-            />
-          </v-col>
-          <!-- todo: implement -->
-          <!-- <v-col class="w-25">
-            <v-select
-              v-model="perPage"
-              class="mt-3 w-25"
-              :items="[15, 25, 50, 100]"
-              label="Items per page"
-              variant="outlined"
-              density="compact"
-              @update:model-value="getShips"
-            />
-          </v-col> -->
-        </v-row>
-      </template>
-    </v-data-table>
+    </v-table>
   </v-container>
 </template>
 
 <script setup>
+import VTable from "@/components/VTable.vue";
 import VUpdateFlightMode from '@/components/VUpdateFlightMode.vue';
 import VUpdateShipTask from '@/components/VUpdateShipTask.vue';
-import { ref, onMounted } from "vue";
-import { VDataTable } from "vuetify/lib/components/index.mjs";
+import { ref, } from "vue";
 import useShipUtils from "@/utils/ships.js";
-import { useRepository } from "@/repos/repoGenerator.js";
 
-const repo = useRepository("ships");
 const { tableColumns } = useShipUtils();
 
-const expanded = ref([]);
-const busy = ref(false);
-const ships = ref([]);
-const page = ref(1);
-const perPage = ref(15);
-const totalItems = ref(0);
-const totalPages = ref(0);
+const table = ref(false);
 const refreshing = ref(false);
-
-async function getShips() {
-  busy.value = true;
-  try {
-    const {
-      data: { data, meta },
-    } = await repo.index(page.value, perPage.value);
-    ships.value = data;
-    totalPages.value = meta.last_page;
-    totalItems.value = meta.total;
-  } catch (error) {
-    console.error(error);
-  }
-  busy.value = false;
-}
 
 function getColor(number) {
   if (number > 90) return "green";
@@ -363,21 +306,18 @@ function getColor(number) {
 
 async function refetchShips() {
   refreshing.value = true;
-  busy.value = true;
+  table.value.setIsBusy();
   try {
-    const response = await repo.refetch();
-    ships.value = response.data.data;
+    await table.value.repo.refetch();
   } catch (error) {
     console.error(error);
   }
   refreshing.value = false;
-  busy.value = false;
+  table.value.setIsBusy();
 }
 
 function updateRow(updatedShip) {
-  const index = ships.value.findIndex((ship) => ship.id === updatedShip.id);
-  ships.value.splice(index, 1, updatedShip);
+  const index = table.value.items.findIndex((ship) => ship.id === updatedShip.id);
+  table.value.items.splice(index, 1, updatedShip);
 }
-
-onMounted(getShips);
 </script>

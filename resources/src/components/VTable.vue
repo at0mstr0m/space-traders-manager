@@ -1,5 +1,6 @@
 <template>
   <v-data-table-server
+    v-model:expanded="expanded"
     v-bind="{...$attrs, ...$props}"
     :loading="busy"
     :headers="columns"
@@ -8,6 +9,8 @@
     :items-per-page="perPage"
     item-value="id"
     :items-per-page-options="itemsPerPageOptions"
+    :show-expand="props.expandable"
+    :expand-on-click="props.expandable"
     @update:options="fetchItems"
   >
     <template
@@ -53,6 +56,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  expandable: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const busy = ref(false);
@@ -62,6 +70,7 @@ const totalItems = ref(0);
 const page = ref(1);
 const totalPages = ref(0);
 const repo = computed(() => useRepository(props.repoName));
+const expanded = ref([]);
 
 async function fetchItems(options) {
   // options === { groupBy, itemsPerPage, page, search, sortBy }
@@ -102,5 +111,6 @@ defineExpose({
   setIsBusy,
   setNotBusy,
   repo,
+  items,
 })
 </script>

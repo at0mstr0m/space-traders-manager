@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\UpdateShipAction;
 use App\Enums\ShipTypes;
 use App\Helpers\SpaceTraders;
+use App\Http\Requests\PaginationRequest;
 use App\Http\Requests\PurchaseShipRequest;
 use App\Http\Requests\UpdateFlightModeRequest;
 use App\Http\Requests\UpdateShipTaskRequest;
@@ -14,6 +15,8 @@ use App\Http\Resources\ShipResource;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use App\Models\Task;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ShipController extends Controller
@@ -28,9 +31,20 @@ class ShipController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): AnonymousResourceCollection
+    public function index(PaginationRequest $request): AnonymousResourceCollection
     {
-        return ShipResource::collection(Ship::paginate());
+        return ShipResource::collection(
+            Ship::when(
+                $request->hasSort(),
+                fn (Builder $query) => $query->orderBy(
+                    $request->sortBy(),
+                    $request->sortDirection()
+                )
+            )->paginate(
+                $request->perPage(),
+                page: $request->page()
+            )
+        );
     }
 
     /**
@@ -44,11 +58,11 @@ class ShipController extends Controller
     /**
      * Refetch all ships.
      */
-    public function refetch(): AnonymousResourceCollection
+    public function refetch(Request $request): AnonymousResourceCollection
     {
         UpdateShips::dispatchSync();
 
-        return $this->index();
+        return $this->index($request);
     }
 
     /**
