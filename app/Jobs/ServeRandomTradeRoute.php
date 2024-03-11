@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 {
-    private const MIN_PROFIT = 1.5;
+    private const MIN_PROFIT_PER_FLIGHT = 50_000;
 
     // could change between executions
     private ?PotentialTradeRoute $tradeRoute = null;
@@ -79,7 +79,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                     return;
                 }
 
-                if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
+                if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
                     // forget the current trade route
                     Cache::tags([PotentialTradeRoute::CACHE_TAG])
@@ -123,7 +123,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 );
             }
 
-            if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
+            if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
                 dump("{$this->ship->symbol} trade route is not profitable enough");
                 // forget the current trade route
                 Cache::tags([PotentialTradeRoute::CACHE_TAG])
@@ -175,7 +175,8 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 'distance',
             ])
             ->where([
-                ['profit', '>', static::MIN_PROFIT],
+                ['profit', '>', 0],
+                ['profit_per_flight', '>=', static::MIN_PROFIT_PER_FLIGHT],
                 ['distance', '<=', $this->ship->fuel_capacity],
             ])
             ->get()

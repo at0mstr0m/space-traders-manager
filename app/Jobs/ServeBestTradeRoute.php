@@ -12,8 +12,6 @@ use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
 class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 {
-    private const MIN_PROFIT = 1.7;
-
     private const MIN_PROFIT_PER_FLIGHT = 50_000;
 
     // could change between executions
@@ -64,11 +62,12 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
             if ($this->ship->waypoint_symbol === $this->origin) {
                 if (!$this->tradeRoute) {
                     dump("{$this->ship->symbol} trade route does not exist anymore");
+                    $this->chooseNewRoute();
 
                     return;
                 }
 
-                if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
+                if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
                     $this->chooseNewRoute();
 
@@ -78,10 +77,10 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
                 dump("{$this->ship->symbol} purchase cargo {$this->tradedGood->value}");
 
                 // while (!$this->ship->refresh()->is_fully_loaded) {
-                    $this->ship->purchaseCargo(
-                        $this->tradedGood,
-                        min($this->tradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
-                    );
+                $this->ship->purchaseCargo(
+                    $this->tradedGood,
+                    min($this->tradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
+                );
                 // }
                 dump("{$this->ship->symbol} fly to {$this->destination}");
                 $this->flyToLocation($this->destination);
@@ -104,7 +103,7 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
                 );
             }
 
-            if ($this->tradeRoute->profit <= static::MIN_PROFIT && $this->tradeRoute->profit !== 0) {
+            if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
                 dump("{$this->ship->symbol} trade route is not profitable enough");
                 $this->chooseNewRoute();
 
@@ -139,7 +138,7 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
     {
         $newRoute = PotentialTradeRoute::orderByDesc('profit_per_flight')
             ->firstWhere([
-                ['profit', '>', static::MIN_PROFIT],
+                ['profit', '>', 0],
                 ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
                 ['distance', '<', 300],
             ]);
@@ -153,7 +152,7 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
         dump(
             PotentialTradeRoute::orderByDesc('profit_per_flight')
                 ->where([
-                    ['profit', '>', static::MIN_PROFIT],
+                    ['profit', '>', 0],
                     ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
                     ['distance', '<', 300],
                 ])

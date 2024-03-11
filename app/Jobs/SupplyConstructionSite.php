@@ -39,6 +39,11 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 
     protected function handleShip(): void
     {
+        if ($this->ship->agent->credits < 1_000_000) {
+            dump("{$this->ship->symbol} Agent has less than 1.000.000 credits, aborting.");
+            return;
+        }
+
         $this->constructionSite = LocationHelper::getWaypointUnderConstructionInSystem($this->systemSymbol);
         $this->initSupplyRouteData();
 
@@ -113,7 +118,7 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
             )
             ->flatten(1)
             ->filter(fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $this->ship->fuel_capacity && $tradeOpportunity['distance_to_construction_site'] <= $this->ship->fuel_capacity)
-            ->sortBy('distance')
+            ->sortBy('sell_price')
             ->first();
     }
 }
