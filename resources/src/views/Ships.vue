@@ -263,21 +263,42 @@
       <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.frame_condition="{ value }">
         <v-chip :color="getColor(value)">
-          {{ value }}
+          {{ decimal(value) }}
+        </v-chip>
+      </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
+      <template #item.frame_integrity="{ value }">
+        <v-chip :color="getColor(value)">
+          {{ decimal(value) }}
         </v-chip>
       </template>
 
       <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.reactor_condition="{ value }">
         <v-chip :color="getColor(value)">
-          {{ value }}
+          {{ decimal(value) }}
+        </v-chip>
+      </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
+      <template #item.reactor_integrity="{ value }">
+        <v-chip :color="getColor(value)">
+          {{ decimal(value) }}
         </v-chip>
       </template>
 
       <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template #item.engine_condition="{ value }">
         <v-chip :color="getColor(value)">
-          {{ value }}
+          {{ decimal(value) }}
+        </v-chip>
+      </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
+      <template #item.engine_integrity="{ value }">
+        <v-chip :color="getColor(value)">
+          {{ decimal(value) }}
         </v-chip>
       </template>
     </v-table>
@@ -290,17 +311,19 @@ import VUpdateFlightMode from '@/components/VUpdateFlightMode.vue';
 import VUpdateShipTask from '@/components/VUpdateShipTask.vue';
 import { ref, } from "vue";
 import useShipUtils from "@/utils/ships.js";
+import useStringify from "@/utils/stringify";
 
 const { tableColumns } = useShipUtils();
+const { decimal } = useStringify();
 
 const table = ref(false);
 const refreshing = ref(false);
 
 function getColor(number) {
-  if (number > 90) return "green";
-  else if (number > 75) return "lime";
-  else if (number > 50) return "yellow";
-  else if (number > 25) return "orange";
+  if (number > 0.9) return "green";
+  else if (number > 0.75) return "lime";
+  else if (number > 0.5) return "yellow";
+  else if (number > 0.25) return "orange";
   else return "red";
 }
 

@@ -66,12 +66,24 @@ export default function useShipUtils() {
       key: "frame_condition",
     },
     {
+      title: "Frame Integrity",
+      key: "frame_integrity",
+    },
+    {
       title: "Reactor Condition",
       key: "reactor_condition",
     },
     {
+      title: "Frame Integrity",
+      key: "frame_integrity",
+    },
+    {
       title: "Engine Condition",
       key: "engine_condition",
+    },
+    {
+      title: "Engine Integrity",
+      key: "engine_integrity",
     },
     {
       title: "Cargo Capacity",

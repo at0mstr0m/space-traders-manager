@@ -129,19 +129,31 @@ return new class() extends Migration {
             $table->integer('fuel_consumed');           // fuel.consumed
             $table->integer('cooldown');                // cooldown.remainingSeconds
             $table->foreignId('frame_id')->constrained();
-            $table->tinyInteger('frame_condition');     // frame.condition
+            $table->float('frame_condition');           // frame.condition
+            $table->float('frame_integrity');           // frame.integrity
             $table->foreignId('reactor_id')->constrained();
-            $table->tinyInteger('reactor_condition');   // reactor.condition
+            $table->float('reactor_condition');         // reactor.condition
+            $table->float('reactor_integrity');         // reactor.integrity
             $table->foreignId('engine_id')->constrained();
-            $table->tinyInteger('engine_condition');    // engine.condition
+            $table->float('engine_condition');          // engine.condition
+            $table->float('engine_integrity');          // engine.integrity
 
             // cargo
             $table->smallInteger('cargo_capacity');     // cargo.capacity
             $table->integer('cargo_units');             // cargo.units
         });
 
-        foreach (['crew_morale', 'frame_condition', 'engine_condition'] as $column) {
-            DB::statement("ALTER TABLE ships ADD CONSTRAINT check_{$column}_range CHECK ({$column} >= 0 AND {$column} <= 100)");
+        DB::statement("ALTER TABLE ships ADD CONSTRAINT check_crew_morale_range CHECK (crew_morale >= 0 AND crew_morale <= 100)");
+
+        foreach ([
+            'frame_condition',
+            'frame_integrity',
+            'reactor_condition',
+            'reactor_integrity',
+            'engine_condition',
+            'engine_integrity',
+        ] as $column) {
+            DB::statement("ALTER TABLE ships ADD CONSTRAINT check_{$column}_range CHECK ({$column} >= 0.0 AND {$column} <= 1.0)");
         }
 
         Schema::create('module_ship', function (Blueprint $table) {

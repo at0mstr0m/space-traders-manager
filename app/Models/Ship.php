@@ -48,11 +48,11 @@ use Illuminate\Support\Collection;
  * @property int $fuel_consumed
  * @property int $cooldown
  * @property int $frame_id
- * @property int $frame_condition
+ * @property float $frame_condition
  * @property int $reactor_id
- * @property int $reactor_condition
+ * @property float $reactor_condition
  * @property int $engine_id
- * @property int $engine_condition
+ * @property float $engine_condition
  * @property int $cargo_capacity
  * @property int $cargo_units
  * @property int|null $task_id
@@ -168,9 +168,12 @@ class Ship extends Model
         'fuel_capacity' => 'integer',
         'fuel_consumed' => 'integer',
         'cooldown' => 'integer',
-        'frame_condition' => 'integer',
-        'reactor_condition' => 'integer',
-        'engine_condition' => 'integer',
+        'frame_condition' => 'float',
+        'frame_integrity' => 'float',
+        'reactor_condition' => 'float',
+        'reactor_integrity' => 'float',
+        'engine_condition' => 'float',
+        'engine_integrity' => 'float',
         'cargo_capacity' => 'integer',
         'cargo_units' => 'integer',
     ];
