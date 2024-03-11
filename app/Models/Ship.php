@@ -140,8 +140,11 @@ class Ship extends Model
         'fuel_consumed',
         'cooldown',
         'frame_condition',
+        'frame_integrity',
         'reactor_condition',
+        'reactor_integrity',
         'engine_condition',
+        'engine_integrity',
         'cargo_capacity',
         'cargo_units',
         'faction_id',   // consider removal
