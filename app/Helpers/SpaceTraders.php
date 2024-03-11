@@ -25,9 +25,12 @@ use App\Data\PotentialTradeRouteData;
 use App\Data\PurchaseSellCargoData;
 use App\Data\PurchaseShipData;
 use App\Data\RefuelShipData;
+use App\Data\RepairScrapTransactionData;
+use App\Data\RepairShipData;
 use App\Data\ScanShipsData;
 use App\Data\ScanSystemsData;
 use App\Data\ScanWaypointsData;
+use App\Data\ScrapShipData;
 use App\Data\ShipCargoData;
 use App\Data\ShipData;
 use App\Data\ShipRefineData;
@@ -463,6 +466,38 @@ class SpaceTraders
 
         return InstallRemoveMountData::fromResponse(
             $this->post('my/ships/' . $shipSymbol . '/mounts/remove', $payload)
+                ->json('data')
+        );
+    }
+
+    public function getScrapShip(string $shipSymbol): RepairScrapTransactionData
+    {
+        return RepairScrapTransactionData::fromResponse(
+            $this->get('my/ships/' . $shipSymbol . '/scrap')
+                ->json('data')['transaction']
+        );
+    }
+
+    public function scrapShip(string $shipSymbol): ScrapShipData
+    {
+        return ScrapShipData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/scrap')
+                ->json('data')
+        );
+    }
+
+    public function getRepairShip(string $shipSymbol): RepairScrapTransactionData
+    {
+        return RepairScrapTransactionData::fromResponse(
+            $this->get('my/ships/' . $shipSymbol . '/repair')
+                ->json('data')['transaction']
+        );
+    }
+
+    public function repairShip(string $shipSymbol): RepairShipData
+    {
+        return RepairShipData::fromResponse(
+            $this->post('my/ships/' . $shipSymbol . '/repair')
                 ->json('data')
         );
     }
