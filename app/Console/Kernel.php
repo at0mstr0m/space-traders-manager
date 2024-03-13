@@ -4,16 +4,16 @@ namespace App\Console;
 
 use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
 use App\Enums\TaskTypes;
+use App\Jobs\MultipleMineAndPassOn;
+use App\Jobs\MultipleSiphonAndPassOn;
 use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
-use App\Models\PotentialTradeRoute;
 use App\Models\Ship;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Cache;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,14 +24,21 @@ class Kernel extends ConsoleKernel
     {
         $schedule->job(new UpdateExistingFactions())->daily();
         $schedule->call(function () {
-            // Cache::tags([PotentialTradeRoute::CACHE_TAG])->flush();
             Task::where('type', TaskTypes::SERVE_TRADE_ROUTE)
                 ->each(
                     fn (Task $task) => $task->ships->each(
                         fn (Ship $ship) => ServeRandomTradeRoute::dispatch($ship->symbol)
                     )
                 );
-        })->everySixHours();
+            Task::where('type', TaskTypes::COLLECTIVE_MINING)
+                ->each(
+                    fn (Task $task) => MultipleMineAndPassOn::dispatch($task->id)
+                );
+            Task::where('type', TaskTypes::COLLECTIVE_SIPHONING)
+                ->each(
+                    fn (Task $task) => MultipleSiphonAndPassOn::dispatch($task->id)
+                );
+        })->everyMinute();
         $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
         $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTwoMinutes();
         $schedule->command('model:prune')->everyMinute();
