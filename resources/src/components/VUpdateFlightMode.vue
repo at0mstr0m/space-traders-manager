@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps } from 'vue';
+import { ref, computed } from 'vue';
 import useShipUtils from "@/utils/ships.js";
 import { useRepository } from "@/repos/repoGenerator.js";
 

@@ -41,7 +41,7 @@
 
 <script setup>
 import VDropdown from '@/components/VDropdown.vue';
-import { ref, computed, defineProps } from 'vue';
+import { ref, computed } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 
 const repo = useRepository("ships");
