@@ -25,17 +25,22 @@ class TaskRequest extends FormRequest
                 Rule::enum(TaskTypes::class),
             ],
             'payload' => [
-                'required_if:type,' . TaskTypes::COLLECTIVE_MINING->value . ',' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value,
+                'required_if:type,' . TaskTypes::COLLECTIVE_MINING->value
+                    . ',' . TaskTypes::COLLECTIVE_SIPHONING->value
+                    . ',' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value,
             ],
             'payload.extraction_location' => [
-                'required_if:type,' . TaskTypes::COLLECTIVE_MINING->value,
-                'prohibited_unless:type,' . TaskTypes::COLLECTIVE_MINING->value,
+                'required_if:type,' . TaskTypes::COLLECTIVE_MINING->value
+                    . ',' . TaskTypes::COLLECTIVE_SIPHONING->value,
+                'prohibited_unless:type,' . TaskTypes::COLLECTIVE_MINING->value
+                    . ',' . TaskTypes::COLLECTIVE_SIPHONING->value,
                 'string',
                 Rule::exists(Waypoint::class, 'symbol'),
             ],
             'payload.waiting_location' => [
                 'required_if:type,' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value,
-                'prohibited_unless:type,' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value,
+                'prohibited_unless:type,' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value
+                    . ',' . TaskTypes::COLLECTIVE_SIPHONING->value,
                 'string',
                 Rule::exists(Waypoint::class, 'symbol'),
             ],

@@ -20,7 +20,7 @@
             @update:model-value="resetPayload"
           />
           <v-dropdown
-            v-if="task.type === taskTypes.COLLECTIVE_MINING"
+            v-if="task.type === taskTypes.COLLECTIVE_MINING || task.type === taskTypes.COLLECTIVE_SIPHONING"
             v-model:selected="task.payload.extraction_location"
             item-title="symbol"
             item-value="symbol"

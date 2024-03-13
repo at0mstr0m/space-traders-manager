@@ -50,7 +50,7 @@ abstract class MultipleShipsJob implements ShouldQueue
         // self dispatch with delay when no ships are available
         if ($this->ships->isEmpty()) {
             $delay = $this->task->ships()->max('cooldown');
-            $this->selfDispatch()->delay($delay);
+            $this->selfDispatch()->delay($delay ?: 60);
 
             return;
         }
