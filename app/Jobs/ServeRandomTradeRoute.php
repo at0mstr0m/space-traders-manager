@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Actions\UpdateOrRemovePotentialTradeRoutesAction;
+use App\Enums\SupplyLevels;
 use App\Enums\TradeSymbols;
 use App\Helpers\LocationHelper;
 use App\Models\PotentialTradeRoute;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Cache;
 class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessing
 {
     private const MIN_PROFIT_PER_FLIGHT = 50_000;
+
+    private const MIN_PROFIT = 1;
 
     // could change between executions
     private ?PotentialTradeRoute $tradeRoute = null;
@@ -79,7 +82,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                     return;
                 }
 
-                if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
+                if ($this->tradeRoute->profit_per_flight < static::MIN_PROFIT_PER_FLIGHT || $this->tradeRoute->profit < static::MIN_PROFIT) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
                     // forget the current trade route
                     Cache::tags([PotentialTradeRoute::CACHE_TAG])
@@ -123,7 +126,7 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 );
             }
 
-            if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
+            if ($this->tradeRoute->profit_per_flight < static::MIN_PROFIT_PER_FLIGHT || $this->tradeRoute->profit < static::MIN_PROFIT) {
                 dump("{$this->ship->symbol} trade route is not profitable enough");
                 // forget the current trade route
                 Cache::tags([PotentialTradeRoute::CACHE_TAG])
@@ -175,9 +178,11 @@ class ServeRandomTradeRoute extends ShipJob implements ShouldBeUniqueUntilProces
                 'distance',
             ])
             ->where([
-                ['profit', '>', 0],
+                ['profit', '>', static::MIN_PROFIT],
                 ['profit_per_flight', '>=', static::MIN_PROFIT_PER_FLIGHT],
                 ['distance', '<=', $this->ship->fuel_capacity],
+                ['supply_at_origin', '<>', SupplyLevels::SCARCE],
+                ['supply_at_destination', '<>', SupplyLevels::ABUNDANT],
             ])
             ->get()
             ->map(function (object $route) {

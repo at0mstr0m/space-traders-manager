@@ -14,6 +14,8 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
 {
     private const MIN_PROFIT_PER_FLIGHT = 50_000;
 
+    private const MIN_PROFIT = 1;
+
     // could change between executions
     private ?PotentialTradeRoute $tradeRoute = null;
 
@@ -67,7 +69,7 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
                     return;
                 }
 
-                if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
+                if ($this->tradeRoute->profit_per_flight < static::MIN_PROFIT_PER_FLIGHT || $this->tradeRoute->profit < static::MIN_PROFIT) {
                     dump("{$this->ship->symbol} trade route is not profitable enough");
                     $this->chooseNewRoute();
 
@@ -103,7 +105,7 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
                 );
             }
 
-            if ($this->tradeRoute->profit_per_flight <= static::MIN_PROFIT_PER_FLIGHT && $this->tradeRoute->profit !== 0) {
+            if ($this->tradeRoute->profit_per_flight < static::MIN_PROFIT_PER_FLIGHT || $this->tradeRoute->profit < static::MIN_PROFIT) {
                 dump("{$this->ship->symbol} trade route is not profitable enough");
                 $this->chooseNewRoute();
 
@@ -138,7 +140,7 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
     {
         $newRoute = PotentialTradeRoute::orderByDesc('profit_per_flight')
             ->firstWhere([
-                ['profit', '>', 0],
+                ['profit', '>', static::MIN_PROFIT],
                 ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
                 ['distance', '<', 300],
             ]);
@@ -152,7 +154,7 @@ class ServeBestTradeRoute extends ShipJob implements ShouldBeUniqueUntilProcessi
         dump(
             PotentialTradeRoute::orderByDesc('profit_per_flight')
                 ->where([
-                    ['profit', '>', 0],
+                    ['profit', '>', static::MIN_PROFIT],
                     ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
                     ['distance', '<', 300],
                 ])

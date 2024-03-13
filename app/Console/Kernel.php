@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->job(new UpdateExistingFactions())->daily();
         $schedule->call(function () {
-            Cache::tags([PotentialTradeRoute::CACHE_TAG])->flush();
+            // Cache::tags([PotentialTradeRoute::CACHE_TAG])->flush();
             Task::where('type', TaskTypes::SERVE_TRADE_ROUTE)
                 ->each(
                     fn (Task $task) => $task->ships->each(
