@@ -12,6 +12,7 @@ return new class() extends Migration {
     {
         Schema::table('potential_trade_routes', function (Blueprint $table) {
             $table->foreignId('ship_id')
+                ->unique()
                 ->nullable()
                 ->constrained()
                 ->default(null)

@@ -41,6 +41,9 @@ trait InteractsWithPotentialTradeRoutes
 
     protected function chooseNewRoute(): void
     {
+        dump("{$this->ship->symbol} choosing new trade route, dissociating old one");
+        $this->ship->potentialTradeRoute->ship()->dissociate()->save();
+
         $possibleRoutes = $this->getPossibleTradeRoutes()->whereNull('ship_id');
 
         $count = $possibleRoutes->count();
