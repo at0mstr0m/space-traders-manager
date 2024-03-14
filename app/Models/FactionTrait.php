@@ -5,18 +5,20 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\FactionTraits;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\FactionTrait
+ * App\Models\FactionTrait.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property FactionTraits $symbol
  * @property string $name
  * @property string $description
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Faction> $faction
  * @property-read int|null $faction_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait query()
@@ -26,6 +28,7 @@ use App\Enums\FactionTraits;
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class FactionTrait extends Model

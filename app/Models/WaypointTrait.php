@@ -6,18 +6,20 @@ namespace App\Models;
 
 use App\Enums\WaypointTraitSymbols;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\WaypointTrait
+ * App\Models\WaypointTrait.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property WaypointTraitSymbols $symbol
  * @property string $name
  * @property string $description
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Waypoint> $waypoints
  * @property-read int|null $waypoints_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait query()
@@ -27,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class WaypointTrait extends Model

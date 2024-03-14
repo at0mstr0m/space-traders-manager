@@ -49,10 +49,13 @@ use Illuminate\Support\Collection;
  * @property int $cooldown
  * @property int $frame_id
  * @property float $frame_condition
+ * @property float $frame_integrity
  * @property int $reactor_id
  * @property float $reactor_condition
+ * @property float $reactor_integrity
  * @property int $engine_id
  * @property float $engine_condition
+ * @property float $engine_integrity
  * @property int $cargo_capacity
  * @property int $cargo_units
  * @property int|null $task_id
@@ -72,8 +75,10 @@ use Illuminate\Support\Collection;
  * @property-read int|null $modules_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Mount> $mounts
  * @property-read int|null $mounts_count
+ * @property-read PotentialTradeRoute|null $potentialTradeRoute
  * @property-read Reactor $reactor
  * @property-read Task|null $task
+ * @property-read Waypoint|null $waypoint
  *
  * @method static Builder|Ship newModelQuery()
  * @method static Builder|Ship newQuery()
@@ -94,24 +99,25 @@ use Illuminate\Support\Collection;
  * @method static Builder|Ship whereCrewWages($value)
  * @method static Builder|Ship whereEngineCondition($value)
  * @method static Builder|Ship whereEngineId($value)
+ * @method static Builder|Ship whereEngineIntegrity($value)
  * @method static Builder|Ship whereFactionId($value)
  * @method static Builder|Ship whereFlightMode($value)
  * @method static Builder|Ship whereFrameCondition($value)
  * @method static Builder|Ship whereFrameId($value)
+ * @method static Builder|Ship whereFrameIntegrity($value)
  * @method static Builder|Ship whereFuelCapacity($value)
  * @method static Builder|Ship whereFuelConsumed($value)
  * @method static Builder|Ship whereFuelCurrent($value)
  * @method static Builder|Ship whereId($value)
  * @method static Builder|Ship whereReactorCondition($value)
  * @method static Builder|Ship whereReactorId($value)
+ * @method static Builder|Ship whereReactorIntegrity($value)
  * @method static Builder|Ship whereRole($value)
  * @method static Builder|Ship whereStatus($value)
  * @method static Builder|Ship whereSymbol($value)
  * @method static Builder|Ship whereTaskId($value)
  * @method static Builder|Ship whereUpdatedAt($value)
  * @method static Builder|Ship whereWaypointSymbol($value)
- *
- * @property-read Waypoint|null $waypoint
  *
  * @mixin \Eloquent
  */
@@ -253,6 +259,11 @@ class Ship extends Model
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
+    }
+
+    public function potentialTradeRoute(): HasOne
+    {
+        return $this->hasOne(PotentialTradeRoute::class);
     }
 
     public function modules(): BelongsToMany

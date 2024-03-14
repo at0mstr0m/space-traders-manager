@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Agent
+ * App\Models\Agent.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $account_id
  * @property string $symbol
  * @property string $headquarters
@@ -26,7 +27,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read int|null $ships_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Survey> $surveys
  * @property-read int|null $surveys_count
- * @property-read \App\Models\User $user
+ * @property-read User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent query()
@@ -40,6 +42,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Agent whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Agent whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Agent whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Agent extends Model

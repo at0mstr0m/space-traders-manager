@@ -6,13 +6,14 @@ namespace App\Models;
 
 use App\Enums\MountSymbols;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Mount
+ * App\Models\Mount.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property MountSymbols $symbol
  * @property string $name
  * @property string $description
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int|null $deposits_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
  * @property-read int|null $ships_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Mount newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Mount newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Mount query()
@@ -35,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Mount whereStrength($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Mount whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Mount whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Mount extends Model

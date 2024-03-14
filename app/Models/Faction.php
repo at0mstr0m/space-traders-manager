@@ -7,13 +7,14 @@ namespace App\Models;
 use App\Enums\FactionSymbols;
 use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Faction
+ * App\Models\Faction.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property FactionSymbols $symbol
  * @property string $name
  * @property string $description
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int|null $ships_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FactionTrait> $traits
  * @property-read int|null $traits_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Faction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Faction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Faction query()
@@ -34,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Faction whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Faction whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Faction whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Faction extends Model

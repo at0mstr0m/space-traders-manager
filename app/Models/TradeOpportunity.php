@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\SupplyLevels;
-use App\Enums\TradeSymbols;
-use Illuminate\Support\Arr;
 use App\Enums\ActivityLevels;
+use App\Enums\SupplyLevels;
 use App\Enums\TradeGoodTypes;
+use App\Enums\TradeSymbols;
 use App\Helpers\LocationHelper;
 use App\Traits\FindableBySymbol;
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
- * App\Models\TradeOpportunity
+ * App\Models\TradeOpportunity.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property TradeSymbols $symbol
  * @property string $waypoint_symbol
  * @property int $purchase_price
@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $trade_volume
  * @property SupplyLevels $supply
  * @property ActivityLevels|null $activity
+ * @property-read Waypoint|null $waypoint
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity bySymbol(\App\Enums\TradeSymbols|string $symbol)
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity exchanges()
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity exports()
@@ -48,7 +50,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereWaypointSymbol($value)
- * @property-read \App\Models\Waypoint|null $waypoint
+ *
  * @mixin \Eloquent
  */
 class TradeOpportunity extends Model

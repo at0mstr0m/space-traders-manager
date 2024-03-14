@@ -5,21 +5,23 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\TradeSymbols;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Delivery
+ * App\Models\Delivery.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $contract_id
  * @property TradeSymbols $trade_symbol
  * @property string $destination_symbol
  * @property int $units_required
  * @property int $units_fulfilled
- * @property-read \App\Models\Contract $contract
+ * @property-read Contract $contract
  * @property-read bool $is_done
  * @property-read int $units_to_be_delivered
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery query()
@@ -31,6 +33,7 @@ use App\Enums\TradeSymbols;
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUnitsFulfilled($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUnitsRequired($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Delivery extends Model

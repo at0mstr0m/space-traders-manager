@@ -4,36 +4,43 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\TradeSymbols;
-use App\Enums\WaypointTypes;
 use App\Enums\TradeGoodTypes;
-use App\Traits\FindableBySymbol;
+use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
+use App\Enums\WaypointTypes;
+use App\Traits\FindableBySymbol;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Waypoint
+ * App\Models\Waypoint.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $symbol
  * @property WaypointTypes $type
  * @property int $faction_id
  * @property int $x
  * @property int $y
- * @property Waypoint|null $orbits
+ * @property string|null $orbits
  * @property bool|null $is_under_construction
- * @property-read \App\Models\Faction $faction
+ * @property-read Faction $faction
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointModifier> $modifiers
  * @property-read int|null $modifiers_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Waypoint> $orbitals
  * @property-read int|null $orbitals_count
+ * @property-read Waypoint|null $orbitedWaypoint
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TradeOpportunity> $tradeOpportunities
+ * @property-read int|null $trade_opportunities_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointTrait> $traits
  * @property-read int|null $traits_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint bySystem(string $systemSymbol)
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint canRefuel()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint query()
@@ -47,10 +54,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereY($value)
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TradeOpportunity> $tradeOpportunities
- * @property-read int|null $trade_opportunities_count
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint bySystem(string $systemSymbol)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint canRefuel()
+ *
  * @mixin \Eloquent
  */
 class Waypoint extends Model
@@ -122,7 +126,7 @@ class Waypoint extends Model
         return $query->where('symbol', 'like', $systemSymbol . '-%');
     }
 
-    public function closestRefuelingStation(Waypoint|string $waypoint): ?Waypoint
+    public function closestRefuelingStation(string|Waypoint $waypoint): ?Waypoint
     {
         if ($waypoint instanceof Waypoint) {
             $waypoint = $waypoint->symbol;

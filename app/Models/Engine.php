@@ -7,13 +7,14 @@ namespace App\Models;
 use App\Enums\EngineSymbols;
 use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Engine
+ * App\Models\Engine.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property EngineSymbols $symbol
  * @property string $name
  * @property string $description
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $required_crew
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
  * @property-read int|null $ships_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Engine newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Engine newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Engine query()
@@ -34,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Engine whereSpeed($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Engine whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Engine whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Engine extends Model

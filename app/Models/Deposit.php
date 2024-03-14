@@ -6,13 +6,14 @@ namespace App\Models;
 
 use App\Enums\DepositSymbols;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Deposit
+ * App\Models\Deposit.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property DepositSymbols $symbol
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Module> $modules
  * @property-read int|null $modules_count
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int|null $mounts_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Survey> $surveys
  * @property-read int|null $surveys_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit query()
@@ -27,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Deposit extends Model

@@ -7,13 +7,15 @@ namespace App\Models;
 use App\Enums\ActivityLevels;
 use App\Enums\SupplyLevels;
 use App\Enums\TradeSymbols;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\PotentialTradeRoute
+ * App\Models\PotentialTradeRoute.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property TradeSymbols $trade_symbol
  * @property string $origin
  * @property string $destination
@@ -32,6 +34,9 @@ use App\Enums\TradeSymbols;
  * @property int|null $distance
  * @property float|null $profit
  * @property int|null $profit_per_flight
+ * @property int|null $ship_id
+ * @property-read Ship|null $ship
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute query()
@@ -50,12 +55,14 @@ use App\Enums\TradeSymbols;
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereProfitPerFlight($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute wherePurchasePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereSellPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereShipId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereSupplyAtDestination($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereSupplyAtOrigin($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereTradeSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereTradeVolumeAtDestination($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereTradeVolumeAtOrigin($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class PotentialTradeRoute extends Model
@@ -102,4 +109,9 @@ class PotentialTradeRoute extends Model
         'profit' => 'float',
         'profit_per_flight' => 'integer',
     ];
+
+    public function ship(): BelongsTo
+    {
+        return $this->belongsTo(Ship::class);
+    }
 }

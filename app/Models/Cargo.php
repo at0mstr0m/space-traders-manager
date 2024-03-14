@@ -7,19 +7,21 @@ namespace App\Models;
 use App\Enums\TradeSymbols;
 use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Cargo
+ * App\Models\Cargo.
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property TradeSymbols $symbol
  * @property string $name
  * @property string $description
  * @property int $ship_id
  * @property int $units
- * @property-read \App\Models\Ship $ship
+ * @property-read Ship $ship
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo query()
@@ -31,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereSymbol($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereUnits($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Cargo extends Model
