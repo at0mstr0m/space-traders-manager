@@ -12,6 +12,10 @@ class TasksRepository extends ModelRepository {
   delete(taskId) {
     return this._delete(this.resource + '/' + taskId);
   }
+
+  triggerAll() {
+    return this._get(this.resource + '/trigger-all');
+  }
 }
 
 export default new TasksRepository("tasks");

@@ -18,11 +18,19 @@
 
         <v-btn
           elevation="1"
-          class="mb-4"
+          class="mb-4 mr-4"
           :loading="refreshing"
           text="Create"
           color="primary"
           @click="toggleModal"
+        />
+
+        <v-btn
+          elevation="1"
+          class="mb-4"
+          text="Trigger Tasks"
+          color="primary"
+          @click="triggerTasks"
         />
       </v-col>
     </v-row>
@@ -144,6 +152,10 @@ function editTask(item) {
 async function deleteTask(item) {
   await repo.delete(item.id);
   getTasks();
+}
+
+async function triggerTasks() {
+  await repo.triggerAll();
 }
 
 onMounted(getTasks);

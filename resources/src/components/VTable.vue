@@ -75,7 +75,6 @@ const expanded = ref([]);
 async function fetchItems(options) {
   // options === { groupBy, itemsPerPage, page, search, sortBy }
   busy.value = true;
-  console.log('options', JSON.stringify(options, null, 2));
   page.value = options.page;
   perPage.value = options.itemsPerPage;
   const sortBy = _first(options.sortBy);

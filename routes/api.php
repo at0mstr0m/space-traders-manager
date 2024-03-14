@@ -76,6 +76,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         });
     Route::apiResource('trade-opportunities', TradeOpportunityController::class);
 
+    Route::prefix('tasks')
+        ->as('tasks.')
+        ->controller(TaskController::class)
+        ->group(function () {
+            Route::get('trigger-all', 'triggerAll')->name('trigger-all');
+        });
+
     Route::apiResource('tasks', TaskController::class);
 
     Route::apiResource('waypoints', WaypointController::class)

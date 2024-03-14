@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\TriggerTasks;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
@@ -54,5 +55,15 @@ class TaskController extends Controller
         $task->delete();
 
         return response()->noContent();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function triggerAll(): Response
+    {
+        TriggerTasks::run();
+
+        return response()->noContent(Response::HTTP_OK);
     }
 }

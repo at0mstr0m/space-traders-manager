@@ -15,7 +15,7 @@ class WaypointController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return WaypointResource::collection(Waypoint::paginate());
+        return WaypointResource::collection(Waypoint::orderBy('symbol')->paginate());
     }
 
     /**

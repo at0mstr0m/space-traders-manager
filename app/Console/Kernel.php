@@ -23,22 +23,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->job(new UpdateExistingFactions())->daily();
-        $schedule->call(function () {
-            Task::where('type', TaskTypes::SERVE_TRADE_ROUTE)
-                ->each(
-                    fn (Task $task) => $task->ships->each(
-                        fn (Ship $ship) => ServeRandomTradeRoute::dispatch($ship->symbol)
-                    )
-                );
-            Task::where('type', TaskTypes::COLLECTIVE_MINING)
-                ->each(
-                    fn (Task $task) => MultipleMineAndPassOn::dispatch($task->id)
-                );
-            Task::where('type', TaskTypes::COLLECTIVE_SIPHONING)
-                ->each(
-                    fn (Task $task) => MultipleSiphonAndPassOn::dispatch($task->id)
-                );
-        })->everyMinute();
         $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
         $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTwoMinutes();
         $schedule->command('model:prune')->everyMinute();

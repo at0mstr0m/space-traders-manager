@@ -24,13 +24,13 @@ abstract class ShipJob implements ShouldQueue
 
     protected ?SpaceTraders $api = null;
 
+    protected ?Ship $ship = null;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(
-        protected string $shipSymbol,
-        protected ?Ship $ship = null,
-    ) {
+    public function __construct(protected string $shipSymbol)
+    {
         $this->constructorArguments = func_get_args();
     }
 
