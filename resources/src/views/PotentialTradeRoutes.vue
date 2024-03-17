@@ -39,6 +39,11 @@
           {{ value }}
         </v-chip>
       </template>
+
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
+      <template #item.ship_id="{ item }">
+        {{ item.ship?.symbol }}
+      </template>
     </v-table>
   </v-container>
 </template>
@@ -52,6 +57,10 @@ import Supplies from "@/enums/supplies";
 const { decimal } = useStringify();
 
 const columns = [
+  {
+    title: "Served By",
+    key: "ship_id",
+  },
   {
     title: "Trade Symbol",
     key: "trade_symbol",
