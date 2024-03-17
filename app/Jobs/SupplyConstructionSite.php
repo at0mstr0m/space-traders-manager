@@ -23,8 +23,6 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
      */
     public function __construct(
         protected string $shipSymbol,
-        protected string $systemSymbol,
-        protected ?Ship $ship = null,
     ) {
         $this->constructorArguments = func_get_args();
     }
@@ -39,12 +37,20 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 
     protected function handleShip(): void
     {
-        if ($this->ship->agent->credits < 1_000_000) {
+        if ($this->ship->agent->credits < 3_000_000) {
             dump("{$this->ship->symbol} Agent has less than 1.000.000 credits, aborting.");
             return;
         }
 
-        $this->constructionSite = LocationHelper::getWaypointUnderConstructionInSystem($this->systemSymbol);
+        $systemSymbol = LocationHelper::parseSystemSymbol($this->ship->waypoint_symbol);
+
+        $this->constructionSite = LocationHelper::getWaypointUnderConstructionInSystem($systemSymbol);
+
+        if ($this->ship->waypoint_symbol === $this->constructionSite?->waypointSymbol && !$this->ship->cargo_is_empty) {
+            dump("{$this->ship->symbol} supplying cargo to construction site");
+            $this->ship->supplyCargoToConstructionSite();
+        }
+
         $this->initSupplyRouteData();
 
         if (!$this->supplyRouteData) {
@@ -72,8 +78,6 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
         }
 
         if ($this->ship->waypoint_symbol === $this->constructionSite->waypointSymbol) {
-            dump("{$this->ship->symbol} supplying cargo to construction site");
-            $this->ship->supplyCargoToConstructionSite();
             dump("{$this->ship->symbol} is empty, flying to supply route");
             $this->flyToLocation($this->supplyRouteData['waypoint_symbol']);
 
