@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\ShipNavStatus;
-use App\Enums\ShipRoles;
 use App\Enums\SurveySizes;
 use App\Enums\TaskTypes;
 use App\Models\Cargo;
@@ -186,22 +185,25 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
     private function initSurveyor(): void
     {
-        $surveyor = Ship::firstWhere([
-            'waypoint_symbol' => $this->extractionLocation,
-            'role' => ShipRoles::SURVEYOR,
-            'status' => ShipNavStatus::IN_ORBIT,
-            'cooldown' => 0,
-        ]);
+        $surveyors = Ship::canSurvey()
+            ->where([
+                'waypoint_symbol' => $this->extractionLocation,
+                'cooldown' => 0,
+            ])
+            ->whereNot('status', ShipNavStatus::IN_TRANSIT)
+            ->get();
 
-        if ($surveyor) {
-            dump(now()->toTimeString() . " surveyor {$surveyor->symbol} is available");
-            $surveyor->survey();
-        } else {
+        if ($surveyors->isEmpty()) {
             dump(now()->toTimeString() . ' no surveyor available');
+        } else {
+            $surveyors->each(function (Ship $surveyor) {
+                dump(now()->toTimeString() . " surveyor {$surveyor->symbol} is available");
+                $surveyor->survey();
+            });
         }
 
         /** @var Builder */
-        $query = Survey::orderBy('expiration');
+        $query = Survey::orderByDesc('expiration');
 
         $this->survey = $query->clone()
             ->firstwhere([

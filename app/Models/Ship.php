@@ -579,6 +579,14 @@ class Ship extends Model
         return $query->where('role', ShipRoles::HAULER);
     }
 
+    public function scopeCanSurvey(Builder $query): Builder
+    {
+        return $query->whereHas('mounts', fn (Builder $query) => $query->whereIn(
+                'symbol',
+                MountSymbols::surveyors()
+            ));
+    }
+
     public function canRefuelAtCurrentLocation(): bool
     {
         return Waypoint::canRefuel()

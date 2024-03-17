@@ -2,15 +2,10 @@
 
 namespace App\Console;
 
+use App\Actions\TriggerTasks;
 use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
-use App\Enums\TaskTypes;
-use App\Jobs\MultipleMineAndPassOn;
-use App\Jobs\MultipleSiphonAndPassOn;
-use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
-use App\Models\Ship;
-use App\Models\Task;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -25,6 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new UpdateExistingFactions())->daily();
         $schedule->job(new UpdateContracts(User::find(1)->agent))->everyTenMinutes();
         $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTwoMinutes();
+        $schedule->job(TriggerTasks::makeUniqueJob())->hourly();
         $schedule->command('model:prune')->everyMinute();
     }
 
