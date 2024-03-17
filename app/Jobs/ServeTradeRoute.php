@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Enums\SupplyLevels;
 use App\Traits\InteractsWithPotentialTradeRoutes;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -52,6 +53,13 @@ abstract class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilPro
                         min($this->ship->potentialTradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
                     );
                     // }
+
+                    if ($this->ship->potentialTradeRoute->supply_at_origin === SupplyLevels::ABUNDANT && !$this->ship->refresh()->is_fully_loaded) {
+                        $this->ship->purchaseCargo(
+                            $this->ship->potentialTradeRoute->trade_symbol,
+                            min($this->ship->potentialTradeRoute->trade_volume_at_origin, $this->ship->available_cargo_capacity)
+                        );
+                    }
 
                     dump("{$this->ship->symbol} fly to {$this->ship->potentialTradeRoute->destination}");
                     $this->flyToLocation($this->ship->potentialTradeRoute->destination);
