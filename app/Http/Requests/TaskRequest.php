@@ -38,7 +38,8 @@ class TaskRequest extends FormRequest
                 Rule::exists(Waypoint::class, 'symbol'),
             ],
             'payload.waiting_location' => [
-                'required_if:type,' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value,
+                'required_if:type,' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value
+                    . ',' . TaskTypes::COLLECTIVE_SIPHONING->value,
                 'prohibited_unless:type,' . TaskTypes::SUPPORT_COLLECTIVE_MINERS->value
                     . ',' . TaskTypes::COLLECTIVE_SIPHONING->value,
                 'string',

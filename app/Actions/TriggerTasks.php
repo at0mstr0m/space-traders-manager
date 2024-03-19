@@ -8,6 +8,7 @@ use App\Enums\TaskTypes;
 use App\Jobs\MultipleMineAndPassOn;
 use App\Jobs\MultipleSiphonAndPassOn;
 use App\Jobs\ServeRandomTradeRoute;
+use App\Jobs\SupplyConstructionSite;
 use App\Models\Ship;
 use App\Models\Task;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -31,6 +32,12 @@ class TriggerTasks
         Task::where('type', TaskTypes::COLLECTIVE_SIPHONING)
             ->each(
                 fn (Task $task) => MultipleSiphonAndPassOn::dispatch($task->id)
+            );
+        Task::where('type', TaskTypes::SUPPLY_CONSTRUCTION_SITE)
+            ->each(
+                fn (Task $task) => $task->ships->each(
+                    fn (Ship $ship) => SupplyConstructionSite::dispatch($ship->symbol)
+                )
             );
     }
 }

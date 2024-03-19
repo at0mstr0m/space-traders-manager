@@ -8,7 +8,6 @@ use App\Data\ConstructionMaterialData;
 use App\Data\ConstructionSiteData;
 use App\Enums\SupplyLevels;
 use App\Helpers\LocationHelper;
-use App\Models\Ship;
 use App\Models\TradeOpportunity;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
@@ -17,15 +16,6 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
     private ?ConstructionSiteData $constructionSite = null;
 
     private ?array $supplyRouteData = [];
-
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(
-        protected string $shipSymbol,
-    ) {
-        $this->constructorArguments = func_get_args();
-    }
 
     /**
      * Get the unique ID for the job.
@@ -38,7 +28,8 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
     protected function handleShip(): void
     {
         if ($this->ship->agent->credits < 3_000_000) {
-            dump("{$this->ship->symbol} Agent has less than 1.000.000 credits, aborting.");
+            dump("{$this->ship->symbol} Agent has less than 3.000.000 credits, aborting.");
+
             return;
         }
 
@@ -55,6 +46,7 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 
         if (!$this->supplyRouteData) {
             dump("{$this->ship->symbol} no Supply Route available.");
+
             return;
         }
 

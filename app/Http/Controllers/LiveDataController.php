@@ -21,8 +21,7 @@ class LiveDataController extends Controller
     public function purchasableShipsInSystem(PaginationRequest $request)
     {
         $data = LocationHelper::systemsWithShips()
-            ->map(fn (string $systemSymbol) => $this->api->listPurchasableShipsInSystem($systemSymbol))
-            ->flatten();
+            ->flatMap(fn (string $systemSymbol) => $this->api->listPurchasableShipsInSystem($systemSymbol));
 
         return new LengthAwarePaginator(
             $data,
