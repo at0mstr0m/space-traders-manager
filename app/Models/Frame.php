@@ -57,21 +57,29 @@ class Frame extends Model
         'required_crew',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => FrameSymbols::class,
-        'name' => 'string',
-        'description' => 'string',
-        'module_slots' => 'integer',
-        'mounting_points' => 'integer',
-        'fuel_capacity' => 'integer',
-        'required_power' => 'integer',
-        'required_crew' => 'integer',
-    ];
-
     public function ships()
     {
         return $this->hasMany(Ship::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => FrameSymbols::class,
+            'name' => 'string',
+            'description' => 'string',
+            'module_slots' => 'integer',
+            'mounting_points' => 'integer',
+            'fuel_capacity' => 'integer',
+            'required_power' => 'integer',
+            'required_crew' => 'integer',
+        ];
     }
 }

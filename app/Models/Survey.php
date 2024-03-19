@@ -54,16 +54,6 @@ class Survey extends Model
         'raw_response',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'signature' => 'string',
-        'waypoint_symbol' => 'string',
-        'expiration' => 'datetime',
-        'size' => SurveySizes::class,
-        'raw_response' => 'string',
-    ];
-
     public function agent(): BelongsTo
     {
         return $this->belongsTo(Deposit::class);
@@ -94,5 +84,23 @@ class Survey extends Model
     public function prunable(): Builder
     {
         return static::where('expiration', '<=', now()->addMinutes(2));
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'signature' => 'string',
+            'waypoint_symbol' => 'string',
+            'expiration' => 'datetime',
+            'size' => SurveySizes::class,
+            'raw_response' => 'string',
+        ];
     }
 }

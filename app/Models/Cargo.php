@@ -47,17 +47,25 @@ class Cargo extends Model
         'units',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => TradeSymbols::class,
-        'name' => 'string',
-        'description' => 'string',
-        'units' => 'integer',
-    ];
-
     public function ship(): BelongsTo
     {
         return $this->belongsTo(Ship::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => TradeSymbols::class,
+            'name' => 'string',
+            'description' => 'string',
+            'units' => 'integer',
+        ];
     }
 }

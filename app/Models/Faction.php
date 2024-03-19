@@ -51,16 +51,6 @@ class Faction extends Model
         'is_recruiting',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => FactionSymbols::class,
-        'name' => 'string',
-        'headquarters' => 'string',
-        'description' => 'string',
-        'is_recruiting' => 'boolean',
-    ];
-
     public function ships(): BelongsToMany
     {
         return $this->belongsToMany(Ship::class);
@@ -69,5 +59,23 @@ class Faction extends Model
     public function traits(): BelongsToMany
     {
         return $this->belongsToMany(FactionTrait::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => FactionSymbols::class,
+            'name' => 'string',
+            'headquarters' => 'string',
+            'description' => 'string',
+            'is_recruiting' => 'boolean',
+        ];
     }
 }

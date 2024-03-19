@@ -49,18 +49,26 @@ class Reactor extends Model
         'required_crew',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => ReactorSymbols::class,
-        'name' => 'string',
-        'description' => 'string',
-        'power_output' => 'integer',
-        'required_crew' => 'integer',
-    ];
-
     public function ships(): HasMany
     {
         return $this->hasMany(Ship::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => ReactorSymbols::class,
+            'name' => 'string',
+            'description' => 'string',
+            'power_output' => 'integer',
+            'required_crew' => 'integer',
+        ];
     }
 }

@@ -159,34 +159,6 @@ class Ship extends Model
         'engine_id',    // consider removal
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => 'string',
-        'role' => ShipRoles::class,
-        'waypoint_symbol' => 'string',
-        'status' => ShipNavStatus::class,
-        'flight_mode' => FlightModes::class,
-        'crew_current' => 'integer',
-        'crew_capacity' => 'integer',
-        'crew_required' => 'integer',
-        'crew_rotation' => CrewRotations::class,
-        'crew_morale' => 'integer',
-        'crew_wages' => 'integer',
-        'fuel_current' => 'integer',
-        'fuel_capacity' => 'integer',
-        'fuel_consumed' => 'integer',
-        'cooldown' => 'integer',
-        'frame_condition' => 'float',
-        'frame_integrity' => 'float',
-        'reactor_condition' => 'float',
-        'reactor_integrity' => 'float',
-        'engine_condition' => 'float',
-        'engine_integrity' => 'float',
-        'cargo_capacity' => 'integer',
-        'cargo_units' => 'integer',
-    ];
-
     public function getIsDockedAttribute(): bool
     {
         return $this->status === ShipNavStatus::DOCKED;
@@ -582,9 +554,9 @@ class Ship extends Model
     public function scopeCanSurvey(Builder $query): Builder
     {
         return $query->whereHas('mounts', fn (Builder $query) => $query->whereIn(
-                'symbol',
-                MountSymbols::surveyors()
-            ));
+            'symbol',
+            MountSymbols::surveyors()
+        ));
     }
 
     public function canRefuelAtCurrentLocation(): bool
@@ -611,6 +583,42 @@ class Ship extends Model
                 ->first(),
             'waypoint_symbol',
         );
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => 'string',
+            'role' => ShipRoles::class,
+            'waypoint_symbol' => 'string',
+            'status' => ShipNavStatus::class,
+            'flight_mode' => FlightModes::class,
+            'crew_current' => 'integer',
+            'crew_capacity' => 'integer',
+            'crew_required' => 'integer',
+            'crew_rotation' => CrewRotations::class,
+            'crew_morale' => 'integer',
+            'crew_wages' => 'integer',
+            'fuel_current' => 'integer',
+            'fuel_capacity' => 'integer',
+            'fuel_consumed' => 'integer',
+            'cooldown' => 'integer',
+            'frame_condition' => 'float',
+            'frame_integrity' => 'float',
+            'reactor_condition' => 'float',
+            'reactor_integrity' => 'float',
+            'engine_condition' => 'float',
+            'engine_integrity' => 'float',
+            'cargo_capacity' => 'integer',
+            'cargo_units' => 'integer',
+        ];
     }
 
     private function useApi(): SpaceTraders

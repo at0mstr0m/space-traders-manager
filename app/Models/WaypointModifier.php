@@ -40,16 +40,24 @@ class WaypointModifier extends Model
         'description',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => WaypointModifierSymbols::class,
-        'name' => 'string',
-        'description' => 'string',
-    ];
-
     public function waypoints(): BelongsToMany
     {
         return $this->belongsToMany(Waypoint::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => WaypointModifierSymbols::class,
+            'name' => 'string',
+            'description' => 'string',
+        ];
     }
 }

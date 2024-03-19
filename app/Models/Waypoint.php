@@ -71,16 +71,6 @@ class Waypoint extends Model
         'is_under_construction',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => 'string',
-        'type' => WaypointTypes::class,
-        'x' => 'integer',
-        'y' => 'integer',
-        'is_under_construction' => 'boolean',
-    ];
-
     public function faction(): BelongsTo
     {
         return $this->belongsTo(Faction::class);
@@ -139,5 +129,23 @@ class Waypoint extends Model
         }
 
         return $this->canRefuel();
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => 'string',
+            'type' => WaypointTypes::class,
+            'x' => 'integer',
+            'y' => 'integer',
+            'is_under_construction' => 'boolean',
+        ];
     }
 }
