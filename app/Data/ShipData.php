@@ -93,7 +93,6 @@ class ShipData extends Data implements GeneratableFromResponse
 
         return new static(
             symbol: $response['symbol'],
-            factionId: Faction::findBySymbol($response['registration']['factionSymbol'])->id,
             role: $response['registration']['role'],
             waypointSymbol: $response['nav']['waypointSymbol'],
             status: $response['nav']['status'],
@@ -114,6 +113,7 @@ class ShipData extends Data implements GeneratableFromResponse
             reactorIntegrity: (float) $response['reactor']['integrity'],
             engineCondition: (float) $response['engine']['condition'],
             engineIntegrity: (float) $response['engine']['integrity'],
+            factionId: Faction::findBySymbol($response['registration']['factionSymbol'])->id,
             frame: $frameData,
             frameId: $frame?->id,
             reactor: $reactorData,

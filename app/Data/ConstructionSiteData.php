@@ -1,27 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class ConstructionSiteData extends Data implements GeneratableFromResponse
+class ConstructionSiteData extends Data
 {
+    /**
+     * @param Collection<int, ConstructionMaterialData> $constructionMaterial
+     */
     public function __construct(
+        #[MapInputName('symbol')]
         public string $waypointSymbol,
+        #[MapInputName('isComplete')]
         public bool $isComplete,
-        #[DataCollectionOf(ConstructionMaterialData::class)]
-        public ?DataCollection $constructionMaterial = null,
+        #[MapInputName('materials')]
+        public Collection $constructionMaterial,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            waypointSymbol: $response['symbol'],
-            isComplete: $response['isComplete'],
-            constructionMaterial: ConstructionMaterialData::collectionFromResponse($response['materials']),
-        );
-    }
 }

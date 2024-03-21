@@ -776,13 +776,9 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return Cache::remember(
-            'get_construction_site:' . $waypointSymbol,
-            now()->addHour(),
-            fn () => ConstructionSiteData::fromResponse(
-                $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/construction')
-                    ->json('data')
-            )
+        return ConstructionSiteData::from(
+            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/construction')
+                ->json('data')
         );
     }
 
