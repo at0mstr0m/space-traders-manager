@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\WaypointModifierSymbols;
-use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
 class WaypointModifierData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
-        public string $symbol,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public WaypointModifierSymbols $symbol,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
-    ) {
-        match (true) {
-            !WaypointModifierSymbols::isValid($symbol) => throw new \InvalidArgumentException("Invalid waypoint modifier symbol: {$symbol}"),
-            default => null,
-        };
-    }
+    ) {}
 }

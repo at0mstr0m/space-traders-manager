@@ -6,8 +6,9 @@ namespace App\Traits;
 
 trait FindableBySymbol
 {
-    public static function findBySymbol(string $symbol): ?static
+    public static function findBySymbol(string|\UnitEnum $symbol): ?static
     {
-        return static::firstWhere('symbol', $symbol);
+
+        return static::firstWhere('symbol', is_string($symbol) ? $symbol : $symbol->value);
     }
 }

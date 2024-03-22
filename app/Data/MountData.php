@@ -34,6 +34,6 @@ class MountData extends Data
         #[MapInputName('strength')]
         public ?int $strength = null,
         #[MapInputName('deposits')]
-        public Collection $deposits,
+        public ?Collection $deposits = null,
     ) {}
 }

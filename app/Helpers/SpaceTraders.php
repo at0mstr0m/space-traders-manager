@@ -547,7 +547,8 @@ class SpaceTraders
                 ...($waypointTrait ? ['traits' => $waypointTrait->value] : []),
             ]
         );
-        $data = WaypointData::collection($response->json('data'))->toCollection();
+        /** @var Collection */
+        $data = WaypointData::collect($response->json('data'), Collection::class);
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page, [
