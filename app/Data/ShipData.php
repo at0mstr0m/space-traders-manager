@@ -104,7 +104,7 @@ class ShipData extends Data
         #[MapInputName('mounts')]
         public Collection $mounts,
         #[MapInputName('cargo.inventory')]
-        public ?Collection $inventory = null,
+        public Collection $inventory,
     ) {
         $this->factionId = Faction::findBySymbol($factionSymbol->value)?->id;
         $this->frameId = Frame::findBySymbol($frame->symbol->value)?->id;

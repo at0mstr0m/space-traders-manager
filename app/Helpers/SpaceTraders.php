@@ -161,7 +161,9 @@ class SpaceTraders
             'factions',
             static::paginationParams($perPage, $page, $all)
         );
-        $data = FactionData::collection($response->json('data'))->toCollection();
+
+        /** @var Collection */
+        $data = FactionData::collect($response->json('data'), Collection::class);
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
@@ -170,7 +172,7 @@ class SpaceTraders
 
     public function getFaction(FactionSymbols $factionSymbol): FactionData
     {
-        return FactionData::fromResponse(
+        return FactionData::from(
             $this->get('factions/' . $factionSymbol->value)
                 ->json('data')
         );
@@ -182,7 +184,9 @@ class SpaceTraders
             'my/ships',
             static::paginationParams($perPage, $page, $all)
         );
-        $data = ShipData::collection($response->json('data'))->toCollection();
+
+        /** @var Collection */
+        $data = ShipData::collect($response->json('data'), Collection::class);
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)

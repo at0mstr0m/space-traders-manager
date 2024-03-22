@@ -58,7 +58,6 @@ class UpdateShipAction
         // update modules
         $ship->modules()->sync(
             $shipData->modules
-                ->toCollection()
                 ->unique('symbol')
                 ->map(
                     fn (ModuleData $moduleData) => Module::updateOrCreate(
@@ -87,7 +86,6 @@ class UpdateShipAction
         // update mounts
         $ship->mounts()->sync(
             $shipData->mounts
-                ->toCollection()
                 ->unique('symbol')
                 ->map(
                     fn (MountData $mountData) => Mount::updateOrCreate(
