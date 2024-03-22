@@ -580,7 +580,7 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return WaypointData::fromResponse(
+        return WaypointData::from(
             $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol)
                 ->json('data')
         );
@@ -593,7 +593,7 @@ class SpaceTraders
         return Cache::remember(
             'get_market:' . $waypointSymbol,
             now()->addMinute(),
-            fn () => MarketData::fromResponse(
+            fn () => MarketData::from(
                 $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/market')
                     ->json('data')
             )
@@ -753,9 +753,9 @@ class SpaceTraders
     {
         return $this->listMarketplacesInSystem($waypointSymbol)
             ->mapWithKeys(fn (MarketData $marketData) => [
-                $marketData->symbol => $marketData->tradeGoods->toCollection(),
+                $marketData->symbol => $marketData->tradeGoods,
             ])
-            ->reject(fn (Collection $data) => $data->isEmpty());
+            ->filter(fn (?Collection $data) => $data?->isNotEmpty());
     }
 
     public function getShipyard(string $waypointSymbol): ShipyardData

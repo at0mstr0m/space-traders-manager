@@ -5,33 +5,29 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\TradeSymbols;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class ImportExportExchangeGoodData extends Data implements GeneratableFromResponse
+class ImportExportExchangeGoodData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
-        public string $symbol,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public TradeSymbols $symbol,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
-        public string $waypointSymbol,
-    ) {
-        match (true) {
-            !TradeSymbols::isValid($symbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$symbol}"),
-            default => null,
-        };
-    }
+        #[MapInputName('waypointSymbol')]
+        public ?string $waypointSymbol = null,
+    ) {}
 
-    public static function fromResponse(array $response): static
+    public function setWaypointSymbol(string $waypointSymbol): self
     {
-        return new static(
-            symbol: $response['symbol'],
-            name: $response['name'],
-            description: $response['description'],
-            waypointSymbol: $response['waypointSymbol'],
-        );
+        $this->waypointSymbol = $waypointSymbol;
+
+        return $this;
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\MountSymbols;
-use App\Traits\HasCollectionFromResponse;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\WithCast;
@@ -14,8 +13,6 @@ use Spatie\LaravelData\Data;
 
 class MountData extends Data
 {
-    use HasCollectionFromResponse;
-
     /**
      * @param Collection<int, DepositData> $deposits
      */

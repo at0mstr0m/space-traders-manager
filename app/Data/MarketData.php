@@ -6,51 +6,37 @@ namespace App\Data;
 
 use App\Interfaces\GeneratableFromResponse;
 use Illuminate\Support\Arr;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class MarketData extends Data implements GeneratableFromResponse
+class MarketData extends Data
 {
+    /**
+     * @param Collection<int, ImportExportExchangeGoodData> $exports
+     * @param Collection<int, ImportExportExchangeGoodData> $imports
+     * @param Collection<int, ImportExportExchangeGoodData> $exchange
+     * @param Collection<int, MarketTransactionData> $transactions
+     * @param Collection<int, TradeGoodsData> $tradeGoods
+     */
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
-        #[DataCollectionOf(ImportExportExchangeGoodData::class)]
-        public ?DataCollection $exports = null,
-        #[DataCollectionOf(ImportExportExchangeGoodData::class)]
-        public ?DataCollection $imports = null,
-        #[DataCollectionOf(ImportExportExchangeGoodData::class)]
-        public ?DataCollection $exchange = null,
-        #[DataCollectionOf(MarketTransactionData::class)]
-        public ?DataCollection $transactions = null,
-        #[DataCollectionOf(TradeGoodsData::class)]
-        public ?DataCollection $tradeGoods = null,
-    ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        $waypointSymbol = $response['symbol'];
-        foreach (['exports', 'imports', 'exchange'] as $source) {
-            ${$source} = static::extractImportExportExchangeGoodData($response, $source, $waypointSymbol);
+        #[MapInputName('exports')]
+        public Collection $exports,
+        #[MapInputName('imports')]
+        public Collection $imports,
+        #[MapInputName('exchange')]
+        public Collection $exchange,
+        #[MapInputName('transactions')]
+        public ?Collection $transactions = null,
+        #[MapInputName('tradeGoods')]
+        public ?Collection $tradeGoods = null,
+    ) {
+        foreach (['exports', 'imports', 'exchange'] as $attribute) {
+            $this->{$attribute} = $this->{$attribute}->transform(
+                fn (ImportExportExchangeGoodData $item) => $item->setWaypointSymbol($this->symbol)
+            );
         }
-
-        return new static(
-            symbol: $waypointSymbol,
-            exports: ImportExportExchangeGoodData::collectionFromResponse($exports),
-            imports: ImportExportExchangeGoodData::collectionFromResponse($imports),
-            exchange: ImportExportExchangeGoodData::collectionFromResponse($exchange),
-            transactions: MarketTransactionData::collectionFromResponse(data_get($response, 'transactions', [])),
-            tradeGoods: TradeGoodsData::collectionFromResponse(data_get($response, 'tradeGoods', [])),
-        );
-    }
-
-    private static function extractImportExportExchangeGoodData(
-        array $response,
-        string $source,
-        string $waypointSymbol
-    ): array {
-        return Arr::map(
-            $response[$source],
-            fn ($item) => [...$item, 'waypointSymbol' => $waypointSymbol]
-        );
     }
 }
