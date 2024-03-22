@@ -204,7 +204,7 @@ class SpaceTraders
 
     public function getShip(string $shipSymbol): ShipData
     {
-        return ShipData::fromResponse(
+        return ShipData::from(
             $this->get('my/ships/' . $shipSymbol)
                 ->json('data')
         );

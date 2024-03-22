@@ -5,41 +5,35 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\MountSymbols;
-use App\Interfaces\GeneratableFromResponse;
 use App\Traits\HasCollectionFromResponse;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class MountData extends Data implements GeneratableFromResponse
+class MountData extends Data
 {
     use HasCollectionFromResponse;
 
+    /**
+     * @param Collection<int, DepositData> $deposits
+     */
     public function __construct(
-        public string $symbol,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public MountSymbols $symbol,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
+        #[MapInputName('requirements.power')]
         public int $requiredPower,
+        #[MapInputName('requirements.crew')]
         public int $requiredCrew,
+        #[MapInputName('strength')]
         public ?int $strength = null,
-        #[DataCollectionOf(DepositData::class)]
-        public ?DataCollection $deposits = null,
-    ) {
-        if (!MountSymbols::isValid($symbol)) {
-            throw new \InvalidArgumentException("Invalid mount symbol: {$symbol}");
-        }
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            name: $response['name'],
-            description: $response['description'],
-            strength: data_get($response, 'strength'),
-            deposits: DepositData::collectionFromResponse(data_get($response, 'deposits', [])),
-            requiredPower: $response['requirements']['power'],
-            requiredCrew: $response['requirements']['crew'],
-        );
-    }
+        #[MapInputName('deposits')]
+        public ?Collection $deposits = null,
+    ) {}
 }

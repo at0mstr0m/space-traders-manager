@@ -5,40 +5,33 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\ModuleSymbols;
-use App\Interfaces\GeneratableFromResponse;
 use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class ModuleData extends Data implements GeneratableFromResponse
+class ModuleData extends Data
 {
     use HasCollectionFromResponse;
 
     public function __construct(
-        public string $symbol,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public ModuleSymbols $symbol,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
+        #[MapInputName('requirements.power')]
         public int $requiredPower,
+        #[MapInputName('requirements.crew')]
         public int $requiredCrew,
+        #[MapInputName('requirements.slots')]
         public int $requiredSlots,
+        #[MapInputName('capacity')]
         public ?int $capacity = null,
+        #[MapInputName('range')]
         public ?int $range = null,
-    ) {
-        if (!ModuleSymbols::isValid($symbol)) {
-            throw new \InvalidArgumentException("Invalid module symbol: {$symbol}");
-        }
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            name: $response['name'],
-            description: $response['description'],
-            capacity: $response['capacity'] ?? null,
-            range: $response['range'] ?? null,
-            requiredPower: $response['requirements']['power'],
-            requiredCrew: $response['requirements']['crew'],
-            requiredSlots: $response['requirements']['slots'],
-        );
-    }
+    ) {}
 }

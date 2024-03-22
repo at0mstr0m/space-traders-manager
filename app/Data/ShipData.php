@@ -4,127 +4,111 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Enums\CrewRotations;
+use App\Enums\FactionSymbols;
 use App\Enums\FlightModes;
 use App\Enums\ShipNavStatus;
 use App\Enums\ShipRoles;
-use App\Interfaces\GeneratableFromResponse;
-use App\Models\Agent;
 use App\Models\Engine;
 use App\Models\Faction;
 use App\Models\Frame;
 use App\Models\Reactor;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\Computed;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class ShipData extends Data implements GeneratableFromResponse
+class ShipData extends Data
 {
     public int $agentId;
 
+    #[Computed]
+    public ?int $factionId;
+
+    #[Computed]
+    public ?int $frameId;
+
+    #[Computed]
+    public ?int $reactorId;
+
+    #[Computed]
+    public ?int $engineId;
+
+    /**
+     * @param Collection<int, ModuleData> $modules
+     * @param Collection<int, MountData> $mounts
+     * @param Collection<int, CargoData> $inventory
+     */
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
-        public string $role,
+        #[MapInputName('registration.role')]
+        #[WithCast(EnumCast::class)]
+        public ShipRoles $role,
+        #[MapInputName('nav.waypointSymbol')]
         public string $waypointSymbol,
-        public string $status,
-        public string $flightMode,
+        #[MapInputName('nav.status')]
+        #[WithCast(EnumCast::class)]
+        public ShipNavStatus $status,
+        #[MapInputName('nav.flightMode')]
+        #[WithCast(EnumCast::class)]
+        public FlightModes $flightMode,
+        #[MapInputName('crew.current')]
         public int $crewCurrent,
+        #[MapInputName('crew.capacity')]
         public int $crewCapacity,
+        #[MapInputName('crew.required')]
         public int $crewRequired,
+        #[MapInputName('crew.rotation')]
         public string $crewRotation,
+        #[MapInputName('crew.morale')]
         public int $crewMorale,
+        #[MapInputName('crew.wages')]
         public int $crewWages,
+        #[MapInputName('fuel.current')]
         public int $fuelCurrent,
+        #[MapInputName('fuel.capacity')]
         public int $fuelCapacity,
+        #[MapInputName('fuel.consumed.amount')]
         public int $fuelConsumed,
+        #[MapInputName('cooldown.remainingSeconds')]
         public int $cooldown,
+        #[MapInputName('cargo.capacity')]
         public int $cargoCapacity,
+        #[MapInputName('cargo.units')]
         public int $cargoUnits,
+        #[MapInputName('frame.condition')]
         public float $frameCondition,
+        #[MapInputName('frame.integrity')]
         public float $frameIntegrity,
+        #[MapInputName('reactor.condition')]
         public float $reactorCondition,
+        #[MapInputName('reactor.integrity')]
         public float $reactorIntegrity,
+        #[MapInputName('engine.condition')]
         public float $engineCondition,
+        #[MapInputName('engine.integrity')]
         public float $engineIntegrity,
-        public ?int $factionId = null,
-        public ?FrameData $frame = null,
-        public ?int $frameId = null,
-        public ?ReactorData $reactor = null,
-        public ?int $reactorId = null,
-        public ?EngineData $engine = null,
-        public ?int $engineId = null,
-        #[DataCollectionOf(ModuleData::class)]
-        public ?DataCollection $modules = null,
-        #[DataCollectionOf(MountData::class)]
-        public ?DataCollection $mounts = null,
-        #[DataCollectionOf(CargoData::class)]
-        public ?DataCollection $inventory = null,
+        #[MapInputName('registration.factionSymbol')]
+        #[WithCast(EnumCast::class)]
+        public FactionSymbols $factionSymbol,
+        #[MapInputName('frame')]
+        public FrameData $frame,
+        #[MapInputName('reactor')]
+        public ReactorData $reactor,
+        #[MapInputName('engine')]
+        public EngineData $engine,
+        #[MapInputName('modules')]
+        public Collection $modules,
+        #[MapInputName('mounts')]
+        public Collection $mounts,
+        #[MapInputName('cargo.inventory')]
+        public ?Collection $inventory = null,
     ) {
-        match (true) {
-            !ShipRoles::isValid($role) => throw new \InvalidArgumentException("Invalid role: {$role}"),
-            !ShipNavStatus::isValid($status) => throw new \InvalidArgumentException("Invalid status: {$status}"),
-            !FlightModes::isValid($flightMode) => throw new \InvalidArgumentException("Invalid flight mode: {$flightMode}"),
-            !CrewRotations::isValid($crewRotation) => throw new \InvalidArgumentException("Invalid crew rotation: {$crewRotation}"),
-            default => null,
-        };
-
-        $this->agentId = Agent::firstWhere('symbol', Str::beforeLast($symbol, '-'))->id;
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        $frame = Frame::findBySymbol($response['frame']['symbol']);
-        $frameData = $frame ? null : FrameData::fromResponse($response['frame']);
-
-        $reactor = Reactor::findBySymbol($response['reactor']['symbol']);
-        $reactorData = $reactor ? null : ReactorData::fromResponse($response['reactor']);
-
-        $engine = Engine::findBySymbol($response['engine']['symbol']);
-        $engineData = $engine ? null : EngineData::fromResponse($response['engine']);
-
-        $now = Carbon::now();
-        $arrival = Carbon::parse($response['nav']['route']['arrival']);
-        $diffInSeconds = $now->isBefore($arrival)
-            ? $now->diffInSeconds($arrival)
-            : 0;
-        $cooldown = max($response['cooldown']['remainingSeconds'], $diffInSeconds);
-
-        return new static(
-            symbol: $response['symbol'],
-            role: $response['registration']['role'],
-            waypointSymbol: $response['nav']['waypointSymbol'],
-            status: $response['nav']['status'],
-            flightMode: $response['nav']['flightMode'],
-            crewCurrent: $response['crew']['current'],
-            crewCapacity: $response['crew']['capacity'],
-            crewRequired: $response['crew']['required'],
-            crewRotation: $response['crew']['rotation'],
-            crewMorale: $response['crew']['morale'],
-            crewWages: $response['crew']['wages'],
-            fuelCurrent: $response['fuel']['current'],
-            fuelCapacity: $response['fuel']['capacity'],
-            fuelConsumed: $response['fuel']['consumed']['amount'],
-            cooldown: $cooldown,
-            frameCondition: (float) $response['frame']['condition'],
-            frameIntegrity: (float) $response['frame']['integrity'],
-            reactorCondition: (float) $response['reactor']['condition'],
-            reactorIntegrity: (float) $response['reactor']['integrity'],
-            engineCondition: (float) $response['engine']['condition'],
-            engineIntegrity: (float) $response['engine']['integrity'],
-            factionId: Faction::findBySymbol($response['registration']['factionSymbol'])->id,
-            frame: $frameData,
-            frameId: $frame?->id,
-            reactor: $reactorData,
-            reactorId: $reactor?->id,
-            engine: $engineData,
-            engineId: $engine?->id,
-            modules: ModuleData::collectionFromResponse($response['modules']),
-            mounts: MountData::collectionFromResponse($response['mounts']),
-            cargoCapacity: $response['cargo']['capacity'],
-            cargoUnits: $response['cargo']['units'],
-            inventory: CargoData::collectionFromResponse($response['cargo']['inventory']),
-        );
+        $this->factionId = Faction::findBySymbol($factionSymbol->value)?->id;
+        $this->frameId = Frame::findBySymbol($frame->symbol->value)?->id;
+        $this->reactorId = Reactor::findBySymbol($frame->symbol->value)?->id;
+        $this->engineId = Engine::findBySymbol($frame->symbol->value)?->id;
     }
 }

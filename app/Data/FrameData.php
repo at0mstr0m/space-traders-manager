@@ -5,37 +5,34 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\FrameSymbols;
-use App\Interfaces\GeneratableFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class FrameData extends Data implements GeneratableFromResponse
+class FrameData extends Data
 {
     public function __construct(
-        public string $symbol,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public FrameSymbols $symbol,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
+        #[MapInputName('moduleSlots')]
         public int $moduleSlots,
+        #[MapInputName('mountingPoints')]
         public int $mountingPoints,
+        #[MapInputName('fuelCapacity')]
         public int $fuelCapacity,
+        #[MapInputName('condition')]
+        public float $condition,
+        #[MapInputName('integrity')]
+        public float $integrity,
+        #[MapInputName('requirements.power')]
         public int $requiredPower,
+        #[MapInputName('requirements.crew')]
         public int $requiredCrew,
-    ) {
-        if (!FrameSymbols::isValid($symbol)) {
-            throw new \InvalidArgumentException("Invalid frame symbol: {$symbol}");
-        }
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            name: $response['name'],
-            description: $response['description'],
-            moduleSlots: $response['moduleSlots'],
-            mountingPoints: $response['mountingPoints'],
-            fuelCapacity: $response['fuelCapacity'],
-            requiredPower: $response['requirements']['power'],
-            requiredCrew: $response['requirements']['crew'],
-        );
-    }
+    ) {}
 }
