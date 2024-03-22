@@ -106,7 +106,8 @@ class SpaceTraders
             'my/contracts',
             static::paginationParams($perPage, $page, $all)
         );
-        $data = ContractData::collection($response->json('data'))->toCollection();
+        /** @var Collection */
+        $data = ContractData::collect($response->json('data'), Collection::class);
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)

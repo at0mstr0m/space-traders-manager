@@ -6,47 +6,40 @@ namespace App\Data;
 
 use App\Enums\ContractTypes;
 use App\Enums\FactionSymbols;
-use App\Interfaces\GeneratableFromResponse;
 use Illuminate\Support\Carbon;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class ContractData extends Data implements GeneratableFromResponse
+class ContractData extends Data
 {
+    /**
+     * @param Collection<int, DeliveryData> $deliveries
+     */
     public function __construct(
+        #[MapInputName('identification')]
         public string $identification,
-        public string $factionSymbol,
-        public string $type,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public FactionSymbols $factionSymbol,
+        #[MapInputName('type')]
+        #[WithCast(EnumCast::class)]
+        public ContractTypes $type,
+        #[MapInputName('accepted')]
         public bool $accepted,
+        #[MapInputName('fulfilled')]
         public bool $fulfilled,
+        #[MapInputName('terms.deadline')]
         public Carbon $deadline,
+        #[MapInputName('deadlineToAccept')]
         public Carbon $deadlineToAccept,
+        #[MapInputName('terms.payment.onAccepted')]
         public int $paymentOnAccepted,
+        #[MapInputName('terms.payment.onFulfilled')]
         public int $paymentOnFulfilled,
-        #[DataCollectionOf(DeliveryData::class)]
-        public ?DataCollection $deliveries = null,
-    ) {
-        match (true) {
-            !FactionSymbols::isValid($factionSymbol) => throw new \InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
-            !ContractTypes::isValid($type) => throw new \InvalidArgumentException("Invalid contract type: {$type}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            identification: $response['id'],
-            factionSymbol: $response['factionSymbol'],
-            type: $response['type'],
-            accepted: $response['accepted'],
-            fulfilled: $response['fulfilled'],
-            deadline: Carbon::parse($response['terms']['deadline']),
-            deadlineToAccept: Carbon::parse($response['deadlineToAccept']),
-            paymentOnAccepted: $response['terms']['payment']['onAccepted'],
-            paymentOnFulfilled: $response['terms']['payment']['onFulfilled'],
-            deliveries: DeliveryData::collectionFromResponse($response['terms']['deliver']),
-        );
-    }
+        #[MapInputName('terms.deliver')]
+        public Collection $deliveries,
+    ) {}
 }
