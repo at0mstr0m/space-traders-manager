@@ -3,7 +3,6 @@
 namespace App\Data;
 
 use App\Enums\DepositSymbols;
-use App\Support\Normalizers\CanBeArrayOrStringNormalizer;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\EnumCast;

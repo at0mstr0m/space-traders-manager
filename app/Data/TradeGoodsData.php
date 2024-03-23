@@ -7,41 +7,30 @@ namespace App\Data;
 use App\Enums\ActivityLevels;
 use App\Enums\SupplyLevels;
 use App\Enums\TradeGoodTypes;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class TradeGoodsData extends Data implements GeneratableFromResponse
+class TradeGoodsData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
-        public string $tradeGoodType,
+        #[MapInputName('type')]
+        #[WithCast(EnumCast::class)]
+        public TradeGoodTypes $tradeGoodType,
+        #[MapInputName('tradeVolume')]
         public int $tradeVolume,
-        public string $supplyLevel,
-        public ?string $activity,
+        #[MapInputName('supply')]
+        #[WithCast(EnumCast::class)]
+        public SupplyLevels $supplyLevel,
+        #[MapInputName('purchasePrice')]
         public int $purchasePrice,
+        #[MapInputName('sellPrice')]
         public int $sellPrice,
-    ) {
-        match (true) {
-            !TradeGoodTypes::isValid($tradeGoodType) => throw new \InvalidArgumentException("Invalid type: {$tradeGoodType}"),
-            !SupplyLevels::isValid($supplyLevel) => throw new \InvalidArgumentException("Invalid supply: {$supplyLevel}"),
-            $activity && !ActivityLevels::isValid($activity) => throw new \InvalidArgumentException("Invalid activity: {$activity}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            tradeGoodType: $response['type'],
-            tradeVolume: $response['tradeVolume'],
-            supplyLevel: $response['supply'],
-            activity: data_get($response, 'activity'),
-            purchasePrice: $response['purchasePrice'],
-            sellPrice: $response['sellPrice'],
-        );
-    }
+        #[MapInputName('activity')]
+        #[WithCast(EnumCast::class)]
+        public ?ActivityLevels $activityLevel = null,  // exchanges so not have an activity level
+    ) {}
 }

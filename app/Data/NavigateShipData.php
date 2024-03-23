@@ -4,25 +4,19 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 
-class NavigateShipData extends Data implements GeneratableFromResponse, UpdatesShip
+class NavigateShipData extends Data implements UpdatesShip
 {
     public function __construct(
+        #[MapInputName('fuel')]
         public FuelData $fuel,
+        #[MapInputName('nav')]
         public NavigationData $nav,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            fuel: FuelData::fromResponse($response['fuel']),
-            nav: NavigationData::fromResponse($response['nav']),
-        );
-    }
 
     public function updateShip(Ship $ship): Ship
     {

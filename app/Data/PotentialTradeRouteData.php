@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
 use App\Enums\SupplyLevels;
@@ -7,6 +9,9 @@ use App\Enums\TradeSymbols;
 use App\Traits\DataHasModel;
 use Spatie\LaravelData\Data;
 
+/**
+ * @deprecated
+ */
 class PotentialTradeRouteData extends Data
 {
     use DataHasModel;
@@ -40,7 +45,6 @@ class PotentialTradeRouteData extends Data
 
         /** @var ?TradeGoodsData */
         $exportTradeGoodData = $exportingMarket->tradeGoods
-            ->toCollection()
             ->firstWhere('symbol', $tradeSymbol);
         /** @var ?TradeGoodsData */
         $importTradeGoodData = $importingMarket->tradeGoods
@@ -53,11 +57,11 @@ class PotentialTradeRouteData extends Data
             destination: $importingMarket->symbol,
             purchasePrice: $exportTradeGoodData?->purchasePrice,
             supplyAtOrigin: $exportTradeGoodData?->supplyLevel,
-            activityAtOrigin: $exportTradeGoodData?->activity,
+            activityAtOrigin: $exportTradeGoodData?->activityLevel,
             tradeVolumeAtOrigin: $exportTradeGoodData?->tradeVolume,
             sellPrice: $importTradeGoodData?->purchasePrice,
             supplyAtDestination: $importTradeGoodData?->supplyLevel,
-            activityAtDestination: $importTradeGoodData?->activity,
+            activityAtDestination: $importTradeGoodData?->activityLevel,
             tradeVolumeAtDestination: $importTradeGoodData?->tradeVolume,
         );
     }

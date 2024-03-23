@@ -90,7 +90,6 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
     {
         $this->supplyRouteData = $this->constructionSite
             ->constructionMaterial
-            ->toCollection()
             ->filter(
                 fn (ConstructionMaterialData $constructionMaterialData) => $constructionMaterialData->unitsFulfilled < $constructionMaterialData->unitsRequired
             )

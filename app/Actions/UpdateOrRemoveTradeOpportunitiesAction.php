@@ -44,7 +44,7 @@ class UpdateOrRemoveTradeOpportunitiesAction implements ShouldQueue, ShouldBeUni
                                 'sell_price' => $goodData->sellPrice,
                                 'trade_volume' => $goodData->tradeVolume,
                                 'supply' => $goodData->supplyLevel,
-                                'activity' => $goodData->activity,
+                                'activity' => $goodData->activityLevel,
                             ]
                         )->id
                     )

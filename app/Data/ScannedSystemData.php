@@ -5,35 +5,24 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\SystemTypes;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class ScannedSystemData extends Data implements GeneratableFromResponse
+class ScannedSystemData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
-        public string $type,
+        #[MapInputName('type')]
+        #[WithCast(EnumCast::class)]
+        public SystemTypes $type,
+        #[MapInputName('x')]
         public int $x,
+        #[MapInputName('y')]
         public int $y,
+        #[MapInputName('distance')]
         public int $distance,
-    ) {
-        match (true) {
-            !SystemTypes::isValid($type) => throw new \InvalidArgumentException("Invalid system type: {$type}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            type: $response['type'],
-            x: $response['x'],
-            y: $response['y'],
-            distance: $response['distance'],
-        );
-    }
+    ) {}
 }

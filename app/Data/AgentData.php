@@ -4,40 +4,36 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
+use App\Enums\FactionSymbols;
 use App\Interfaces\UpdatesAgent;
 use App\Interfaces\WithModelInstance;
 use App\Models\Agent;
 use App\Models\Model;
 use App\Traits\DataHasModel;
-use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class AgentData extends Data implements WithModelInstance, GeneratableFromResponse, UpdatesAgent
+class AgentData extends Data implements WithModelInstance, UpdatesAgent
 {
     use DataHasModel;
-    use HasCollectionFromResponse;
 
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
+        #[MapInputName('headquarters')]
         public string $headquarters,
+        #[MapInputName('credits')]
         public int $credits,
-        public string $startingFaction,
+        #[MapInputName('startingFaction')]
+        #[WithCast(EnumCast::class)]
+        public FactionSymbols $startingFaction,
+        #[MapInputName('shipCount')]
         public ?int $shipCount = null,
+        #[MapInputName('accountId')]
         public ?string $accountId = null,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            headquarters: $response['headquarters'],
-            credits: $response['credits'],
-            startingFaction: $response['startingFaction'],
-            shipCount: $response['shipCount'],
-            accountId: data_get($response, 'accountId'),
-        );
-    }
 
     public function makeModelInstance(): Model
     {

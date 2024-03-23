@@ -57,7 +57,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Spatie\LaravelData\DataCollection;
 
 class SpaceTraders
 {
@@ -88,7 +87,8 @@ class SpaceTraders
             'agents',
             static::paginationParams($perPage, $page, $all)
         );
-        $data = AgentData::collection($response->json('data'))->toCollection();
+        /** @var Collection */
+        $data = AgentData::collect($response->json('data'), Collection::class);
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
@@ -116,7 +116,7 @@ class SpaceTraders
 
     public function getContract(string $contractId): ContractData
     {
-        return ContractData::fromResponse(
+        return ContractData::from(
             $this->get('my/contracts/' . $contractId)
                 ->json('data')
         );
@@ -124,7 +124,7 @@ class SpaceTraders
 
     public function acceptContract(string $contractId): AcceptOrFulfillContractData
     {
-        return AcceptOrFulfillContractData::fromResponse(
+        return AcceptOrFulfillContractData::from(
             $this->post('my/contracts/' . $contractId . '/accept')
                 ->json('data')
         );
@@ -142,7 +142,7 @@ class SpaceTraders
             'units' => $units,
         ];
 
-        return DeliverCargoToContractData::fromResponse(
+        return DeliverCargoToContractData::from(
             $this->post('my/contracts/' . $contractId . '/deliver', $payload)
                 ->json('data')
         );
@@ -150,7 +150,7 @@ class SpaceTraders
 
     public function fulfillContract(string $contractId): AcceptOrFulfillContractData
     {
-        return AcceptOrFulfillContractData::fromResponse(
+        return AcceptOrFulfillContractData::from(
             $this->post('my/contracts/' . $contractId . '/fulfill')
                 ->json('data')
         );
@@ -201,7 +201,7 @@ class SpaceTraders
             'waypointSymbol' => $waypointSymbol,
         ];
 
-        return PurchaseShipData::fromResponse(
+        return PurchaseShipData::from(
             $this->post('my/ships', $payload)
                 ->json('data')
         );
@@ -217,7 +217,7 @@ class SpaceTraders
 
     public function getShipCargo(string $shipSymbol): ShipCargoData
     {
-        return ShipCargoData::fromResponse(
+        return ShipCargoData::from(
             $this->get('my/ships/' . $shipSymbol . '/cargo')
                 ->json('data')
         );
@@ -225,7 +225,7 @@ class SpaceTraders
 
     public function orbitShip(string $shipSymbol): NavigationData
     {
-        return NavigationData::fromResponse(
+        return NavigationData::from(
             $this->post('my/ships/' . $shipSymbol . '/orbit')
                 ->json('data')['nav']
         );
@@ -235,7 +235,7 @@ class SpaceTraders
     {
         $payload = ['produce' => $refinementGood->value];
 
-        return ShipRefineData::fromResponse(
+        return ShipRefineData::from(
             $this->post('my/ships/' . $shipSymbol . '/refine', $payload)
                 ->json('data')
         );
@@ -243,7 +243,7 @@ class SpaceTraders
 
     public function createChart(string $shipSymbol): CreateChartData
     {
-        return CreateChartData::fromResponse(
+        return CreateChartData::from(
             $this->post('my/ships/' . $shipSymbol . '/chart')
                 ->json('data')
         );
@@ -262,7 +262,7 @@ class SpaceTraders
 
     public function dockShip(string $shipSymbol): NavigationData
     {
-        return NavigationData::fromResponse(
+        return NavigationData::from(
             $this->post('my/ships/' . $shipSymbol . '/dock')
                 ->json('data')['nav']
         );
@@ -278,7 +278,7 @@ class SpaceTraders
 
     public function extractResources(string $shipSymbol): ExtractionData
     {
-        return ExtractionData::fromResponse(
+        return ExtractionData::from(
             $this->post('my/ships/' . $shipSymbol . '/extract')
                 ->json('data')
         );
@@ -286,7 +286,7 @@ class SpaceTraders
 
     public function extractResourcesWithSurvey(string $shipSymbol, array $surveyData): ExtractionData
     {
-        return ExtractionData::fromResponse(
+        return ExtractionData::from(
             $this->post(
                 'my/ships/' . $shipSymbol . '/extract/survey',
                 $surveyData,
@@ -296,7 +296,7 @@ class SpaceTraders
 
     public function siphonResources(string $shipSymbol): SiphonData
     {
-        return SiphonData::fromResponse(
+        return SiphonData::from(
             $this->post('my/ships/' . $shipSymbol . '/siphon')
                 ->json('data')
         );
@@ -309,7 +309,7 @@ class SpaceTraders
             'units' => $units,
         ];
 
-        return ShipCargoData::fromResponse(
+        return ShipCargoData::from(
             $this->post('my/ships/' . $shipSymbol . '/jettison', $payload)
                 ->json('data')['cargo']
         );
@@ -319,7 +319,7 @@ class SpaceTraders
     {
         $payload = ['systemSymbol' => $systemSymbol];
 
-        return JumpShipData::fromResponse(
+        return JumpShipData::from(
             $this->post('my/ships/' . $shipSymbol . '/jump', $payload)
                 ->json('data')
         );
@@ -329,7 +329,7 @@ class SpaceTraders
     {
         $payload = ['waypointSymbol' => $waypointSymbol];
 
-        return NavigateShipData::fromResponse(
+        return NavigateShipData::from(
             $this->post('my/ships/' . $shipSymbol . '/navigate', $payload)
                 ->json('data')
         );
@@ -339,7 +339,7 @@ class SpaceTraders
     {
         $payload = ['flightMode' => $flightMode];
 
-        return NavigationData::fromResponse(
+        return NavigationData::from(
             $this->patch('my/ships/' . $shipSymbol . '/nav', $payload)
                 ->json('data')
         );
@@ -347,7 +347,7 @@ class SpaceTraders
 
     public function getShipNav(string $shipSymbol): NavigationData
     {
-        return NavigationData::fromResponse(
+        return NavigationData::from(
             $this->get('my/ships/' . $shipSymbol . '/nav')
                 ->json('data')
         );
@@ -357,7 +357,7 @@ class SpaceTraders
     {
         $payload = ['waypointSymbol' => $waypointSymbol];
 
-        return NavigateShipData::fromResponse(
+        return NavigateShipData::from(
             $this->post('my/ships/' . $shipSymbol . '/warp', $payload)
                 ->json('data')
         );
@@ -370,7 +370,7 @@ class SpaceTraders
             'units' => $units,
         ];
 
-        return PurchaseSellCargoData::fromResponse(
+        return PurchaseSellCargoData::from(
             $this->post('my/ships/' . $shipSymbol . '/sell', $payload)
                 ->json('data')
         );
@@ -378,7 +378,7 @@ class SpaceTraders
 
     public function scanSystems(string $shipSymbol): ScanSystemsData
     {
-        return ScanSystemsData::fromResponse(
+        return ScanSystemsData::from(
             $this->post('my/ships/' . $shipSymbol . '/scan/systems')
                 ->json('data')
         );
@@ -386,7 +386,7 @@ class SpaceTraders
 
     public function scanWaypoints(string $shipSymbol): ScanWaypointsData
     {
-        return ScanWaypointsData::fromResponse(
+        return ScanWaypointsData::from(
             $this->post('my/ships/' . $shipSymbol . '/scan/waypoints')
                 ->json('data')
         );
@@ -394,7 +394,7 @@ class SpaceTraders
 
     public function scanShips(string $shipSymbol): ScanShipsData
     {
-        return ScanShipsData::fromResponse(
+        return ScanShipsData::from(
             $this->post('my/ships/' . $shipSymbol . '/scan/ships')
                 ->json('data')
         );
@@ -402,7 +402,7 @@ class SpaceTraders
 
     public function refuelShip(string $shipSymbol): RefuelShipData
     {
-        return RefuelShipData::fromResponse(
+        return RefuelShipData::from(
             $this->post('my/ships/' . $shipSymbol . '/refuel')
                 ->json('data')
         );
@@ -415,7 +415,7 @@ class SpaceTraders
             'units' => $units,
         ];
 
-        return PurchaseSellCargoData::fromResponse(
+        return PurchaseSellCargoData::from(
             $this->post('my/ships/' . $shipSymbol . '/purchase', $payload)
                 ->json('data')
         );
@@ -433,7 +433,7 @@ class SpaceTraders
             'shipSymbol' => $receivingShipSymbol,
         ];
 
-        return ShipCargoData::fromResponse(
+        return ShipCargoData::from(
             $this->post('my/ships/' . $transferringShipSymbol . '/transfer', $payload)
                 ->json('data')['cargo']
         );
@@ -441,25 +441,29 @@ class SpaceTraders
 
     public function negotiateContract(string $shipSymbol): ContractData
     {
-        return ContractData::fromResponse(
+        return ContractData::from(
             $this->post('my/ships/' . $shipSymbol . '/negotiate/contract')
                 ->json('data')['contract']
         );
     }
 
-    public function getMounts(string $shipSymbol): Collection
+    /**
+     * @return Collection<int, MountData>
+     */
+    public function getMounts(string $shipSymbol)
     {
-        return MountData::collectionFromResponse(
+        return MountData::collect(
             $this->get('my/ships/' . $shipSymbol . '/mounts')
-                ->json('data')
-        )->toCollection();
+                ->json('data'),
+            Collection::class
+        );
     }
 
     public function installMount(string $shipSymbol, MountSymbols $mountSymbol): InstallRemoveMountData
     {
         $payload = ['symbol' => $mountSymbol->value];
 
-        return InstallRemoveMountData::fromResponse(
+        return InstallRemoveMountData::from(
             $this->post('my/ships/' . $shipSymbol . '/mounts/install', $payload)
                 ->json('data')
         );
@@ -469,7 +473,7 @@ class SpaceTraders
     {
         $payload = ['symbol' => $mountSymbol->value];
 
-        return InstallRemoveMountData::fromResponse(
+        return InstallRemoveMountData::from(
             $this->post('my/ships/' . $shipSymbol . '/mounts/remove', $payload)
                 ->json('data')
         );
@@ -477,7 +481,7 @@ class SpaceTraders
 
     public function getScrapShip(string $shipSymbol): RepairScrapTransactionData
     {
-        return RepairScrapTransactionData::fromResponse(
+        return RepairScrapTransactionData::from(
             $this->get('my/ships/' . $shipSymbol . '/scrap')
                 ->json('data')['transaction']
         );
@@ -485,7 +489,7 @@ class SpaceTraders
 
     public function scrapShip(string $shipSymbol): ScrapShipData
     {
-        return ScrapShipData::fromResponse(
+        return ScrapShipData::from(
             $this->post('my/ships/' . $shipSymbol . '/scrap')
                 ->json('data')
         );
@@ -493,7 +497,7 @@ class SpaceTraders
 
     public function getRepairShip(string $shipSymbol): RepairScrapTransactionData
     {
-        return RepairScrapTransactionData::fromResponse(
+        return RepairScrapTransactionData::from(
             $this->get('my/ships/' . $shipSymbol . '/repair')
                 ->json('data')['transaction']
         );
@@ -501,7 +505,7 @@ class SpaceTraders
 
     public function repairShip(string $shipSymbol): RepairShipData
     {
-        return RepairShipData::fromResponse(
+        return RepairShipData::from(
             $this->post('my/ships/' . $shipSymbol . '/repair')
                 ->json('data')
         );
@@ -513,7 +517,9 @@ class SpaceTraders
             'systems',
             static::paginationParams($perPage, $page, $all)
         );
-        $data = SystemData::collection($response->json('data'))->toCollection();
+
+        /** @var Collection<int, SystemData> */
+        $data = SystemData::collect($response->json('data'), Collection::class);
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)
@@ -522,7 +528,7 @@ class SpaceTraders
 
     public function getSystem(string $systemSymbol): SystemData
     {
-        return SystemData::fromResponse(
+        return SystemData::from(
             $this->get('systems/' . $systemSymbol)
                 ->json('data')
         );
@@ -586,7 +592,10 @@ class SpaceTraders
         );
     }
 
-    public function getMarket(string $waypointSymbol): MarketData
+    /**
+     * @return MarketData
+     */
+    public function getMarket(string $waypointSymbol)
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
@@ -600,7 +609,10 @@ class SpaceTraders
         );
     }
 
-    public function listMarketplacesInSystem(string $waypointSymbol): Collection
+    /**
+     * @return Collection<int, MarketData>
+     */
+    public function listMarketplacesInSystem(string $waypointSymbol)
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
@@ -722,7 +734,8 @@ class SpaceTraders
     }
 
     /**
-     * @return Collection<string, Collection<PotentialTradeRouteData>>
+     * @return Collection<string, Collection<int, PotentialTradeRouteData>>
+     * @deprecated
      */
     public function listPotentialTradeRoutesInSystem(string $waypointSymbol): Collection
     {
@@ -762,7 +775,7 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return ShipyardData::fromResponse(
+        return ShipyardData::from(
             $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/shipyard')
                 ->json('data')
         );
@@ -772,7 +785,7 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return JumpGateData::fromResponse(
+        return JumpGateData::from(
             $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/jump-gate')
                 ->json('data')
         );
@@ -816,12 +829,20 @@ class SpaceTraders
             'units' => $units,
         ];
 
-        return SupplyConstructionSiteData::fromResponse(
+        return SupplyConstructionSiteData::from(
             $this->post(
                 'systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/construction/supply',
                 $payload
             )->json('data')
         );
+    }
+
+    private function listGoodsInSystem(string $waypointSymbol, string $type): Collection
+    {
+        return $this->listMarketplacesInSystem($waypointSymbol)
+            ->pluck($type)
+            ->flatten()
+            ->unique('symbol');
     }
 
     private function listMarketplacesInSystemForMany(
@@ -836,15 +857,6 @@ class SpaceTraders
                 $tradeSymbol->value => static::filterMarketsByTradeSymbol($marketplaces, $tradeSymbol, $haystack),
             ])
             ->map(fn (Collection $marketplaces) => $marketplaces->first());
-    }
-
-    private function listGoodsInSystem(string $waypointSymbol, string $type): Collection
-    {
-        return $this->listMarketplacesInSystem($waypointSymbol)
-            ->pluck($type)
-            ->map(fn (DataCollection $data) => $data->toCollection())
-            ->flatten()
-            ->unique('symbol');
     }
 
     // only allow 2 requests per second
@@ -920,7 +932,6 @@ class SpaceTraders
     ): Collection {
         return $marketplaces->filter(
             fn (MarketData $marketData) => $marketData->{$haystack}
-                ->toCollection()
                 ->filter(
                     fn (ImportExportExchangeGoodData|TradeGoodsData $data) => $data->symbol === $tradeSymbol->value
                 )->isNotEmpty()

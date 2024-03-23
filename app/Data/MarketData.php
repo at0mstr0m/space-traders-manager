@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;

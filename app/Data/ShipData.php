@@ -21,8 +21,6 @@ use Spatie\LaravelData\Data;
 
 class ShipData extends Data
 {
-    public int $agentId;
-
     #[Computed]
     public ?int $factionId;
 

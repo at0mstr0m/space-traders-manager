@@ -2,28 +2,25 @@
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class InstallRemoveMountData extends Data implements GeneratableFromResponse
+class InstallRemoveMountData extends Data
 {
+    /**
+     * @param Collection<int, MountData> $mounts
+     */
     public function __construct(
+        #[MapInputName('agent')]
         public AgentData $agent,
+        #[MapInputName('cargo')]
         public ShipCargoData $cargo,
+        #[MapInputName('transaction')]
         public ShipModificationTransactionData $transaction,
-        #[DataCollectionOf(MountData::class)]
-        public ?DataCollection $mounts = null,
+        #[MapInputName('mounts')]
+        public ?Collection $mounts = null,
     ) {}
 
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            agent: AgentData::fromResponse($response['agent']),
-            cargo: ShipCargoData::fromResponse($response['cargo']),
-            transaction: ShipModificationTransactionData::fromResponse($response['transaction']),
-            mounts: MountData::collectionFromResponse($response['mounts']),
-        );
-    }
+    // todo: implement UpdatesShip
 }

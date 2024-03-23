@@ -5,31 +5,24 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\FactionSymbols;
-use App\Interfaces\GeneratableFromResponse;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class JumpGateData extends Data implements GeneratableFromResponse
+class JumpGateData extends Data
 {
+    /**
+     * @param Collection<int, JumpGateSystemData> $connectedSystems
+     */
     public function __construct(
+        #[MapInputName('jumpRange')]
         public int $jumpRange,
-        public string $factionSymbol,
-        #[DataCollectionOf(JumpGateSystemData::class)]
-        public ?DataCollection $connectedSystems = null,
-    ) {
-        match (true) {
-            !FactionSymbols::isValid($factionSymbol) => throw new \InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            jumpRange: $response['jumpRange'],
-            factionSymbol: $response['factionSymbol'],
-            connectedSystems: JumpGateSystemData::collectionFromResponse($response['connectedSystems']),
-        );
-    }
+        #[MapInputName('factionSymbol')]
+        #[WithCast(EnumCast::class)]
+        public FactionSymbols $factionSymbol,
+        #[MapInputName('connectedSystems')]
+        public ?Collection $connectedSystems = null,
+    ) {}
 }
