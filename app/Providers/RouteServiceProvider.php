@@ -34,7 +34,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            if (App::isLocal()) {
+            if (file_exists(base_path('/routes/dev.php'))) {
                 Route::middleware('web')
                     ->prefix('dev')
                     ->group(base_path('routes/dev.php'));
