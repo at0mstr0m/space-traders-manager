@@ -21,7 +21,15 @@ class ShipMount extends Pivot
         'quantity',
     ];
 
-    protected $casts = [
-        'quantity' => 'integer',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'quantity' => 'integer',
+        ];
+    }
 }

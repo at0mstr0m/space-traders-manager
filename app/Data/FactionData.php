@@ -5,39 +5,30 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\FactionSymbols;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class FactionData extends Data implements GeneratableFromResponse
+class FactionData extends Data
 {
-    use HasCollectionFromResponse;
-
+    /**
+     * @param Collection<int, FactionTraitData> $traits
+     */
     public function __construct(
-        public string $symbol,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public FactionSymbols $symbol,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
+        #[MapInputName('headquarters')]
         public string $headquarters,
+        #[MapInputName('isRecruiting')]
         public bool $isRecruiting,
-        #[DataCollectionOf(FactionTraitData::class)]
-        public ?DataCollection $traits = null,
-    ) {
-        if (!FactionSymbols::isValid($symbol)) {
-            throw new \InvalidArgumentException("Invalid Faction symbol: {$symbol}");
-        }
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            name: $response['name'],
-            description: $response['description'],
-            headquarters: $response['headquarters'],
-            isRecruiting: $response['isRecruiting'],
-            traits: FactionTraitData::collectionFromResponse($response['traits']),
-        );
-    }
+        #[MapInputName('traits')]
+        public Collection $traits,
+    ) {}
 }

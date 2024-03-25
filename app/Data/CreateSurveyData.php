@@ -1,37 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
 use Illuminate\Support\Arr;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class CreateSurveyData extends Data implements GeneratableFromResponse, UpdatesShip
+class CreateSurveyData extends Data implements UpdatesShip
 {
     public function __construct(
+        #[MapInputName('cooldown.remainingSeconds')]
         public int $cooldown,
-        #[DataCollectionOf(SurveyData::class)]
-        public ?DataCollection $surveys = null,
-    ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        $surveys = Arr::map(
-            data_get($response, 'surveys', []),
+        #[MapInputName('surveys')]
+        public array|Collection $surveys,
+    ) {
+        $this->surveys = SurveyData::collect(Arr::map(
+            $surveys,
             fn (array $survey) => $survey = [
                 ...$survey,
-                'raw_response' => json_encode($survey),
+                'rawResponse' => json_encode($survey),
             ]
-        );
-
-        return new static(
-            cooldown: $response['cooldown']['remainingSeconds'],
-            surveys: SurveyData::collectionFromResponse($surveys),
-        );
+        ), Collection::class);
     }
 
     public function updateShip(Ship $ship): Ship

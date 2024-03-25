@@ -27,7 +27,6 @@ class UpdateSurveyAction
         );
 
         $surveyData->deposits
-            ->toCollection()
             ->map(fn (DepositData $depositData) => Deposit::firstOrCreate(['symbol' => $depositData->symbol])->id)
             ->unique()
             ->pipe(fn ($depositIds) => $survey->deposits()->sync($depositIds));

@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
+use App\Data\Casts\CarbonCast;
 use Illuminate\Support\Carbon;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class ScanSystemsData extends Data implements GeneratableFromResponse
+class ScanSystemsData extends Data
 {
+    /**
+     * @param Collection<int, ScannedSystemData> $systems
+     */
     public function __construct(
-        public Carbon $cooldown,
-        #[DataCollectionOf(ScannedSystemData::class)]
-        public ?DataCollection $systems = null,
+        #[MapInputName('cooldown.expiration')]
+        #[WithCast(CarbonCast::class)]
+        public Carbon $cooldownExpiresAt,
+        #[MapInputName('cooldown.remainingSeconds')]
+        public int $remainingSeconds,
+        #[MapInputName('systems')]
+        public Collection $systems,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            cooldown: Carbon::parse($response['cooldown']['expiration']),
-            systems: ScannedSystemData::collectionFromResponse($response['systems']),
-        );
-    }
 }

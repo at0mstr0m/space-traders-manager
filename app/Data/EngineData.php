@@ -5,33 +5,30 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\EngineSymbols;
-use App\Interfaces\GeneratableFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class EngineData extends Data implements GeneratableFromResponse
+class EngineData extends Data
 {
     public function __construct(
-        public string $symbol,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public EngineSymbols $symbol,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
+        #[MapInputName('condition')]
+        public float $condition,
+        #[MapInputName('integrity')]
+        public float $integrity,
+        #[MapInputName('speed')]
         public int $speed,
+        #[MapInputName('requirements.power')]
         public int $requiredPower,
+        #[MapInputName('requirements.crew')]
         public int $requiredCrew,
-    ) {
-        if (!EngineSymbols::isValid($symbol)) {
-            throw new \InvalidArgumentException("Invalid engine symbol: {$symbol}");
-        }
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            name: $response['name'],
-            description: $response['description'],
-            speed: $response['speed'],
-            requiredPower: $response['requirements']['power'],
-            requiredCrew: $response['requirements']['crew'],
-        );
-    }
+    ) {}
 }

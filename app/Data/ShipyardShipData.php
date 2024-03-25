@@ -5,52 +5,50 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\ShipTypes;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class ShipyardShipData extends Data implements GeneratableFromResponse
+class ShipyardShipData extends Data
 {
-    use HasCollectionFromResponse;
-
+    /**
+     * @param Collection<int, ModuleData> $modules
+     * @param Collection<int, MountData> $mounts
+     */
     public function __construct(
-        public string $type,
+        #[MapInputName('symbol')]
+        #[WithCast(EnumCast::class)]
+        public ShipTypes $type,
+        #[MapInputName('name')]
         public string $name,
+        #[MapInputName('description')]
         public string $description,
+        #[MapInputName('purchasePrice')]
         public int $purchasePrice,
-        public string $waypointSymbol,
+        #[MapInputName('frame')]
         public FrameData $frame,
+        #[MapInputName('reactor')]
         public ReactorData $reactor,
+        #[MapInputName('engine')]
         public EngineData $engine,
+        #[MapInputName('crew.capacity')]
         public int $crewCapacity,
+        #[MapInputName('crew.required')]
         public int $crewRequired,
-        #[DataCollectionOf(ModuleData::class)]
-        public ?DataCollection $modules = null,
-        #[DataCollectionOf(MountData::class)]
-        public ?DataCollection $mounts = null,
-    ) {
-        if (!ShipTypes::isValid($type)) {
-            throw new \InvalidArgumentException("Invalid ship type: {$type}");
-        }
-    }
+        #[MapInputName('modules')]
+        public Collection $modules,
+        #[MapInputName('mounts')]
+        public Collection $mounts,
+        #[MapInputName('waypointSymbol')]
+        public ?string $waypointSymbol = null,
+    ) {}
 
-    public static function fromResponse(array $response): static
+    public function setWaypointSymbol(string $waypointSymbol): self
     {
-        return new static(
-            type: $response['type'],
-            name: $response['name'],
-            description: $response['description'],
-            purchasePrice: $response['purchasePrice'],
-            waypointSymbol: $response['waypointSymbol'],
-            frame: FrameData::fromResponse($response['frame']),
-            reactor: ReactorData::fromResponse($response['reactor']),
-            engine: EngineData::fromResponse($response['engine']),
-            crewCapacity: $response['crew']['capacity'],
-            crewRequired: $response['crew']['required'],
-            modules: ModuleData::collectionFromResponse($response['modules']),
-            mounts: MountData::collectionFromResponse($response['mounts']),
-        );
+        $this->waypointSymbol = $waypointSymbol;
+
+        return $this;
     }
 }

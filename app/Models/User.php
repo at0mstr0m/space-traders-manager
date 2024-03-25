@@ -71,18 +71,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
-
     protected $with = [
         'agent',
     ];
@@ -90,5 +78,25 @@ class User extends Authenticatable
     public function agent(): HasOne
     {
         return $this->hasOne(Agent::class);
+    }
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }

@@ -5,31 +5,21 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Actions\UpdateShipAction;
-use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
-use App\Traits\HasCollectionFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 
-class RepairShipData extends Data implements GeneratableFromResponse, UpdatesShip
+class RepairShipData extends Data implements UpdatesShip
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('agent')]
         public AgentData $agent,
+        #[MapInputName('ship')]
         public ShipData $ship,
+        #[MapInputName('transaction')]
         public RepairScrapTransactionData $transaction,
     ) {}
-
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            agent: AgentData::fromResponse($response['agent']),
-            ship: ShipData::fromResponse($response['ship']),
-            transaction: RepairScrapTransactionData::fromResponse($response['transaction']),
-        );
-    }
 
     public function updateShip(Ship $ship): Ship
     {

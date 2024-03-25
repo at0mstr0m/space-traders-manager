@@ -57,19 +57,6 @@ class Module extends Model
         'required_slots',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => ModuleSymbols::class,
-        'name' => 'string',
-        'description' => 'string',
-        'capacity' => 'integer',
-        'range' => 'integer',
-        'required_power' => 'integer',
-        'required_crew' => 'integer',
-        'required_slots' => 'integer',
-    ];
-
     public function ships(): BelongsToMany
     {
         return $this->belongsToMany(Ship::class)
@@ -80,5 +67,26 @@ class Module extends Model
     public function deposits(): BelongsToMany
     {
         return $this->belongsToMany(Deposit::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => ModuleSymbols::class,
+            'name' => 'string',
+            'description' => 'string',
+            'capacity' => 'integer',
+            'range' => 'integer',
+            'required_power' => 'integer',
+            'required_crew' => 'integer',
+            'required_slots' => 'integer',
+        ];
     }
 }

@@ -38,12 +38,6 @@ class Deposit extends Model
         'symbol',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => DepositSymbols::class,
-    ];
-
     public function modules(): BelongsToMany
     {
         return $this->belongsToMany(Module::class);
@@ -57,5 +51,19 @@ class Deposit extends Model
     public function surveys(): BelongsToMany
     {
         return $this->belongsToMany(Survey::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => DepositSymbols::class,
+        ];
     }
 }

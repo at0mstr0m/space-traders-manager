@@ -39,16 +39,24 @@ class FactionTrait extends Model
         'description',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'symbol' => FactionTraits::class,
-        'name' => 'string',
-        'description' => 'string',
-    ];
-
     public function faction()
     {
         return $this->belongsToMany(Faction::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'symbol' => FactionTraits::class,
+            'name' => 'string',
+            'description' => 'string',
+        ];
     }
 }

@@ -7,8 +7,6 @@ namespace App\Actions;
 use App\Data\WaypointData;
 use App\Data\WaypointModifierData;
 use App\Data\WaypointTraitData;
-use App\Enums\WaypointModifierSymbols;
-use App\Enums\WaypointTraitSymbols;
 use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Models\Faction;
@@ -18,7 +16,6 @@ use App\Models\WaypointModifier;
 use App\Models\WaypointTrait;
 use Illuminate\Support\Collection;
 use Lorisleiva\Actions\Concerns\AsAction;
-use Spatie\LaravelData\DataCollection;
 
 class UpdateWaypointsAction
 {
@@ -53,9 +50,7 @@ class UpdateWaypointsAction
             $waypoint->traits()->sync(
                 $waypointTraits->whereIn(
                     'symbol',
-                    $waypointData->traits
-                        ->toCollection()
-                        ->map(fn (WaypointTraitData $waypointTraitData) => WaypointTraitSymbols::from($waypointTraitData->symbol))
+                    $waypointData->traits->map(fn (WaypointTraitData $waypointTraitData) => $waypointTraitData->symbol)
                 )->pluck('id')
                     ->all()
             );
@@ -63,9 +58,7 @@ class UpdateWaypointsAction
             $waypoint->modifiers()->sync(
                 $waypointModifiers->whereIn(
                     'symbol',
-                    $waypointData->modifiers
-                        ->toCollection()
-                        ->map(fn (WaypointModifierData $waypointTraitData) => WaypointModifierSymbols::from($waypointTraitData->symbol))
+                    $waypointData->modifiers->map(fn (WaypointModifierData $waypointTraitData) => $waypointTraitData->symbol)
                 )->pluck('id')
                     ->all()
             );
@@ -73,12 +66,11 @@ class UpdateWaypointsAction
     }
 
     /**
-     * @return Collection<Model>
+     * @return Collection<int, Model>
      */
     private function extractRelation(Collection $waypoints, string $key, string $modelClass): Collection
     {
         return $waypoints->pluck($key)
-            ->map(fn (DataCollection $dataCollection) => $dataCollection->items())
             ->flatten(1)
             ->unique('symbol')
             ->map(

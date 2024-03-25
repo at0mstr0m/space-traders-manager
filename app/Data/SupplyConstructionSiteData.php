@@ -1,26 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 
-class SupplyConstructionSiteData extends Data implements GeneratableFromResponse, UpdatesShip
+class SupplyConstructionSiteData extends Data implements UpdatesShip
 {
     public function __construct(
+        #[MapInputName('construction')]
         public ConstructionSiteData $construction,
+        #[MapInputName('cargo')]
         public ShipCargoData $cargo,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            construction: ConstructionSiteData::fromResponse($response['construction']),
-            cargo: ShipCargoData::fromResponse($response['cargo']),
-        );
-    }
 
     public function updateShip(Ship $ship): Ship
     {

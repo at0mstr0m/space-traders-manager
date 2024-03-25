@@ -4,21 +4,15 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 
-class CreateChartData extends Data implements GeneratableFromResponse
+class CreateChartData extends Data
 {
     public function __construct(
+        #[MapInputName('chart')]
         public ChartData $chart,
+        #[MapInputName('waypoint')]
         public WaypointData $waypoint,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            chart: ChartData::fromResponse($response['chart']),
-            waypoint: WaypointData::fromResponse($response['waypoint']),
-        );
-    }
 }

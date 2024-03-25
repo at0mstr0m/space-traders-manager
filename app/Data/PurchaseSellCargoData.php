@@ -4,27 +4,21 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Ship;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 
-class PurchaseSellCargoData extends Data implements GeneratableFromResponse, UpdatesShip
+class PurchaseSellCargoData extends Data implements UpdatesShip
 {
     public function __construct(
+        #[MapInputName('agent')]
         public AgentData $agent,
+        #[MapInputName('cargo')]
         public ShipCargoData $cargo,
+        #[MapInputName('transaction')]
         public MarketTransactionData $transaction,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            agent: AgentData::fromResponse($response['agent']),
-            cargo: ShipCargoData::fromResponse($response['cargo']),
-            transaction: MarketTransactionData::fromResponse($response['transaction']),
-        );
-    }
 
     public function updateShip(Ship $ship): Ship
     {

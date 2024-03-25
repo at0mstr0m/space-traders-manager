@@ -68,19 +68,6 @@ class TradeOpportunity extends Model
         'activity',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'waypoint_symbol' => 'string',
-        'symbol' => TradeSymbols::class,
-        'purchase_price' => 'integer',
-        'sell_price' => 'integer',
-        'type' => TradeGoodTypes::class,
-        'trade_volume' => 'integer',
-        'supply' => SupplyLevels::class,
-        'activity' => ActivityLevels::class,
-    ];
-
     public function waypoint(): BelongsTo
     {
         return $this->belongsTo(Waypoint::class, 'symbol', 'waypoint_symbol');
@@ -172,5 +159,26 @@ class TradeOpportunity extends Model
     {
         return static::marketplacesForCargos($ship)
             ->map(fn (Collection $tradeOpportunities) => $tradeOpportunities->random());
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'waypoint_symbol' => 'string',
+            'symbol' => TradeSymbols::class,
+            'purchase_price' => 'integer',
+            'sell_price' => 'integer',
+            'type' => TradeGoodTypes::class,
+            'trade_volume' => 'integer',
+            'supply' => SupplyLevels::class,
+            'activity' => ActivityLevels::class,
+        ];
     }
 }

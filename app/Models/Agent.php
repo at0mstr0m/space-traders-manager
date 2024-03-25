@@ -56,17 +56,6 @@ class Agent extends Model
         'ship_count',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'account_id' => 'string',
-        'symbol' => 'string',
-        'headquarters' => 'string',
-        'credits' => 'integer',
-        'starting_faction' => 'string',
-        'ship_count' => 'integer',
-    ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -85,5 +74,24 @@ class Agent extends Model
     public function surveys(): HasMany
     {
         return $this->hasMany(Survey::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'account_id' => 'string',
+            'symbol' => 'string',
+            'headquarters' => 'string',
+            'credits' => 'integer',
+            'starting_faction' => 'string',
+            'ship_count' => 'integer',
+        ];
     }
 }

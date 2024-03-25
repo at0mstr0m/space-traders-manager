@@ -4,34 +4,28 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Data\Casts\CarbonCast;
 use App\Enums\TradeSymbols;
-use App\Interfaces\GeneratableFromResponse;
 use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class ShipModificationTransactionData extends Data implements GeneratableFromResponse
+class ShipModificationTransactionData extends Data
 {
     public function __construct(
+        #[MapInputName('waypointSymbol')]
         public string $waypointSymbol,
+        #[MapInputName('shipSymbol')]
         public string $shipSymbol,
-        public string $tradeSymbol,
+        #[MapInputName('tradeSymbol')]
+        #[WithCast(EnumCast::class)]
+        public TradeSymbols $tradeSymbol,
+        #[MapInputName('totalPrice')]
         public int $totalPrice,
+        #[MapInputName('timestamp')]
+        #[WithCast(CarbonCast::class)]
         public Carbon $timestamp,
-    ) {
-        match (true) {
-            !TradeSymbols::isValid($tradeSymbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            waypointSymbol: $response['waypointSymbol'],
-            shipSymbol: $response['shipSymbol'],
-            tradeSymbol: $response['tradeSymbol'],
-            totalPrice: $response['totalPrice'],
-            timestamp: Carbon::parse($response['timestamp']),
-        );
-    }
+    ) {}
 }

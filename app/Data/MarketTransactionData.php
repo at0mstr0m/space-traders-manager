@@ -4,45 +4,36 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Data\Casts\CarbonCast;
 use App\Enums\TradeSymbols;
 use App\Enums\TransactionTypes;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
 use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class MarketTransactionData extends Data implements GeneratableFromResponse
+class MarketTransactionData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('waypointSymbol')]
         public string $waypointSymbol,
+        #[MapInputName('shipSymbol')]
         public string $shipSymbol,
-        public string $tradeSymbol,
-        public string $type,
+        #[MapInputName('tradeSymbol')]
+        #[WithCast(EnumCast::class)]
+        public TradeSymbols $tradeSymbol,
+        #[MapInputName('type')]
+        #[WithCast(EnumCast::class)]
+        public TransactionTypes $type,
+        #[MapInputName('units')]
         public int $units,
+        #[MapInputName('pricePerUnit')]
         public int $pricePerUnit,
+        #[MapInputName('totalPrice')]
         public int $totalPrice,
+        #[MapInputName('timestamp')]
+        #[WithCast(CarbonCast::class)]
         public Carbon $timestamp,
-    ) {
-        match (true) {
-            !TradeSymbols::isValid($tradeSymbol) => throw new \InvalidArgumentException("Invalid trade symbol: {$tradeSymbol}"),
-            !TransactionTypes::isValid($type) => throw new \InvalidArgumentException("Invalid transaction type: {$tradeSymbol}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            waypointSymbol: $response['waypointSymbol'],
-            shipSymbol: $response['shipSymbol'],
-            tradeSymbol: $response['tradeSymbol'],
-            type: $response['type'],
-            units: $response['units'],
-            pricePerUnit: $response['pricePerUnit'],
-            totalPrice: $response['totalPrice'],
-            timestamp: Carbon::parse($response['timestamp']),
-        );
-    }
+    ) {}
 }

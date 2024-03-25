@@ -45,16 +45,6 @@ class Delivery extends Model
         'units_fulfilled',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'trade_symbol' => TradeSymbols::class,
-        'destination_symbol' => 'string',
-        'units_required' => 'integer',
-        'units_fulfilled' => 'integer',
-        'units_to_be_delivered' => 'integer',
-    ];
-
     public function contract()
     {
         return $this->belongsTo(Contract::class);
@@ -68,5 +58,23 @@ class Delivery extends Model
     public function getIsDoneAttribute(): bool
     {
         return $this->units_required === $this->units_fulfilled;
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'trade_symbol' => TradeSymbols::class,
+            'destination_symbol' => 'string',
+            'units_required' => 'integer',
+            'units_fulfilled' => 'integer',
+            'units_to_be_delivered' => 'integer',
+        ];
     }
 }

@@ -5,36 +5,27 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Enums\WaypointTypes;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
 use Illuminate\Support\Arr;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class SystemWaypointData extends Data implements GeneratableFromResponse
+class SystemWaypointData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
-        public string $type,
+        #[MapInputName('cooldown.expiration')]
+        #[WithCast(EnumCast::class)]
+        public WaypointTypes $type,
+        #[MapInputName('x')]
         public int $x,
+        #[MapInputName('y')]
         public int $y,
+        #[MapInputName('orbitals')]
         public array $orbitals,
     ) {
-        match (true) {
-            !WaypointTypes::isValid($type) => throw new \InvalidArgumentException("Invalid waypoint type: {$type}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            type: $response['type'],
-            x: $response['x'],
-            y: $response['y'],
-            orbitals: Arr::map($response['orbitals'], fn (array $orbital) => $orbital['symbol']),
-        );
+        $this->orbitals = Arr::pluck($orbitals, 'symbol');
     }
 }

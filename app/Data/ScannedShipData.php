@@ -4,49 +4,44 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Enums\EngineSymbols;
 use App\Enums\FactionSymbols;
 use App\Enums\FrameSymbols;
+use App\Enums\ReactorSymbols;
 use App\Enums\ShipRoles;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
 use Illuminate\Support\Arr;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class ScannedShipData extends Data implements GeneratableFromResponse
+class ScannedShipData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
+        #[MapInputName('registration.name')]
         public string $name,
-        public string $factionSymbol,
-        public string $role,
+        #[MapInputName('registration.factionSymbol')]
+        #[WithCast(EnumCast::class)]
+        public FactionSymbols $factionSymbol,
+        #[MapInputName('registration.role')]
+        #[WithCast(EnumCast::class)]
+        public ShipRoles $role,
+        #[MapInputName('nav')]
         public NavigationData $nav,
-        public string $frameSymbol,
-        public string $reactorSymbol,
-        public string $engineSymbol,
+        #[MapInputName('frame.symbol')]
+        #[WithCast(EnumCast::class)]
+        public FrameSymbols $frameSymbol,
+        #[MapInputName('reactor.symbol')]
+        #[WithCast(EnumCast::class)]
+        public ReactorSymbols $reactorSymbol,
+        #[MapInputName('engine.symbol')]
+        #[WithCast(EnumCast::class)]
+        public EngineSymbols $engineSymbol,
+        #[MapInputName('mounts')]
         public array $mounts,
     ) {
-        match (true) {
-            !ShipRoles::isValid($role) => throw new \InvalidArgumentException("Invalid role: {$role}"),
-            !FactionSymbols::isValid($factionSymbol) => throw new \InvalidArgumentException("Invalid faction symbol: {$factionSymbol}"),
-            !FrameSymbols::isValid($frameSymbol) => throw new \InvalidArgumentException("Invalid frame symbol: {$frameSymbol}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            name: $response['registration']['name'],
-            factionSymbol: $response['registration']['factionSymbol'],
-            role: $response['registration']['role'],
-            nav: NavigationData::fromResponse($response['nav']),
-            frameSymbol: $response['frame']['symbol'],
-            reactorSymbol: $response['reactor']['symbol'],
-            engineSymbol: $response['engine']['symbol'],
-            mounts: Arr::map($response['mounts'], fn (array $mount) => $mount['symbol']),
-        );
+        $this->mounts = Arr::map($mounts, fn (array $mount) => $mount['symbol']);
     }
 }

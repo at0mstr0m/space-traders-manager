@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
+use App\Data\Casts\CarbonCast;
 use Illuminate\Support\Carbon;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class ScanShipsData extends Data implements GeneratableFromResponse
+class ScanShipsData extends Data
 {
+    /**
+     * @param Collection<int, ScannedWaypointData> $ships
+     */
     public function __construct(
-        public Carbon $cooldown,
-        #[DataCollectionOf(ScannedWaypointData::class)]
-        public ?DataCollection $ships = null,
+        #[MapInputName('cooldown.expiration')]
+        #[WithCast(CarbonCast::class)]
+        public Carbon $cooldownExpiresAt,
+        #[MapInputName('cooldown.remainingSeconds')]
+        public int $remainingSeconds,
+        #[MapInputName('ships')]
+        public ?Collection $ships = null,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            cooldown: Carbon::parse($response['cooldown']['expiration']),
-            ships: ScannedShipData::collectionFromResponse($response['ships']),
-        );
-    }
 }

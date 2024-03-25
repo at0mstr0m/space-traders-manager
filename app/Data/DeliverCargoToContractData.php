@@ -5,26 +5,20 @@ declare(strict_types=1);
 namespace App\Data;
 
 use App\Actions\UpdateContractAction;
-use App\Interfaces\GeneratableFromResponse;
 use App\Interfaces\UpdatesShip;
 use App\Models\Agent;
 use App\Models\Ship;
+use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 
-class DeliverCargoToContractData extends Data implements GeneratableFromResponse, UpdatesShip
+class DeliverCargoToContractData extends Data implements UpdatesShip
 {
     public function __construct(
+        #[MapInputName('contract')]
         public ContractData $contract,
+        #[MapInputName('cargo')]
         public ShipCargoData $cargo,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            contract: ContractData::fromResponse($response['contract']),
-            cargo: ShipCargoData::fromResponse($response['cargo']),
-        );
-    }
 
     public function updateContract(): static
     {

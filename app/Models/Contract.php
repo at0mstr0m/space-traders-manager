@@ -64,19 +64,6 @@ class Contract extends Model
         'payment_on_fulfilled',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'identification' => 'string',
-        'faction_symbol' => FactionSymbols::class,
-        'type' => ContractTypes::class,
-        'accepted' => 'boolean',
-        'fulfilled' => 'boolean',
-        'deadline' => 'datetime',
-        'payment_on_accepted' => 'integer',
-        'payment_on_fulfilled' => 'integer',
-    ];
-
     public function agent(): BelongsTo
     {
         return $this->belongsTo(Agent::class);
@@ -116,5 +103,26 @@ class Contract extends Model
 
         return $api->fulfillContract($this->identification)
             ->updateContract($this);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'identification' => 'string',
+            'faction_symbol' => FactionSymbols::class,
+            'type' => ContractTypes::class,
+            'accepted' => 'boolean',
+            'fulfilled' => 'boolean',
+            'deadline' => 'datetime',
+            'payment_on_accepted' => 'integer',
+            'payment_on_fulfilled' => 'integer',
+        ];
     }
 }

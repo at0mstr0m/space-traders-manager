@@ -4,29 +4,23 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
+use App\Data\Casts\CarbonCast;
 use Illuminate\Support\Carbon;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
 
-class RepairScrapTransactionData extends Data implements GeneratableFromResponse
+class RepairScrapTransactionData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('waypointSymbol')]
         public string $waypointSymbol,
+        #[MapInputName('shipSymbol')]
         public string $shipSymbol,
+        #[MapInputName('totalPrice')]
         public int $totalPrice,
+        #[MapInputName('timestamp')]
+        #[WithCast(CarbonCast::class)]
         public Carbon $timestamp,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            shipSymbol: $response['shipSymbol'],
-            waypointSymbol: $response['waypointSymbol'],
-            totalPrice: $response['totalPrice'],
-            timestamp: Carbon::parse($response['timestamp']),
-        );
-    }
 }

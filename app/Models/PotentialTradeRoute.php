@@ -87,31 +87,39 @@ class PotentialTradeRoute extends Model
         'destination_y',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'trade_symbol' => TradeSymbols::class,
-        'origin' => 'string',
-        'destination' => 'string',
-        'purchase_price' => 'integer',
-        'supply_at_origin' => SupplyLevels::class,
-        'activity_at_origin' => ActivityLevels::class,
-        'trade_volume_at_origin' => 'integer',
-        'sell_price' => 'integer',
-        'supply_at_destination' => SupplyLevels::class,
-        'activity_at_destination' => ActivityLevels::class,
-        'trade_volume_at_destination' => 'integer',
-        'origin_x' => 'integer',
-        'origin_y' => 'integer',
-        'destination_x' => 'integer',
-        'destination_y' => 'integer',
-        'distance' => 'integer',
-        'profit' => 'float',
-        'profit_per_flight' => 'integer',
-    ];
-
     public function ship(): BelongsTo
     {
         return $this->belongsTo(Ship::class);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'trade_symbol' => TradeSymbols::class,
+            'origin' => 'string',
+            'destination' => 'string',
+            'purchase_price' => 'integer',
+            'supply_at_origin' => SupplyLevels::class,
+            'activity_at_origin' => ActivityLevels::class,
+            'trade_volume_at_origin' => 'integer',
+            'sell_price' => 'integer',
+            'supply_at_destination' => SupplyLevels::class,
+            'activity_at_destination' => ActivityLevels::class,
+            'trade_volume_at_destination' => 'integer',
+            'origin_x' => 'integer',
+            'origin_y' => 'integer',
+            'destination_x' => 'integer',
+            'destination_y' => 'integer',
+            'distance' => 'integer',
+            'profit' => 'float',
+            'profit_per_flight' => 'integer',
+        ];
     }
 }

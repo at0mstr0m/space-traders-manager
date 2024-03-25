@@ -1,37 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Data;
 
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
+use App\Data\Casts\CarbonCast;
 use Illuminate\Support\Carbon;
-use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\DataCollection;
 
-class SurveyData extends Data implements GeneratableFromResponse
+class SurveyData extends Data
 {
-    use HasCollectionFromResponse;
-
+    /**
+     * @param Collection<int, DepositData> $deposits
+     */
     public function __construct(
-        public string $waypointSymbol,
+        #[MapInputName('signature')]
         public string $signature,
+        #[MapInputName('symbol')]
+        public string $waypointSymbol,
+        #[MapInputName('expiration')]
+        #[WithCast(CarbonCast::class)]
         public Carbon $expiration,
+        #[MapInputName('size')]
         public string $size,
+        #[MapInputName('rawResponse')]
         public string $rawResponse,
-        #[DataCollectionOf(DepositData::class)]
-        public ?DataCollection $deposits = null,
+        #[MapInputName('deposits')]
+        public ?Collection $deposits = null,
     ) {}
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            waypointSymbol: $response['symbol'],
-            signature: $response['signature'],
-            expiration: Carbon::parse($response['expiration']),
-            size: $response['size'],
-            rawResponse: $response['raw_response'],
-            deposits: DepositData::collectionFromResponse(data_get($response, 'deposits', [])),
-        );
-    }
 }

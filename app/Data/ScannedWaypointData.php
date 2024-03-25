@@ -6,45 +6,37 @@ namespace App\Data;
 
 use App\Enums\FactionSymbols;
 use App\Enums\WaypointTypes;
-use App\Interfaces\GeneratableFromResponse;
-use App\Traits\HasCollectionFromResponse;
 use Illuminate\Support\Arr;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\EnumCast;
 use Spatie\LaravelData\Data;
 
-class ScannedWaypointData extends Data implements GeneratableFromResponse
+class ScannedWaypointData extends Data
 {
-    use HasCollectionFromResponse;
-
     public function __construct(
+        #[MapInputName('symbol')]
         public string $symbol,
-        public string $type,
+        #[MapInputName('type')]
+        #[WithCast(EnumCast::class)]
+        public WaypointTypes $type,
+        #[MapInputName('x')]
         public int $x,
+        #[MapInputName('y')]
         public int $y,
+        #[MapInputName('orbitals')]
         public array $orbitals,
-        public string $faction,
+        #[MapInputName('faction.symbol')]
+        #[WithCast(EnumCast::class)]
+        public FactionSymbols $faction,
+        #[MapInputName('traits')]
         public array $traits,
+        #[MapInputName('chart')]
         public ChartData $chart,
+        #[MapInputName('orbits')]
         public ?string $orbits,
     ) {
-        match (true) {
-            !WaypointTypes::isValid($type) => throw new \InvalidArgumentException("Invalid waypoint type: {$type}"),
-            !FactionSymbols::isValid($faction) => throw new \InvalidArgumentException("Invalid faction symbol: {$faction}"),
-            default => null,
-        };
-    }
-
-    public static function fromResponse(array $response): static
-    {
-        return new static(
-            symbol: $response['symbol'],
-            type: $response['type'],
-            x: $response['x'],
-            y: $response['y'],
-            orbitals: Arr::map($response['orbitals'], fn (array $orbital) => $orbital['symbol']),
-            faction: $response['faction']['symbol'],
-            traits: Arr::map($response['traits'], fn (array $orbital) => $orbital['symbol']),
-            chart: ChartData::fromResponse($response['chart']),
-            orbits: data_get($response, 'orbits'),
-        );
+        $this->orbitals = Arr::map($orbitals, fn (array $orbital) => $orbital['symbol']);
+        $this->traits = Arr::map($traits, fn (array $orbital) => $orbital['symbol']);
     }
 }
