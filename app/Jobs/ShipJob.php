@@ -43,7 +43,7 @@ abstract class ShipJob implements ShouldQueue
 
         if ($this->ship->is_in_transit || $this->ship->cooldown) {
             dump("{$this->ship->symbol} is in transit or on cooldown");
-            $this->selfDispatch()->delay($this->ship->cooldown);
+            $this->selfDispatch()->delay($this->ship->cooldown ?: 60);
 
             return;
         }

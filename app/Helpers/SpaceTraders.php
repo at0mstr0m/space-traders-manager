@@ -576,10 +576,9 @@ class SpaceTraders
             all: true
         )
             ->map(fn (WaypointData $waypointData) => $this->getShipyard($waypointData->symbol))
-            ->reduce(
-                fn (Collection $carry, ShipyardData $shipyardData) => $carry->concat($shipyardData->ships),
-                collect()
-            );
+            ->pluck('ships')
+            ->flatten(1)
+            ->filter();
     }
 
     public function getWaypoint(string $waypointSymbol): WaypointData
@@ -735,6 +734,7 @@ class SpaceTraders
 
     /**
      * @return Collection<string, Collection<int, PotentialTradeRouteData>>
+     *
      * @deprecated
      */
     public function listPotentialTradeRoutesInSystem(string $waypointSymbol): Collection

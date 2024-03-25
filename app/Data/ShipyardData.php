@@ -27,7 +27,7 @@ class ShipyardData extends Data
         #[MapInputName('ships')]
         public ?Collection $ships = null,
     ) {
-        $this->ships->transform(
+        $this->ships?->transform(
             fn (ShipyardShipData $item) => $item->setWaypointSymbol($this->symbol)
         );
     }

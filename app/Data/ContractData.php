@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Data\Casts\CarbonCast;
 use App\Enums\ContractTypes;
 use App\Enums\FactionSymbols;
 use Illuminate\Support\Carbon;
@@ -19,7 +20,7 @@ class ContractData extends Data
      * @param Collection<int, DeliveryData> $deliveries
      */
     public function __construct(
-        #[MapInputName('identification')]
+        #[MapInputName('id')]
         public string $identification,
         #[MapInputName('symbol')]
         #[WithCast(EnumCast::class)]
@@ -32,8 +33,10 @@ class ContractData extends Data
         #[MapInputName('fulfilled')]
         public bool $fulfilled,
         #[MapInputName('terms.deadline')]
+        #[WithCast(CarbonCast::class)]
         public Carbon $deadline,
         #[MapInputName('deadlineToAccept')]
+        #[WithCast(CarbonCast::class)]
         public Carbon $deadlineToAccept,
         #[MapInputName('terms.payment.onAccepted')]
         public int $paymentOnAccepted,
