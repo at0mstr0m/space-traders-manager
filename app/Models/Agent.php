@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -47,6 +48,8 @@ use Illuminate\Support\Carbon;
  */
 class Agent extends Model
 {
+    use FindableBySymbol;
+
     protected $fillable = [
         'account_id',
         'symbol',

@@ -53,11 +53,9 @@ class AgentData extends Data implements WithModelInstance, UpdatesAgent
 
     public function updateAgent(Agent $agent): Agent
     {
-        $agent->fill([
+        return $agent->fill([
             'credits' => $this->credits,
             'ship_count' => $this->shipCount,
         ]);
-
-        return $agent;
     }
 }
