@@ -21,6 +21,8 @@ trait InteractsWithPotentialTradeRoutes
 {
     public const MIN_PROFIT_PER_FLIGHT = 50_000;
 
+    public const MINI_TRADE_MIN_PROFIT_PER_FLIGHT = 20_000;
+
     public const MIN_PROFIT = 1;
 
     /** @var ?EloquentCollection<int, PotentialTradeRoute> */

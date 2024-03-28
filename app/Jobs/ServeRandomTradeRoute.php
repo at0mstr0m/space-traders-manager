@@ -25,6 +25,7 @@ class ServeRandomTradeRoute extends ServeTradeRoute
                 ->orWhere(
                     fn (EloquentBuilder $query) => $query->where('supply_at_destination', SupplyLevels::SCARCE)
                         ->whereIn('supply_at_origin', [SupplyLevels::ABUNDANT, SupplyLevels::HIGH])
+                        ->where('profit_per_flight', '>=', static::MINI_TRADE_MIN_PROFIT_PER_FLIGHT)
                 )
         );
     }
