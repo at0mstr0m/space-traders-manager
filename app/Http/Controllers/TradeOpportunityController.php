@@ -10,7 +10,6 @@ use App\Http\Resources\TradeOpportunityResource;
 use App\Models\TradeOpportunity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class TradeOpportunityController extends Controller
 {
@@ -36,7 +35,7 @@ class TradeOpportunityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TradeOpportunity $tradeOpportunity): JsonResource
+    public function show(TradeOpportunity $tradeOpportunity): TradeOpportunityResource
     {
         return new TradeOpportunityResource($tradeOpportunity);
     }
@@ -44,7 +43,7 @@ class TradeOpportunityController extends Controller
     /**
      * Refetch all trade opportunities.
      */
-    public function refetch(PaginationRequest $request)
+    public function refetch(PaginationRequest $request): AnonymousResourceCollection
     {
         UpdateOrRemoveTradeOpportunitiesAction::dispatchSync();
 

@@ -27,16 +27,22 @@
         @click="navigateTo('home')"
       />
       <v-list-item
+        prepend-icon="mdi-map-outline"
+        title="Map"
+        value="map"
+        @click="navigateTo('map')"
+      />
+      <v-list-item
         prepend-icon="mdi-rocket-launch-outline"
         title="Ships"
         value="ships"
         @click="navigateTo('ships')"
       />
       <v-list-item
-        prepend-icon="mdi-map-outline"
-        title="Map"
-        value="map"
-        @click="navigateTo('map')"
+        prepend-icon="mdi mdi-account-hard-hat-outline"
+        title="Tasks"
+        value="Tasks"
+        @click="navigateTo('tasks')"
       />
       <v-list-item
         prepend-icon="mdi-file-sign"
@@ -63,10 +69,10 @@
         @click="navigateTo('markets')"
       />
       <v-list-item
-        prepend-icon="mdi mdi-account-hard-hat-outline"
-        title="Tasks"
-        value="Tasks"
-        @click="navigateTo('tasks')"
+        prepend-icon="mdi mdi-swap-vertical-bold"
+        title="Transactions"
+        value="Transactions"
+        @click="navigateTo('transactions')"
       />
     </v-list>
   </v-navigation-drawer>

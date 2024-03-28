@@ -37,7 +37,7 @@
 <script setup>
 import { ref, defineModel, onMounted } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
-import uniqBy from "lodash/uniqBy";
+import _uniqBy from "lodash/uniqBy";
 
 const selected = defineModel('selected', { required: false, type: [String, Number, Object, Array, Boolean]});
 const items = ref([]);
@@ -75,7 +75,7 @@ async function fetchItems() {
   }
   const response = await repo.index(page.value, 15);
   lastPage.value = response.data.meta.last_page;
-  items.value = uniqBy(items.value.concat(response.data.data), 'id');
+  items.value = _uniqBy(items.value.concat(response.data.data), 'id');
 }
 
 async function fetchPreviouslySelected() {

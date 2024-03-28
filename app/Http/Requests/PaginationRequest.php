@@ -55,13 +55,13 @@ class PaginationRequest extends FormRequest
         return $this->has('sortBy') && $this->has('sortDirection');
     }
 
-    public function sortBy(): string
+    public function sortBy(?string $default = null): ?string
     {
-        return (string) $this->validated('sortBy');
+        return (string) $this->validated('sortBy') ?: $default;
     }
 
-    public function sortDirection(): string
+    public function sortDirection(?string $default = null): ?string
     {
-        return (string) $this->validated('sortDirection');
+        return (string) $this->validated('sortDirection') ?: $default;
     }
 }

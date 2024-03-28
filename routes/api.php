@@ -8,6 +8,7 @@ use App\Http\Controllers\PotentialTradeRouteController;
 use App\Http\Controllers\ShipController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TradeOpportunityController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WaypointController;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +83,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->group(function () {
             Route::get('trigger-all', 'triggerAll')->name('trigger-all');
         });
+
+    Route::apiResource('transactions', TransactionController::class)
+        ->only(['index', 'show']);
 
     Route::apiResource('tasks', TaskController::class);
 

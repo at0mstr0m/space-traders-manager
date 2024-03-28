@@ -598,13 +598,9 @@ class SpaceTraders
     {
         $systemSymbol = LocationHelper::parseSystemSymbol($waypointSymbol);
 
-        return Cache::remember(
-            'get_market:' . $waypointSymbol,
-            now()->addMinute(),
-            fn () => MarketData::from(
-                $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/market')
-                    ->json('data')
-            )
+        return MarketData::from(
+            $this->get('systems/' . $systemSymbol . '/waypoints/' . $waypointSymbol . '/market')
+                ->json('data')
         );
     }
 

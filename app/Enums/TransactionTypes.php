@@ -12,4 +12,6 @@ enum TransactionTypes: string
 
     case PURCHASE = 'PURCHASE';
     case SELL = 'SELL';
+    case REPAIR = 'REPAIR';
+    case MODIFICATION = 'MODIFICATION';
 }

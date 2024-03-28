@@ -8,7 +8,7 @@
     :items-length="totalItems"
     :items-per-page="perPage"
     item-value="id"
-    :items-per-page-options="itemsPerPageOptions"
+    :items-per-page-options="props.itemsPerPageOptions"
     :show-expand="props.expandable"
     :expand-on-click="props.expandable"
     @update:options="fetchItems"
@@ -40,8 +40,6 @@ import { ref, computed } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 import _first from "lodash/first";
 
-const itemsPerPageOptions = [15, 25, 50, 100];
-
 const props = defineProps({
   title: {
     type: String,
@@ -61,11 +59,21 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  itemsPerPageOptions: {
+    type: Array,
+    required: false,
+    default: () => [15, 25, 50, 100],
+  },
+  initialPerPage: {
+    type: Number,
+    required: false,
+    default: 15,
+  },
 });
 
 const busy = ref(false);
 const items = ref([]);
-const perPage = ref(15);
+const perPage = ref(props.initialPerPage);
 const totalItems = ref(0);
 const page = ref(1);
 const totalPages = ref(0);

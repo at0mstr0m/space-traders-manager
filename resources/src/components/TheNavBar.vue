@@ -1,16 +1,34 @@
 <template>
-  <v-app-bar :elevation="1" dense short>
-    <v-app-bar-nav-icon variant="text" @click.stop="toggleNavDrawer" />
+  <v-app-bar
+    :elevation="1"
+    dense
+    short
+  >
+    <v-app-bar-nav-icon
+      variant="text"
+      @click.stop="toggleNavDrawer"
+    />
     <v-spacer />
-    <v-btn icon @click="toggleMap">
+    <v-btn
+      icon
+      @click="toggleMap"
+    >
       <v-icon icon="mdi-map-outline" />
     </v-btn>
     <v-spacer />
   </v-app-bar>
 
-  <v-dialog v-model="mapVisible" fullscreen transition="dialog-top-transition">
+  <v-dialog
+    v-model="mapVisible"
+    fullscreen
+    transition="dialog-top-transition"
+  >
     <v-toolbar dark>
-      <v-btn icon dark @click="toggleMap">
+      <v-btn
+        icon
+        dark
+        @click="toggleMap"
+      >
         <v-icon icon="mdi-close" />
       </v-btn>
       <v-spacer />

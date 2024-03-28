@@ -3,6 +3,7 @@ import potentialTradeRouteRepository from "@/repos/potentialTradeRoutes.js";
 import shipRepository from "@/repos/ships.js";
 import contractRepository from "@/repos/contracts.js";
 import tradeOpportunitiesRepository from "@/repos/tradeOpportunities.js";
+import transactionsRepository from "@/repos/transactions.js";
 import tasksRepository from "@/repos/tasks.js";
 import waypointsRepository from "@/repos/waypoints.js";
 
@@ -20,6 +21,8 @@ export function useRepository(resource) {
       return tasksRepository;
     case "trade-opportunities":
       return tradeOpportunitiesRepository;
+    case "transactions":
+      return transactionsRepository;
     case "waypoints":
       return waypointsRepository;
     default:
