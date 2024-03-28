@@ -79,9 +79,11 @@ const page = ref(1);
 const totalPages = ref(0);
 const repo = computed(() => useRepository(props.repoName));
 const expanded = ref([]);
+const currentTableOptions = ref({});
 
 async function fetchItems(options) {
   // options === { groupBy, itemsPerPage, page, search, sortBy }
+  currentTableOptions.value = options;
   busy.value = true;
   page.value = options.page;
   perPage.value = options.itemsPerPage;
@@ -106,12 +108,16 @@ async function fetchItems(options) {
   busy.value = false;
 }
 
-function setIsBusy(value) {
-  busy.value = value;
+function setIsBusy() {
+  busy.value = true;
 }
 
 function setNotBusy() {
   busy.value = false;
+}
+
+async function refresh() {
+  return fetchItems(currentTableOptions.value);
 }
 
 defineExpose({
@@ -119,5 +125,6 @@ defineExpose({
   setNotBusy,
   repo,
   items,
+  refresh,
 })
 </script>

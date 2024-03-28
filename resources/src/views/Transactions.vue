@@ -1,6 +1,18 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-container fluid>
+    <v-btn
+      elevation="1"
+      class="mb-4"
+      :loading="refreshing"
+      color="primary"
+      @click="table.refresh"
+    >
+      Refresh
+      <template #loader>
+        <v-progress-linear indeterminate />
+      </template>
+    </v-btn>
     <v-table
       ref="table"
       title="Transactions"

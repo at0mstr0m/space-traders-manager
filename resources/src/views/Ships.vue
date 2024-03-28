@@ -336,7 +336,7 @@ async function refetchShips() {
     console.error(error);
   }
   refreshing.value = false;
-  table.value.setIsBusy();
+  table.value.setNotBusy();
 }
 
 function updateRow(updatedShip) {

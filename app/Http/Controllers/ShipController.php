@@ -58,7 +58,7 @@ class ShipController extends Controller
     /**
      * Refetch all ships.
      */
-    public function refetch(Request $request): AnonymousResourceCollection
+    public function refetch(PaginationRequest $request): AnonymousResourceCollection
     {
         UpdateShips::dispatchSync();
 

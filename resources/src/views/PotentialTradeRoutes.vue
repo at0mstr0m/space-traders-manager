@@ -155,6 +155,6 @@ async function refetchTradeRoutes() {
     console.error(error);
   }
   refreshing.value = false;
-  table.value.setIsBusy();
+  table.value.setNotBusy();
 }
 </script>
