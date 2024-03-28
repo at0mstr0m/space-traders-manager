@@ -6,7 +6,7 @@
       class="mb-4"
       :loading="refreshing"
       color="primary"
-      @click="table.refresh"
+      @click="table?.refresh"
     >
       Refresh
       <template #loader>
