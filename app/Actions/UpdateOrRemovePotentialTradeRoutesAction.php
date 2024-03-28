@@ -39,7 +39,7 @@ class UpdateOrRemovePotentialTradeRoutesAction
                 "{$exporterAlias}.waypoint_symbol as origin",
                 "{$importerAlias}.waypoint_symbol as destination",
                 "{$exporterAlias}.purchase_price as purchase_price",
-                "{$importerAlias}.purchase_price as sell_price",
+                "{$importerAlias}.sell_price as sell_price",
                 "{$exporterAlias}.supply as supply_at_origin",
                 "{$importerAlias}.supply as supply_at_destination",
                 "{$exporterAlias}.activity as activity_at_origin",
