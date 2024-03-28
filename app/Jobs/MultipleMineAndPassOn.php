@@ -108,7 +108,7 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
     private function handleTransferCargoToCompanionShip(Ship $ship, Cargo $cargo): void
     {
-        dump(now()->toTimeString() . " handling cargo {$cargo->symbol->value} for {$ship->symbol}");
+        dump(now()->toTimeString() . " handling {$cargo->units} units of cargo {$cargo->symbol->value} for {$ship->symbol}");
         if ($this->noCompanionPresent()) {
             dump(now()->toTimeString() . " {$ship->symbol} no companion present");
 

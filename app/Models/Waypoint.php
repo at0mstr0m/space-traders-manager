@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\SupplyLevels;
 use App\Enums\TradeGoodTypes;
 use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
@@ -108,6 +109,7 @@ class Waypoint extends Model
                 'tradeOpportunities',
                 fn (Builder $query) => $query->where('symbol', TradeSymbols::FUEL)
                     ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+                    ->whereNotIn('supply', [SupplyLevels::SCARCE, SupplyLevels::LIMITED])
             );
     }
 
