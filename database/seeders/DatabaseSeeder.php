@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Actions\RelateAgentToUser;
+use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
+use App\Actions\UpdateWaypointsAction;
+use App\Jobs\UpdateContracts;
+use App\Jobs\UpdateExistingFactions;
+use App\Jobs\UpdateShips;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\App;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +20,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        if (App::isLocal()) {
-            $this->call([
-                UserSeeder::class,
-                DevelopmentEnvironmentSeeder::class,
-            ]);
-        }
+        $this->call([
+            UserSeeder::class,
+        ]);
+
+        UpdateExistingFactions::dispatchSync();
+        RelateAgentToUser::run();
+        UpdateContracts::dispatchSync();
+        UpdateShips::dispatchSync();
+        UpdateWaypointsAction::run();
+        UpdateOrRemoveTradeOpportunitiesAction::run();
     }
 }
