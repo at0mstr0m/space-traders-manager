@@ -7,7 +7,6 @@ use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\PotentialTradeRouteResource;
 use App\Models\PotentialTradeRoute;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PotentialTradeRouteController extends Controller
@@ -24,32 +23,22 @@ class PotentialTradeRouteController extends Controller
                     $request->sortBy(),
                     $request->sortDirection()
                 )
-            )->paginate(
-                $request->perPage(),
-                page: $request->page()
             )
+                // ->where('distance', '<=', 600)
+                ->paginate(
+                    $request->perPage(),
+                    page: $request->page()
+                )
         );
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
      * Display the specified resource.
      */
-    public function show(PotentialTradeRoute $potentialTradeRoute) {}
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, PotentialTradeRoute $potentialTradeRoute) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PotentialTradeRoute $potentialTradeRoute) {}
+    public function show(PotentialTradeRoute $potentialTradeRoute): PotentialTradeRouteResource
+    {
+        return new PotentialTradeRouteResource($potentialTradeRoute);
+    }
 
     /**
      * Refetch all potential trade routes.

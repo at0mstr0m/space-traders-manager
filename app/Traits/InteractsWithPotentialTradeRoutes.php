@@ -9,7 +9,6 @@ use App\Enums\SupplyLevels;
 use App\Helpers\LocationHelper;
 use App\Jobs\ShipJob;
 use App\Models\PotentialTradeRoute;
-use Illuminate\Contracts\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 /**
@@ -19,11 +18,9 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
  */
 trait InteractsWithPotentialTradeRoutes
 {
-    public const MIN_PROFIT_PER_FLIGHT = 50_000;
+    public const MIN_PROFIT = 0.01;
 
-    public const MINI_TRADE_MIN_PROFIT_PER_FLIGHT = 5_000;
-
-    public const MIN_PROFIT = 1;
+    public const MIN_PROFIT_PER_FLIGHT = 2_000;
 
     /** @var ?EloquentCollection<int, PotentialTradeRoute> */
     protected ?EloquentCollection $possibleTradeRoutes = null;
@@ -32,23 +29,16 @@ trait InteractsWithPotentialTradeRoutes
     {
         UpdateOrRemovePotentialTradeRoutesAction::run();
 
-        $this->possibleTradeRoutes = $this->buildPossibleNewRoutesQuery(
-            PotentialTradeRoute::where([
-                ['profit', '>', static::MIN_PROFIT],
-                ['distance', '<=', $this->ship->fuel_capacity],
-                ['supply_at_origin', '<>', SupplyLevels::SCARCE],
-                ['supply_at_destination', '<>', SupplyLevels::ABUNDANT],
-            ])
-        )->get()
+        $this->possibleTradeRoutes = PotentialTradeRoute::where([
+            ['profit', '>', static::MIN_PROFIT],
+            ['profit_per_flight', '>', static::MIN_PROFIT_PER_FLIGHT],
+            ['distance', '<=', $this->ship->fuel_capacity],
+            ['supply_at_origin', '<>', SupplyLevels::SCARCE],
+            ['supply_at_destination', '<>', SupplyLevels::ABUNDANT],
+        ])->get()
             ->filter(fn (PotentialTradeRoute $route) => $this->routeDistanceIsPossible($route));
 
         dump("{$this->ship->symbol} found {$this->possibleTradeRoutes->count()} possible trade routes");
-    }
-
-    // override this method in child classes to specify query conditions
-    protected function buildPossibleNewRoutesQuery(EloquentBuilder $query): EloquentBuilder
-    {
-        return $query;
     }
 
     protected function chooseNewRoute(): void
