@@ -315,9 +315,9 @@ class SpaceTraders
         );
     }
 
-    public function jumpShip(string $shipSymbol, string $systemSymbol): JumpShipData
+    public function jumpShip(string $shipSymbol, string $waypointSymbol): JumpShipData
     {
-        $payload = ['systemSymbol' => $systemSymbol];
+        $payload = ['waypointSymbol' => $waypointSymbol];
 
         return JumpShipData::from(
             $this->post('my/ships/' . $shipSymbol . '/jump', $payload)

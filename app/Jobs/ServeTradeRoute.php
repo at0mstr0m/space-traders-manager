@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\SupplyLevels;
+use App\Enums\TaskTypes;
+use App\Models\PotentialTradeRoute;
 use App\Traits\InteractsWithPotentialTradeRoutes;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -26,6 +28,17 @@ abstract class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilPro
      */
     protected function handleShip(): void
     {
+        if ($this->ship?->task?->type !== TaskTypes::SERVE_TRADE_ROUTE) {
+            dump("{$this->ship->symbol} is not executing this task anymore.");
+
+            // remove ship from potential trade route if it's not serving a trade route anymore
+            PotentialTradeRoute::getQuery()
+                ->where('ship_id', $this->ship->id)
+                ->update(['ship_id' => null]);
+
+            return;
+        }
+
         $this->initPossibleNewRoutes();
 
         dump("{$this->ship->symbol} serving trade route, currently located at {$this->ship->waypoint_symbol}");

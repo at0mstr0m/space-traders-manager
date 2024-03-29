@@ -301,6 +301,17 @@ class Ship extends Model
         return $this;
     }
 
+    public function jumpToJumpGateInOtherSystem(string $waypointSymbol): static
+    {
+        $this->moveIntoOrbit()
+            ->useApi()
+            ->jumpShip($this->symbol, $waypointSymbol)
+            ->updateShip($this)
+            ->save();
+
+        return $this;
+    }
+
     public function survey(): static
     {
         $createSurveyData = $this->moveIntoOrbit()

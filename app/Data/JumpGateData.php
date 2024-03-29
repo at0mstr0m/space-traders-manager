@@ -17,12 +17,9 @@ class JumpGateData extends Data
      * @param Collection<int, JumpGateSystemData> $connectedSystems
      */
     public function __construct(
-        #[MapInputName('jumpRange')]
-        public int $jumpRange,
-        #[MapInputName('factionSymbol')]
-        #[WithCast(EnumCast::class)]
-        public FactionSymbols $factionSymbol,
-        #[MapInputName('connectedSystems')]
-        public ?Collection $connectedSystems = null,
+        #[MapInputName('symbol')]
+        public string $symbol,
+        #[MapInputName('connections')]
+        public array $connections,
     ) {}
 }

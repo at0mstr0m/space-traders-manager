@@ -38,7 +38,7 @@ class WaypointData extends Data
         public Collection $traits,
         #[MapInputName('modifiers')]
         public Collection $modifiers,
-        #[MapInputName('orbits')]
+        #[MapInputName('isUnderConstruction')]
         public bool $isUnderConstruction,
         #[MapInputName('orbits')]
         public ?string $orbits = null,
