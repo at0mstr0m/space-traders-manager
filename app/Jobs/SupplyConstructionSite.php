@@ -28,7 +28,7 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
     protected function handleShip(): void
     {
         if ($this->ship->agent->credits < 1_300_000) {
-            dump("{$this->ship->symbol} Agent has less than 3.000.000 credits, aborting.");
+            dump("{$this->ship->symbol} Agent has less than 1.300.000 credits, aborting.");
 
             return;
         }
