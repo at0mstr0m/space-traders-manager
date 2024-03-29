@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Models\Cargo;
@@ -36,6 +38,7 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
         $currentLocation = $this->ship->waypoint_symbol;
         if (!$this->ship->task?->payload) {
             dump("{$this->ship->symbol} no longer has this task");
+
             return;
         }
         $waitingLocation = $this->ship->task->payload['waiting_location'];
@@ -51,19 +54,29 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
             return;
         }
 
+        $didJettison = false;
         $markets = TradeOpportunity::randomMarketplacesForCargos($this->ship)
-            ->pipe(function (Collection $marketData) {
+            ->pipe(function (Collection $marketData) use (&$didJettison) {
                 $this->ship
                     ->cargos()
                     ->whereNotIn('symbol', $marketData->keys()->all())
                     ->get()
-                    ->each(fn (Cargo $cargo) => $this->ship->jettisonCargo($cargo->symbol));
+                    ->each(function (Cargo $cargo) use (&$didJettison) {
+                        dump("jettisoning {$cargo->units} units of {$cargo->symbol->value}");
+                        $this->ship->jettisonCargo($cargo->symbol);
+                        $didJettison = true;
+                    });
 
                 return $marketData;
             })
             ->sortBy('distance');
 
-        /// todo: handle if is null
+        if ($didJettison && $currentLocation === $waitingLocation) {
+            dump('not fully loaded after jettisoning, keep waiting');
+
+            return;
+        }
+
         $this->closestTradeOpportunity = $markets->first();
 
         if (!$this->closestTradeOpportunity) {
