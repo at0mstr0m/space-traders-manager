@@ -113,7 +113,7 @@ class TradeOpportunity extends Model
                 ...$tradeOpportunity->only([
                     'symbol',
                     'waypoint_symbol',
-                    'purchase_price',
+                    'sell_price',
                     'trade_volume',
                 ]),
                 'distance' => LocationHelper::distance(
@@ -143,7 +143,7 @@ class TradeOpportunity extends Model
             ->map(
                 fn (Collection $tradeOpportunities) => $tradeOpportunities
                     ->sortBy(
-                        fn (array $tradeOpportunity) => $tradeOpportunity['purchase_price'] / $tradeOpportunity['distance'],
+                        fn (array $tradeOpportunity) => $tradeOpportunity['sell_price'] / $tradeOpportunity['distance'],
                         descending: true
                     )
                     ->first()

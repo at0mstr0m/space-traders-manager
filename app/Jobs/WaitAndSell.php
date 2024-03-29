@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Enums\SupplyLevels;
+use App\Helpers\LocationHelper;
 use App\Models\Cargo;
 use App\Models\TradeOpportunity;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -61,10 +63,41 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
                     ->cargos()
                     ->whereNotIn('symbol', $marketData->keys()->all())
                     ->get()
-                    ->each(function (Cargo $cargo) use (&$didJettison) {
-                        dump("jettisoning {$cargo->units} units of {$cargo->symbol->value}");
-                        $this->ship->jettisonCargo($cargo->symbol);
-                        $didJettison = true;
+                    ->each(function (Cargo $cargo) use ($marketData, &$didJettison) {
+                        $exchanges = TradeOpportunity::exchanges()
+                            ->bySymbol($cargo->symbol)
+                            ->whereNotIn('supply', [SupplyLevels::ABUNDANT, SupplyLevels::HIGH])
+                            ->get()
+                            ->map(fn (TradeOpportunity $tradeOpportunity) => [
+                                ...$tradeOpportunity->only([
+                                    'symbol',
+                                    'waypoint_symbol',
+                                    'sell_price',
+                                    'trade_volume',
+                                ]),
+                                'distance' => LocationHelper::distance(
+                                    $this->ship->waypoint_symbol,
+                                    $tradeOpportunity->waypoint_symbol
+                                ),
+                            ])->when(
+                                $this->ship->fuel_capacity > 0,
+                                fn (Collection $tradeOpportunities) => $tradeOpportunities->filter(
+                                    fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $this->ship->fuel_capacity
+                                )
+                            );
+
+                        if ($exchanges->isEmpty()) {
+                            dump("cannot even sell {$cargo->symbol->value} at exchange, jettison {$cargo->units} units");
+
+                            $this->ship->jettisonCargo($cargo->symbol);
+                            $didJettison = true;
+
+                            return;
+                        }
+
+                        dump("keeping {$cargo->symbol->value} to sell at exchange");
+
+                        $marketData->put($cargo->symbol->value, $exchanges->random());
                     });
 
                 return $marketData;
