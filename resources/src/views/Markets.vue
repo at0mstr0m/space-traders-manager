@@ -45,6 +45,10 @@ const columns = [
     key: "waypoint_symbol",
   },
   {
+    title: "Purchase Price",
+    key: "purchase_price",
+  },
+  {
     title: "Sell Price",
     key: "sell_price",
   },
