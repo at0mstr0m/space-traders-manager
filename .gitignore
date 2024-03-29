@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 /routes/dev.php
 _ide_helper.php
+/logs
