@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
  */
 trait InteractsWithPotentialTradeRoutes
 {
-    public const MIN_PROFIT = 0.01;
+    public const MIN_PROFIT = 0.5;
 
     public const MIN_PROFIT_PER_FLIGHT = 2_000;
 

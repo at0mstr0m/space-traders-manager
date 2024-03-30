@@ -52,7 +52,7 @@ abstract class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilPro
             return;
         }
 
-        dump("{$this->ship->symbol} serving trade route {$this->ship->potentialTradeRoute->origin} -> {$this->ship->potentialTradeRoute->destination} with {$this->ship->potentialTradeRoute->trade_symbol->value}");
+        dump("{$this->ship->symbol} serving trade route {$this->ship->potentialTradeRoute->origin} -> {$this->ship->potentialTradeRoute->destination} with {$this->ship->potentialTradeRoute->trade_symbol->value} and a profit_per_flight of {$this->ship->potentialTradeRoute->profit_per_flight}");
 
         if ($this->ship->cargo_is_empty) {
             dump("{$this->ship->symbol} cargo is empty");

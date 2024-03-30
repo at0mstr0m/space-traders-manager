@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Enums\TradeGoodTypes;
+use App\Enums\TradeSymbols;
 use App\Models\PotentialTradeRoute;
 use App\Models\TradeOpportunity;
 use App\Models\Waypoint;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -28,10 +30,28 @@ class UpdateOrRemovePotentialTradeRoutesAction
         $changedIds = DB::table("{$tradeOpportunityTable}", "{$exporterAlias}")
             ->crossJoin("{$tradeOpportunityTable} as {$importerAlias}")
             ->whereColumn("{$exporterAlias}.symbol", "{$importerAlias}.symbol")
-            ->where([
-                "{$exporterAlias}.type" => TradeGoodTypes::EXPORT,
-                "{$importerAlias}.type" => TradeGoodTypes::IMPORT,
-            ])
+            ->where(
+                fn (Builder $query) => $query->where([
+                    "{$exporterAlias}.type" => TradeGoodTypes::EXPORT,
+                    "{$importerAlias}.type" => TradeGoodTypes::IMPORT,
+                ])->orWhere(
+                    fn (Builder $builder) => $builder->where([
+                        "{$exporterAlias}.type" => TradeGoodTypes::EXPORT,
+                        "{$importerAlias}.type" => TradeGoodTypes::EXCHANGE,
+                    ])
+                )->orWhere(
+                    fn (Builder $builder) => $builder->where([
+                        "{$exporterAlias}.type" => TradeGoodTypes::EXCHANGE,
+                        "{$importerAlias}.type" => TradeGoodTypes::IMPORT,
+                    ])
+                )->orWhere(
+                    fn (Builder $builder) => $builder->where([
+                        "{$exporterAlias}.symbol" => TradeSymbols::FUEL,
+                        "{$exporterAlias}.type" => TradeGoodTypes::EXPORT,
+                        "{$importerAlias}.type" => TradeGoodTypes::IMPORT,
+                    ])
+                )
+            )
             ->join("{$waypointTable} as w1", "{$exporterAlias}.waypoint_symbol", '=', 'w1.symbol')
             ->join("{$waypointTable} as w2", "{$importerAlias}.waypoint_symbol", '=', 'w2.symbol')
             ->select([
@@ -46,6 +66,8 @@ class UpdateOrRemovePotentialTradeRoutesAction
                 "{$importerAlias}.activity as activity_at_destination",
                 "{$exporterAlias}.trade_volume as trade_volume_at_origin",
                 "{$importerAlias}.trade_volume as trade_volume_at_destination",
+                "{$exporterAlias}.type as origin_type",
+                "{$importerAlias}.type as destination_type",
                 'w1.x as origin_x',
                 'w1.y as origin_y',
                 'w2.x as destination_x',
