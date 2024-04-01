@@ -24,6 +24,7 @@ class ContractResource extends JsonResource
             'accepted' => $this->accepted,
             'fulfilled' => $this->fulfilled,
             'deadline' => $this->deadline->toDateTimeString(),
+            'deadline_to_accept' => $this->deadline_to_accept->toDateTimeString(),
             'payment_on_accepted' => $this->payment_on_accepted,
             'payment_on_fulfilled' => $this->payment_on_fulfilled,
             'deliveries' => DeliveryResource::collection($this->loadMissing('deliveries')->deliveries),

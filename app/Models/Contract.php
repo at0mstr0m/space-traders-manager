@@ -60,6 +60,7 @@ class Contract extends Model
         'accepted',
         'fulfilled',
         'deadline',
+        'deadline_to_accept',
         'payment_on_accepted',
         'payment_on_fulfilled',
     ];
@@ -121,6 +122,7 @@ class Contract extends Model
             'accepted' => 'boolean',
             'fulfilled' => 'boolean',
             'deadline' => 'datetime',
+            'deadline_to_accept' => 'datetime',
             'payment_on_accepted' => 'integer',
             'payment_on_fulfilled' => 'integer',
         ];

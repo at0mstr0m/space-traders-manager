@@ -159,6 +159,10 @@ const contractColumns = ref([
     key: "deadline",
   },
   {
+    title: "Deadline to Accept",
+    key: "deadline_to_accept",
+  },
+  {
     title: "Payment on accepted",
     key: "payment_on_accepted",
   },
