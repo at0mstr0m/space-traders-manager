@@ -153,4 +153,18 @@ enum TradeSymbols: string
     case SHIP_ORE_HOUND = 'SHIP_ORE_HOUND';
     case SHIP_REFINING_FREIGHTER = 'SHIP_REFINING_FREIGHTER';
     case SHIP_SURVEYOR = 'SHIP_SURVEYOR';
+
+    public static function ores(): array
+    {
+        return [
+            self::IRON_ORE,
+            self::COPPER_ORE,
+            self::ALUMINUM_ORE,
+            self::SILVER_ORE,
+            self::GOLD_ORE,
+            self::PLATINUM_ORE,
+            self::URANITE_ORE,
+            self::MERITIUM_ORE,
+        ];
+    }
 }

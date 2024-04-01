@@ -9,6 +9,7 @@ use App\Jobs\MultipleMineAndPassOn;
 use App\Jobs\MultipleSiphonAndPassOn;
 use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\SupplyConstructionSite;
+use App\Jobs\WaitAndFulfillProcurement;
 use App\Jobs\WaitAndSell;
 use App\Traits\EnumUtils;
 
@@ -22,6 +23,7 @@ enum TaskTypes: string
     case SERVE_TRADE_ROUTE = 'SERVE_TRADE_ROUTE';
     case SUPPLY_CONSTRUCTION_SITE = 'SUPPLY_CONSTRUCTION_SITE';
     case DISTRIBUTE_FUEL = 'DISTRIBUTE_FUEL';
+    case FULFILL_PROCUREMENT = 'FULFILL_PROCUREMENT';
 
     public function getCorrespondingJob(): string
     {
@@ -32,6 +34,7 @@ enum TaskTypes: string
             self::SERVE_TRADE_ROUTE => ServeRandomTradeRoute::class,
             self::SUPPLY_CONSTRUCTION_SITE => SupplyConstructionSite::class,
             self::DISTRIBUTE_FUEL => DistributeFuelToMarkets::class,
+            self::FULFILL_PROCUREMENT => WaitAndFulfillProcurement::class,
         };
     }
 }

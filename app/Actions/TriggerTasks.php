@@ -10,6 +10,7 @@ use App\Jobs\MultipleMineAndPassOn;
 use App\Jobs\MultipleSiphonAndPassOn;
 use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\SupplyConstructionSite;
+use App\Jobs\WaitAndFulfillProcurement;
 use App\Models\Ship;
 use App\Models\Task;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -46,5 +47,11 @@ class TriggerTasks
                     fn (Ship $ship) => DistributeFuelToMarkets::dispatch($ship->symbol)
                 )
             );
+        // Task::where('type', TaskTypes::FULFILL_PROCUREMENT)
+        //     ->each(
+        //         fn (Task $task) => $task->ships->each(
+        //             fn (Ship $ship) => WaitAndFulfillProcurement::dispatch($ship->symbol)
+        //         )
+        //     );
     }
 }

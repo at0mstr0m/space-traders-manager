@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\UpdateContractAction;
 use App\Actions\UpdateShipAction;
 use App\Actions\UpdateSurveyAction;
 use App\Data\SurveyData;
@@ -594,6 +595,16 @@ class Ship extends Model
                 ->first(),
             'waypoint_symbol',
         );
+    }
+
+    public function negotiateContract(): static
+    {
+        UpdateContractAction::run(
+            $this->dock()->useApi()->negotiateContract($this->symbol),
+            $this->agent
+        );
+
+        return $this;
     }
 
     /**

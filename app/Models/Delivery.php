@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\TradeSymbols;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 /**
@@ -58,6 +59,11 @@ class Delivery extends Model
     public function getIsDoneAttribute(): bool
     {
         return $this->units_required === $this->units_fulfilled;
+    }
+
+    public function scopeOnlyUnfulfilled(Builder $query): Builder
+    {
+        return $query->whereColumn('units_required', '>', 'units_fulfilled');
     }
 
     /**
