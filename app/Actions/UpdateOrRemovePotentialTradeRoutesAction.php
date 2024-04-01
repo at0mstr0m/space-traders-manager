@@ -44,12 +44,6 @@ class UpdateOrRemovePotentialTradeRoutesAction
                         "{$exporterAlias}.type" => TradeGoodTypes::EXCHANGE,
                         "{$importerAlias}.type" => TradeGoodTypes::IMPORT,
                     ])
-                )->orWhere(
-                    fn (Builder $builder) => $builder->where([
-                        "{$exporterAlias}.symbol" => TradeSymbols::FUEL,
-                        "{$exporterAlias}.type" => TradeGoodTypes::EXPORT,
-                        "{$importerAlias}.type" => TradeGoodTypes::IMPORT,
-                    ])
                 )
             )
             ->join("{$waypointTable} as w1", "{$exporterAlias}.waypoint_symbol", '=', 'w1.symbol')

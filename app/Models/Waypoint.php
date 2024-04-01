@@ -109,7 +109,6 @@ class Waypoint extends Model
                 'tradeOpportunities',
                 fn (Builder $query) => $query->where('symbol', TradeSymbols::FUEL)
                     ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
-                    ->whereNotIn('supply', [SupplyLevels::SCARCE])
             );
     }
 

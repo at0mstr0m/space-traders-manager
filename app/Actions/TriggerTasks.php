@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Enums\TaskTypes;
+use App\Jobs\DistributeFuelToMarkets;
 use App\Jobs\MultipleMineAndPassOn;
 use App\Jobs\MultipleSiphonAndPassOn;
 use App\Jobs\ServeRandomTradeRoute;
@@ -37,6 +38,12 @@ class TriggerTasks
             ->each(
                 fn (Task $task) => $task->ships->each(
                     fn (Ship $ship) => SupplyConstructionSite::dispatch($ship->symbol)
+                )
+            );
+        Task::where('type', TaskTypes::DISTRIBUTE_FUEL)
+            ->each(
+                fn (Task $task) => $task->ships->each(
+                    fn (Ship $ship) => DistributeFuelToMarkets::dispatch($ship->symbol)
                 )
             );
     }

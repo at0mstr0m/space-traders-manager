@@ -28,7 +28,7 @@ abstract class ServeTradeRoute extends ShipJob implements ShouldBeUniqueUntilPro
      */
     protected function handleShip(): void
     {
-        if ($this->ship?->task?->type !== TaskTypes::SERVE_TRADE_ROUTE) {
+        if ($this->ship?->task?->type?->getCorrespondingJob() !== static::class) {
             dump("{$this->ship->symbol} is not executing this task anymore.");
 
             // remove ship from potential trade route if it's not serving a trade route anymore
