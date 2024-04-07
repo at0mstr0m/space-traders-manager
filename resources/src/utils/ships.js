@@ -14,6 +14,14 @@ export default function useShipUtils() {
       key: "waypoint_symbol",
     },
     {
+      title: "Destination",
+      key: "destination",
+    },
+    {
+      title: "has_reached_destination",
+      key: "has_reached_destination",
+    },
+    {
       title: "Task",
       key: "task.type",
     },

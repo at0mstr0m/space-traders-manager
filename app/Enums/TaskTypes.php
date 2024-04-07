@@ -9,7 +9,7 @@ use App\Jobs\MultipleMineAndPassOn;
 use App\Jobs\MultipleSiphonAndPassOn;
 use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\SupplyConstructionSite;
-use App\Jobs\WaitAndFulfillProcurement;
+use App\Jobs\FulfillProcurement;
 use App\Jobs\WaitAndSell;
 use App\Traits\EnumUtils;
 
@@ -34,7 +34,7 @@ enum TaskTypes: string
             self::SERVE_TRADE_ROUTE => ServeRandomTradeRoute::class,
             self::SUPPLY_CONSTRUCTION_SITE => SupplyConstructionSite::class,
             self::DISTRIBUTE_FUEL => DistributeFuelToMarkets::class,
-            self::FULFILL_PROCUREMENT => WaitAndFulfillProcurement::class,
+            self::FULFILL_PROCUREMENT => FulfillProcurement::class,
         };
     }
 }

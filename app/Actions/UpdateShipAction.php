@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions;
 
 use App\Data\CargoData;
@@ -54,6 +56,10 @@ class UpdateShipAction
                 'engine_id' => $this->resolveEngine($shipData)->id,
             ]
         );
+
+        if ($ship->has_reached_destination) {
+            $ship->update(['destination' => null]);
+        }
 
         // update modules
         $ship->modules()->sync(

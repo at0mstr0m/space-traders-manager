@@ -5,18 +5,14 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\ContractTypes;
-use App\Enums\TaskTypes;
 use App\Models\Contract;
 use App\Models\Delivery;
-use App\Models\Task;
 use App\Models\TradeOpportunity;
 
-class WaitAndFulfillProcurement extends ShipJob
+class FulfillProcurement extends ShipJob
 {
     // todo: associate & dissociate ship with contract
     private ?Contract $currentContract = null;
-
-    private ?string $waitingLocation = null;
 
     protected function handleShip(): void
     {
@@ -36,43 +32,23 @@ class WaitAndFulfillProcurement extends ShipJob
             $this->currentContract = $this->ship->negotiateContract();
         }
 
-        // dump('Evaluate closest extraction location');
-
-        // $this->waitingLocation = data_get(
-        //     Task::where('type', TaskTypes::COLLECTIVE_MINING)
-        //         ->pluck('payload')
-        //         ->pluck('extraction_location')
-        //         ->map(fn (string $waypointSymbol) => [
-        //             'waypointSymbol' => $waypointSymbol,
-        //             'distance' => $this->ship->distanceTo($waypointSymbol),
-        //         ])
-        //         ->sortBy('distance')
-        //         ->first(),
-        //     'waypointSymbol'
-        // );
-
-        // if (!$this->waitingLocation) {
-        //     dump('No extraction location available.');
-
-        //     return;
-        // }
-
-        // if ($this->ship->waypoint_symbol !== $this->waitingLocation) {
-        //     $this->flyToLocation($this->waitingLocation);
-
-        //     dump("fly to extraction location at {$this->waitingLocation}");
-
-        //     return;
-        // }
-
         /** @var Delivery $currentDelivery */
         $currentDelivery = $this->currentContract->deliveries()->onlyUnfulfilled()->first();
 
+        if (!$currentDelivery) {
+            dump('No more deliveries to fulfill, fulfilling contract, self dispatching');
+            $this->currentContract->fulfill();
+            $this->selfDispatch()->delay(1);
+
+            return;
+        }
+
         if ($this->ship->cargo_is_empty) {
-            $purchaseLocation = TradeOpportunity::bySymbol($currentDelivery->trade_symbol)
+            $tradeOpportunity = TradeOpportunity::bySymbol($currentDelivery->trade_symbol)
                 ->orderBy('purchase_price')
-                ->first()
-                ?->waypoint_symbol;
+                ->first();
+
+            $purchaseLocation = $tradeOpportunity?->waypoint_symbol;
 
             if (!$purchaseLocation) {
                 throw new \Exception("No purchase location for {$currentDelivery->trade_symbol->value} available");
@@ -89,7 +65,11 @@ class WaitAndFulfillProcurement extends ShipJob
             dump("{$this->ship->symbol} purchasing {$currentDelivery->trade_symbol->value}");
             $this->ship->purchaseCargo(
                 $currentDelivery->trade_symbol,
-                min($currentDelivery->units_to_be_delivered, $this->ship->available_cargo_capacity)
+                min(
+                    $currentDelivery->units_to_be_delivered,
+                    $this->ship->available_cargo_capacity,
+                    $tradeOpportunity->trade_volume
+                )
             );
 
             $this->flyToLocation($currentDelivery->destination_symbol);
@@ -118,13 +98,14 @@ class WaitAndFulfillProcurement extends ShipJob
             }
 
             dump('done with contract, self dispatching');
-
-            $this->selfDispatch();
+            $this->selfDispatch()->delay(1);
 
             return;
         }
 
-        dump('did nothing');
+        dump("{$this->ship->symbol} is neither empty nor at delivery location, traveling to delivery destination at {$currentDelivery->destination_symbol}");
+
+        $this->flyToLocation($currentDelivery->destination_symbol);
     }
 
     private function initContract(): void
@@ -157,7 +138,6 @@ class WaitAndFulfillProcurement extends ShipJob
                 ['accepted', '=', true],
                 ['fulfilled', '=', false],
                 ['deadline', '>', now()],
-                ['deadline_to_accept', '>', now()],
             ])->exists()
         ) {
             $this->currentContract = $this->ship->agent->contracts()->where([
@@ -165,7 +145,6 @@ class WaitAndFulfillProcurement extends ShipJob
                 ['accepted', '=', true],
                 ['fulfilled', '=', false],
                 ['deadline', '>', now()],
-                ['deadline_to_accept', '>', now()],
             ])->first();
 
             dump("Using already accepted procurement contract {$this->currentContract->id}");
