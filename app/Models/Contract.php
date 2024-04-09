@@ -102,8 +102,11 @@ class Contract extends Model
         /** @var SpaceTraders */
         $api = app(SpaceTraders::class);
 
-        return $api->fulfillContract($this->identification)
-            ->updateContract($this);
+        $response = $api->fulfillContract($this->identification);
+        $response->updateContract($this);
+        $response->updateAgent($this->agent)->save();
+
+        return $this;
     }
 
     /**

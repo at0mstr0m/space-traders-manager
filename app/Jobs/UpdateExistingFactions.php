@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Models\Faction;
 use App\Data\FactionData;
-use App\Models\FactionTrait;
-use App\Helpers\SpaceTraders;
-use Illuminate\Bus\Queueable;
 use App\Data\FactionTraitData;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Helpers\SpaceTraders;
+use App\Models\Faction;
+use App\Models\FactionTrait;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class UpdateExistingFactions implements ShouldQueue
 {

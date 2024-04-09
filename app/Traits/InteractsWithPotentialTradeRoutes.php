@@ -32,7 +32,6 @@ trait InteractsWithPotentialTradeRoutes
 
         $this->possibleTradeRoutes = $this->buildPossibleNewRoutesQuery(
             PotentialTradeRoute::where([
-                ['distance', '<=', $this->ship->fuel_capacity],
                 ['supply_at_origin', '<>', SupplyLevels::SCARCE],
                 ['supply_at_destination', '<>', SupplyLevels::ABUNDANT],
             ])

@@ -6,7 +6,7 @@ namespace App\Data;
 
 use App\Actions\UpdateContractAction;
 use App\Interfaces\UpdatesShip;
-use App\Models\Agent;
+use App\Models\Contract;
 use App\Models\Ship;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
@@ -24,7 +24,7 @@ class DeliverCargoToContractData extends Data implements UpdatesShip
     {
         UpdateContractAction::run(
             $this->contract,
-            Agent::firstWhere('identification', $this->contract->identification)
+            Contract::firstWhere('identification', $this->contract->identification)->agent
         );
 
         return $this;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data;
 
+use App\Data\Casts\CarbonCast;
 use App\Enums\FactionSymbols;
 use App\Enums\FlightModes;
 use App\Enums\ShipNavStatus;
@@ -12,6 +13,7 @@ use App\Models\Engine;
 use App\Models\Faction;
 use App\Models\Frame;
 use App\Models\Reactor;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Attributes\Computed;
 use Spatie\LaravelData\Attributes\MapInputName;
@@ -52,6 +54,9 @@ class ShipData extends Data
         #[MapInputName('nav.flightMode')]
         #[WithCast(EnumCast::class)]
         public FlightModes $flightMode,
+        #[MapInputName('nav.route.arrival')]
+        #[WithCast(CarbonCast::class)]
+        public Carbon $arrival,
         #[MapInputName('crew.current')]
         public int $crewCurrent,
         #[MapInputName('crew.capacity')]
@@ -108,5 +113,13 @@ class ShipData extends Data
         $this->frameId = Frame::findBySymbol($frame->symbol->value)?->id;
         $this->reactorId = Reactor::findBySymbol($frame->symbol->value)?->id;
         $this->engineId = Engine::findBySymbol($frame->symbol->value)?->id;
+
+        $now = Carbon::now();
+        $this->cooldown = (int) ceil(max(
+            $cooldown,
+            $now->isBefore($arrival)
+                ? $now->diffInSeconds($arrival)
+                : 0
+        ));
     }
 }

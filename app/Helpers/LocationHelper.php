@@ -8,10 +8,14 @@ use App\Data\ConstructionSiteData;
 use App\Enums\ShipNavStatus;
 use App\Enums\ShipRoles;
 use App\Enums\WaypointTraitSymbols;
+use App\Exceptions\NoPathException;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use App\Models\Waypoint;
+use App\Support\Pathfinding\Dijkstra;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class LocationHelper
@@ -115,5 +119,42 @@ class LocationHelper
         return $waypointSymbol
             ? $api->getConstructionSite($waypointSymbol)
             : null;
+    }
+
+    public static function getRoutePath(string $origin, string $destination, int $fuelCapacity): ?array
+    {
+        $graph = Cache::tags(['graphs'])
+            ->rememberForever($fuelCapacity, function () use ($fuelCapacity) {
+                $graph = new Dijkstra();
+                Waypoint::canRefuel()
+                    ->get()
+                    ->pipe(fn (EloquentCollection $waypoints) => $waypoints->crossJoin($waypoints))
+                    ->reject(fn (array $waypoints) => $waypoints[0]->symbol === $waypoints[1]->symbol)
+                    ->map(fn (array $waypoints) => [
+                        'origin' => $waypoints[0]->symbol,
+                        'destination' => $waypoints[1]->symbol,
+                        'distance' => LocationHelper::distance($waypoints[0]->symbol, $waypoints[1]->symbol),
+                    ])
+                    ->values()
+                    ->each(function (array $waypoint) use (&$graph, $fuelCapacity) {
+                        if ($waypoint['distance'] > $fuelCapacity) {
+                            return;
+                        }
+
+                        $graph->addEdge(
+                            $waypoint['origin'],
+                            $waypoint['destination'],
+                            $waypoint['distance']
+                        );
+                    });
+
+                return $graph;
+            });
+
+        try {
+            return $graph->findShortestPath($origin, $destination);
+        } catch (NoPathException $th) {
+            return null;
+        }
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\NavigateShipAction;
+use App\Actions\UpdateContractAction;
 use App\Actions\UpdateShipAction;
 use App\Actions\UpdateSurveyAction;
 use App\Data\SurveyData;
@@ -157,6 +159,7 @@ class Ship extends Model
         'frame_id',     // consider removal
         'reactor_id',   // consider removal
         'engine_id',    // consider removal
+        'destination',
     ];
 
     public function getIsDockedAttribute(): bool
@@ -187,6 +190,11 @@ class Ship extends Model
     public function getAvailableCargoCapacityAttribute(): int
     {
         return $this->cargo_capacity - $this->cargo_units;
+    }
+
+    public function getHasReachedDestinationAttribute(): bool
+    {
+        return !$this->destination || $this->waypoint_symbol === $this->destination;
     }
 
     public function isLoadedWith(string|TradeSymbols $tradeSymbol): bool
@@ -272,6 +280,10 @@ class Ship extends Model
 
     public function moveIntoOrbit(): static
     {
+        if ($this->is_in_orbit) {
+            return $this;
+        }
+
         $this->useApi()
             ->orbitShip($this->symbol)
             ->updateShip($this)
@@ -280,19 +292,16 @@ class Ship extends Model
         return $this;
     }
 
-    public function navigateTo(string $waypointSymbol): static
+    public function navigateTo(string $destinationWaypointSymbol): static
     {
-        $this->moveIntoOrbit()
-            ->useApi()
-            ->navigateShip($this->symbol, $waypointSymbol)
-            ->updateShip($this)
-            ->save();
-
-        return $this;
+        return NavigateShipAction::run($this, $destinationWaypointSymbol);
     }
 
     public function dock(): static
     {
+        if ($this->is_docked) {
+            return $this;
+        }
         $this->useApi()
             ->dockShip($this->symbol)
             ->updateShip($this)
@@ -360,11 +369,17 @@ class Ship extends Model
 
     public function refuel(): static
     {
+        $wasInOrbitBeforeRefueling = $this->is_in_orbit;
+
         $this->dock()
             ->useApi()
             ->refuelShip($this->symbol)
             ->updateShip($this)
             ->save();
+
+        if ($wasInOrbitBeforeRefueling) {
+            $this->moveIntoOrbit();
+        }
 
         return $this;
     }
@@ -502,6 +517,9 @@ class Ship extends Model
 
     public function setFlightMode(FlightModes|string $flightMode): static
     {
+        if ($this->flight_mode === $flightMode) {
+            return $this;
+        }
         $this->useApi()
             ->patchShipNav($this->symbol, FlightModes::fromName($flightMode))
             ->updateShip($this)
@@ -531,11 +549,11 @@ class Ship extends Model
         return $this;
     }
 
-    public function distanceTo(string $waypointSymbol): int
+    public function distanceTo(string|Waypoint $waypointSymbol): int
     {
         return LocationHelper::distance(
             $this->waypoint_symbol,
-            $waypointSymbol
+            is_string($waypointSymbol) ? $waypointSymbol : $waypointSymbol->symbol
         );
     }
 
@@ -572,27 +590,16 @@ class Ship extends Model
 
     public function canRefuelAtCurrentLocation(): bool
     {
-        return Waypoint::canRefuel()
-            ->where('symbol', $this->waypoint_symbol)
-            ->exists();
+        return $this->waypoint->can_refuel;
     }
 
-    public function closestRefuelingStation(): string
+    public function negotiateContract(): Contract
     {
-        if ($this->canRefuelAtCurrentLocation()) {
-            return $this->waypoint_symbol;
-        }
-
-        return data_get(
-            Waypoint::canRefuel()
-                ->get()
-                ->map(fn (Waypoint $waypoint) => [
-                    'waypoint_symbol' => $waypoint->symbol,
-                    'distance' => $this->distanceTo($waypoint->symbol),
-                ])
-                ->sortBy('distance')
-                ->first(),
-            'waypoint_symbol',
+        return UpdateContractAction::run(
+            $this->dock()
+                ->useApi()
+                ->negotiateContract($this->symbol),
+            $this->agent
         );
     }
 
@@ -629,6 +636,7 @@ class Ship extends Model
             'engine_integrity' => 'float',
             'cargo_capacity' => 'integer',
             'cargo_units' => 'integer',
+            'destination' => 'string',
         ];
     }
 

@@ -21,6 +21,8 @@ class ShipResource extends JsonResource
             'symbol' => $this->symbol,
             'role' => $this->role,
             'waypoint_symbol' => $this->waypoint_symbol,
+            'destination' => $this->destination,
+            'has_reached_destination' => $this->has_reached_destination,
             'status' => $this->status,
             'flight_mode' => $this->flight_mode,
             'crew_current' => $this->crew_current,

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use App\Jobs\DistributeFuelToMarkets;
+use App\Jobs\FulfillProcurement;
 use App\Jobs\MultipleMineAndPassOn;
 use App\Jobs\MultipleSiphonAndPassOn;
+use App\Jobs\ServeBestTradeRoute;
 use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\SupplyConstructionSite;
 use App\Jobs\WaitAndSell;
@@ -20,8 +22,10 @@ enum TaskTypes: string
     case COLLECTIVE_SIPHONING = 'COLLECTIVE_SIPHONING';
     case SUPPORT_COLLECTIVE_MINERS = 'SUPPORT_COLLECTIVE_MINERS';
     case SERVE_TRADE_ROUTE = 'SERVE_TRADE_ROUTE';
+    case SERVE_BEST_TRADE_ROUTE = 'SERVE_BEST_TRADE_ROUTE';
     case SUPPLY_CONSTRUCTION_SITE = 'SUPPLY_CONSTRUCTION_SITE';
     case DISTRIBUTE_FUEL = 'DISTRIBUTE_FUEL';
+    case FULFILL_PROCUREMENT = 'FULFILL_PROCUREMENT';
 
     public function getCorrespondingJob(): string
     {
@@ -30,8 +34,10 @@ enum TaskTypes: string
             self::COLLECTIVE_SIPHONING => MultipleSiphonAndPassOn::class,
             self::SUPPORT_COLLECTIVE_MINERS => WaitAndSell::class,
             self::SERVE_TRADE_ROUTE => ServeRandomTradeRoute::class,
+            self::SERVE_BEST_TRADE_ROUTE => ServeBestTradeRoute::class,
             self::SUPPLY_CONSTRUCTION_SITE => SupplyConstructionSite::class,
             self::DISTRIBUTE_FUEL => DistributeFuelToMarkets::class,
+            self::FULFILL_PROCUREMENT => FulfillProcurement::class,
         };
     }
 }

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Models\Agent;
-use App\Data\ShipData;
-use App\Models\Faction;
-use App\Helpers\SpaceTraders;
-use Illuminate\Bus\Queueable;
 use App\Actions\UpdateShipAction;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Data\ShipData;
+use App\Helpers\SpaceTraders;
+use App\Models\Agent;
+use App\Models\Faction;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class UpdateShips implements ShouldQueue
 {
@@ -23,6 +23,7 @@ class UpdateShips implements ShouldQueue
     use SerializesModels;
 
     private SpaceTraders $api;
+
     private Faction $agentFaction;
 
     /**
@@ -41,7 +42,7 @@ class UpdateShips implements ShouldQueue
     public function handle(): void
     {
         // update ships
-        $this->api->listShips(all:true)->each(function (ShipData $shipData) {
+        $this->api->listShips(all: true)->each(function (ShipData $shipData) {
             $shipFaction = Faction::find($shipData->factionId);
             if ($this->agentFaction->isNot($shipFaction)) {
                 throw new \Exception('Ship faction does not match agent faction');

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\SupplyLevels;
 use App\Enums\TradeGoodTypes;
 use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;
+use App\Helpers\LocationHelper;
 use App\Traits\FindableBySymbol;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -72,6 +72,17 @@ class Waypoint extends Model
         'is_under_construction',
     ];
 
+    public function getCanRefuelAttribute(): bool
+    {
+        return $this->traits()
+            ->where('symbol', WaypointTraitSymbols::MARKETPLACE)
+            ->exists()
+            && $this->tradeOpportunities()
+                ->where('symbol', TradeSymbols::FUEL)
+                ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+                ->exists();
+    }
+
     public function faction(): BelongsTo
     {
         return $this->belongsTo(Faction::class);
@@ -117,19 +128,25 @@ class Waypoint extends Model
         return $query->where('symbol', 'like', $systemSymbol . '-%');
     }
 
-    public function closestRefuelingStation(string|Waypoint $waypoint): ?Waypoint
+    public function closestRefuelingWaypoint(): ?static
     {
-        if ($waypoint instanceof Waypoint) {
-            $waypoint = $waypoint->symbol;
-        }
+        $waypoints = Waypoint::canRefuel()->get();
 
-        $refuelingStations = static::canRefuel()->get();
+        $waypointSymbol = data_get(
+            $waypoints->map(
+                fn (Waypoint $waypoint) => [
+                    'waypoint_symbol' => $waypoint->symbol,
+                    'distance' => LocationHelper::distance($this, $waypoint),
+                ]
+            )
+                ->sortBy('distance')
+                ->first(),
+            'waypoint_symbol'
+        );
 
-        if ($refuelingStations->pluck('symbol')->contains($waypoint)) {
-            return $waypoint;
-        }
-
-        return $this->canRefuel();
+        return $waypointSymbol
+            ? $waypoints->firstWhere('symbol', $waypointSymbol)
+            : null;
     }
 
     /**

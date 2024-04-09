@@ -128,6 +128,7 @@ class ExtractAndTransferToCompanion implements ShouldQueue
         dump('ship is fully loaded');
         $this->ship->cargos->each(function (Cargo $cargo) {
             dump("transfer cargo {$cargo->symbol->value}");
+
             // todo: handle case that companion ship cannot cope with the cargo in a better way
             try {
                 $this->ship->transferCargoTo(
