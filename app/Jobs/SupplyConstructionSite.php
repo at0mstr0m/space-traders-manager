@@ -15,7 +15,7 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 {
     private ?ConstructionSiteData $constructionSite = null;
 
-    private ?array $supplyRouteData = [];
+    private ?TradeOpportunity $supplyTradeOpportunity = null;
 
     /**
      * Get the unique ID for the job.
@@ -42,21 +42,24 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
             $this->ship->supplyCargoToConstructionSite();
         }
 
-        $this->initSupplyRouteData();
+        $this->initSupplyTradeOpportunity();
 
-        if (!$this->supplyRouteData) {
+        if (!$this->supplyTradeOpportunity) {
             dump("{$this->ship->symbol} no Supply Route available.");
 
             return;
         }
 
         if ($this->ship->cargo_is_empty) {
-            if ($this->ship->waypoint_symbol === $this->supplyRouteData['waypoint_symbol']) {
-                dump("{$this->ship->symbol} purchasing {$this->supplyRouteData['symbol']->value} at {$this->ship->waypoint_symbol} for the construction site");
+            if ($this->ship->waypoint_symbol === $this->supplyTradeOpportunity->waypoint_symbol) {
+                dump("{$this->ship->symbol} purchasing {$this->supplyTradeOpportunity->symbol->value} at {$this->ship->waypoint_symbol} for the construction site");
                 while (!$this->ship->refresh()->is_fully_loaded) {
                     $this->ship->purchaseCargo(
-                        $this->supplyRouteData['symbol'],
-                        min($this->supplyRouteData['trade_volume'], $this->ship->available_cargo_capacity)
+                        $this->supplyTradeOpportunity->symbol,
+                        min(
+                            $this->supplyTradeOpportunity->trade_volume,
+                            $this->ship->available_cargo_capacity
+                        )
                     );
                 }
                 dump("{$this->ship->symbol} is fully loaded, flying to construction site");
@@ -64,14 +67,14 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 
                 return;
             }
-            $this->flyToLocation($this->supplyRouteData['waypoint_symbol']);
+            $this->flyToLocation($this->supplyTradeOpportunity->waypoint_symbol);
 
             return;
         }
 
         if ($this->ship->waypoint_symbol === $this->constructionSite->waypointSymbol) {
             dump("{$this->ship->symbol} is empty, flying to supply route");
-            $this->flyToLocation($this->supplyRouteData['waypoint_symbol']);
+            $this->flyToLocation($this->supplyTradeOpportunity->waypoint_symbol);
 
             return;
         }
@@ -86,9 +89,9 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
         dump("{$this->ship->symbol} did nothing.");
     }
 
-    private function initSupplyRouteData(): void
+    private function initSupplyTradeOpportunity(): void
     {
-        $this->supplyRouteData = $this->constructionSite
+        $this->supplyTradeOpportunity = $this->constructionSite
             ->constructionMaterial
             ->filter(
                 fn (ConstructionMaterialData $constructionMaterialData) => $constructionMaterialData->unitsFulfilled < $constructionMaterialData->unitsRequired
@@ -97,22 +100,9 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
                 fn (ConstructionMaterialData $constructionMaterialData) => TradeOpportunity::exports()
                     ->bySymbol($constructionMaterialData->tradeSymbol)
                     ->whereNotIn('supply', [SupplyLevels::SCARCE, SupplyLevels::LIMITED])
-                    ->select('symbol', 'waypoint_symbol', 'sell_price', 'trade_volume')
                     ->get()
-                    ->map(fn (TradeOpportunity $tradeOpportunity) => [
-                        ...$tradeOpportunity->only('symbol', 'waypoint_symbol', 'sell_price', 'trade_volume'),
-                        'distance' => LocationHelper::distance(
-                            $tradeOpportunity->waypoint_symbol,
-                            $this->ship->waypoint_symbol
-                        ),
-                        'distance_to_construction_site' => LocationHelper::distance(
-                            $tradeOpportunity->waypoint_symbol,
-                            $this->constructionSite->waypointSymbol
-                        ),
-                    ])
             )
             ->flatten(1)
-            ->filter(fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $this->ship->fuel_capacity && $tradeOpportunity['distance_to_construction_site'] <= $this->ship->fuel_capacity)
             ->sortBy('sell_price')
             ->first();
     }
