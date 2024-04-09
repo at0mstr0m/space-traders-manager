@@ -79,12 +79,13 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
                                     $this->ship->waypoint_symbol,
                                     $tradeOpportunity->waypoint_symbol
                                 ),
-                            ])->when(
-                                $this->ship->fuel_capacity > 0,
-                                fn (Collection $tradeOpportunities) => $tradeOpportunities->filter(
-                                    fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $this->ship->fuel_capacity
-                                )
-                            );
+                            ]);
+                            // ->when(
+                            //     $this->ship->fuel_capacity > 0,
+                            //     fn (Collection $tradeOpportunities) => $tradeOpportunities->filter(
+                            //         fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $this->ship->fuel_capacity
+                            //     )
+                            // );
 
                         if ($exchanges->isEmpty()) {
                             dump("cannot even sell {$cargo->symbol->value} at exchange, jettison {$cargo->units} units");

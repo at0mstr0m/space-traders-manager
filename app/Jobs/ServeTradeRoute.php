@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\SupplyLevels;
-use App\Enums\TaskTypes;
 use App\Models\PotentialTradeRoute;
 use App\Traits\InteractsWithPotentialTradeRoutes;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
