@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use App\Actions\TriggerTasks;
+use Illuminate\Http\Response;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
-use App\Models\Task;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
@@ -62,6 +63,7 @@ class TaskController extends Controller
      */
     public function triggerAll(): Response
     {
+        Cache::tags(['graphs'])->flush();
         TriggerTasks::run();
 
         return response()->noContent(Response::HTTP_OK);
