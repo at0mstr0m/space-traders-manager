@@ -35,8 +35,8 @@ trait InteractsWithPotentialTradeRoutes
                 ['supply_at_origin', '<>', SupplyLevels::SCARCE],
                 ['supply_at_destination', '<>', SupplyLevels::ABUNDANT],
             ])
-        )->get()
-            ->filter(fn (PotentialTradeRoute $route) => $this->routeDistanceIsPossible($route));
+        )->get();
+            // ->filter(fn (PotentialTradeRoute $route) => $this->routeDistanceIsPossible($route));
 
         dump("{$this->ship->symbol} found {$this->possibleTradeRoutes->count()} possible trade routes");
     }
