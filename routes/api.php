@@ -75,6 +75,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->group(function () {
             Route::get('refetch', 'refetch')->name('refetch');
         });
+
     Route::apiResource('trade-opportunities', TradeOpportunityController::class);
 
     Route::prefix('tasks')
@@ -88,6 +89,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->only(['index', 'show']);
 
     Route::apiResource('tasks', TaskController::class);
+
+    Route::prefix('waypoints')
+        ->as('waypoints.')
+        ->controller(WaypointController::class)
+        ->group(function () {
+            Route::get('without-satellite', 'withoutSatellite')->name('without-satellite');
+        });
 
     Route::apiResource('waypoints', WaypointController::class)
         ->only(['index', 'show']);

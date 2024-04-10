@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Helpers\LocationHelper;
 use App\Http\Resources\WaypointResource;
 use App\Models\Waypoint;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -24,5 +25,13 @@ class WaypointController extends Controller
     public function show(Waypoint $waypoint): WaypointResource
     {
         return new WaypointResource($waypoint);
+    }
+
+    /**
+     * Waypoints without Satellites.
+     */
+    public function withoutSatellite(): AnonymousResourceCollection
+    {
+        return WaypointResource::collection(LocationHelper::marketplacesWithoutSatellite());
     }
 }

@@ -13,8 +13,8 @@ use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use App\Models\Waypoint;
 use App\Support\Pathfinding\Dijkstra;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -97,14 +97,15 @@ class LocationHelper
         };
     }
 
-    public static function marketplacesWithoutSatellite(): Collection
+    public static function marketplacesWithoutSatellite(): EloquentCollection
     {
         $satelliteLocations = Ship::where('role', ShipRoles::SATELLITE)
             ->pluck('waypoint_symbol');
 
         return Waypoint::whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
             ->whereNotIn('symbol', $satelliteLocations)
-            ->pluck('symbol');
+            ->orderBy('symbol')
+            ->get();
     }
 
     public static function getWaypointUnderConstructionInSystem(string $systemSymbol): ?ConstructionSiteData
