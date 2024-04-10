@@ -13,7 +13,7 @@ use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use App\Models\Waypoint;
 use App\Support\Pathfinding\Dijkstra;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
