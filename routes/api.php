@@ -30,6 +30,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->group(function () {
             Route::get('purchasable-ships-in-system', 'purchasableShipsInSystem')
                 ->name('purchasable-ships-in-system');
+            Route::get('construction-site-in-starting-system', 'constructionSiteInStartingSystem')
+                ->name('construction-site-in-starting-system');
         });
 
     Route::prefix('ships')

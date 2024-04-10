@@ -5,6 +5,7 @@
     variant="tonal"
     color="primary"
     title="Waypoints without satellite"
+    min-width="300px"
   >
     <v-list
       :items="items"

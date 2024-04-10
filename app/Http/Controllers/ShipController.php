@@ -16,7 +16,6 @@ use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use App\Models\Task;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ShipController extends Controller

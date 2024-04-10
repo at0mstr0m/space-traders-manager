@@ -10,6 +10,10 @@ class LiveDataRepository extends Repository {
       },
     });
   }
+
+  constructionSiteInStartingSystem() {
+    return this._get(this.resource + "/construction-site-in-starting-system");
+  }
 }
 
 export default new LiveDataRepository("live-data");

@@ -8,6 +8,8 @@ use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Http\Requests\PaginationRequest;
 use App\Support\LengthAwarePaginator;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class LiveDataController extends Controller
 {
@@ -18,7 +20,7 @@ class LiveDataController extends Controller
         $this->api = app(SpaceTraders::class);
     }
 
-    public function purchasableShipsInSystem(PaginationRequest $request)
+    public function purchasableShipsInSystem(PaginationRequest $request): LengthAwarePaginator
     {
         $data = LocationHelper::systemsWithShips()
             ->flatMap(fn (string $systemSymbol) => $this->api->listPurchasableShipsInSystem($systemSymbol));
@@ -31,6 +33,15 @@ class LiveDataController extends Controller
             [
                 'path' => $request->url(),
             ]
+        );
+    }
+
+    public function constructionSiteInStartingSystem(Request $request): JsonResource
+    {
+        $systemSymbol = LocationHelper::parseSystemSymbol($request->user()->agent->headquarters);
+
+        return new JsonResource(
+            LocationHelper::getWaypointUnderConstructionInSystem($systemSymbol)
         );
     }
 }
