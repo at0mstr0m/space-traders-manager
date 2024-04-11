@@ -131,8 +131,10 @@ class NavigateShipAction
         $closestRefuelingWaypoint = $ship->waypoint->closestRefuelingWaypoint();
 
         if (
-            $ship->fuel_current >= $ship->distanceTo($closestRefuelingWaypoint)
+            ($canRefuelAtCurrenLocation || $ship->fuel_current >= $ship->distanceTo($closestRefuelingWaypoint))
             && $distanceToDestinationWaypoint > $ship->distanceTo($closestRefuelingWaypoint)
+            // $closestRefuelingWaypoint must be closer to $destinationWaypoint
+            && $distanceToDestinationWaypoint > LocationHelper::distance($closestRefuelingWaypoint, $destinationWaypoint)
         ) {
             if ($canRefuelAtCurrenLocation) {
                 $ship->refuel();
