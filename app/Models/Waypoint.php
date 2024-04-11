@@ -128,9 +128,14 @@ class Waypoint extends Model
         return $query->where('symbol', 'like', $systemSymbol . '-%');
     }
 
-    public function closestRefuelingWaypoint(): ?static
+    public function closestRefuelingWaypoint(bool $excludeThis = true): ?static
     {
-        $waypoints = Waypoint::canRefuel()->get();
+        $waypoints = Waypoint::canRefuel()
+            ->when(
+                $excludeThis,
+                fn (Builder $query) => $query->whereNot('symbol', $this->symbol)
+            )
+            ->get();
 
         $waypointSymbol = data_get(
             $waypoints->map(
