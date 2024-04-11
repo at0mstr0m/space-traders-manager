@@ -128,20 +128,21 @@ class NavigateShipAction
             return $ship;
         }
 
-        if (!$canRefuelAtCurrenLocation) {
-            $closestRefuelingWaypoint = $ship->waypoint->closestRefuelingWaypoint();
+        $closestRefuelingWaypoint = $ship->waypoint->closestRefuelingWaypoint();
 
-            if (
-                $ship->fuel_current >= $ship->distanceTo($closestRefuelingWaypoint)
-                && $distanceToDestinationWaypoint > $ship->distanceTo($closestRefuelingWaypoint)
-            ) {
-                $this->api
-                    ->navigateShip($ship->symbol, $closestRefuelingWaypoint->symbol)
-                    ->updateShip($ship)
-                    ->save();
-
-                return $ship;
+        if (
+            $ship->fuel_current >= $ship->distanceTo($closestRefuelingWaypoint)
+            && $distanceToDestinationWaypoint > $ship->distanceTo($closestRefuelingWaypoint)
+        ) {
+            if ($canRefuelAtCurrenLocation) {
+                $ship->refuel();
             }
+            $this->api
+                ->navigateShip($ship->symbol, $closestRefuelingWaypoint->symbol)
+                ->updateShip($ship)
+                ->save();
+
+            return $ship;
         }
 
         if (!$destinationWaypoint->can_refuel) {
@@ -163,19 +164,18 @@ class NavigateShipAction
             }
         }
 
-        throw new \Exception("{$ship->symbol} cannot reach destination {$destinationWaypointSymbol} from {$ship->waypoint_symbol}", 1);
         // no route found, no other chance than to drift to the destination
-        // $ship->setFlightMode(FlightModes::DRIFT);
+        $ship->setFlightMode(FlightModes::DRIFT);
 
-        // if ($canRefuelAtCurrenLocation) {
-        //     $ship->refuel();
-        // }
+        if ($canRefuelAtCurrenLocation) {
+            $ship->refuel();
+        }
 
-        // $this->api
-        //     ->navigateShip($ship->symbol, $destinationWaypointSymbol)
-        //     ->updateShip($ship)
-        //     ->save();
+        $this->api
+            ->navigateShip($ship->symbol, $destinationWaypointSymbol)
+            ->updateShip($ship)
+            ->save();
 
-        // return $ship;
+        return $ship;
     }
 }
