@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Enums\ContractTypes;
 use App\Models\Contract;
 use App\Models\Delivery;
+use App\Enums\ContractTypes;
+use App\Enums\TradeGoodTypes;
 use App\Models\TradeOpportunity;
 
 class FulfillProcurement extends ShipJob
@@ -45,6 +46,7 @@ class FulfillProcurement extends ShipJob
 
         if ($this->ship->cargo_is_empty) {
             $tradeOpportunity = TradeOpportunity::bySymbol($currentDelivery->trade_symbol)
+                ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
                 ->orderBy('purchase_price')
                 ->first();
 
