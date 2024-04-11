@@ -133,7 +133,11 @@ class Waypoint extends Model
         $waypoints = Waypoint::canRefuel()
             ->when(
                 $excludeThis,
-                fn (Builder $query) => $query->whereNot('symbol', $this->symbol)
+                fn (Builder $query) => $query->where([
+                    ['symbol', '<>', $this->symbol],
+                    ['x', '<>', $this->x],
+                    ['y', '<>', $this->y],
+                ])
             )
             ->get();
 
