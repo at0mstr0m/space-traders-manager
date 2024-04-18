@@ -603,6 +603,14 @@ class Ship extends Model
         );
     }
 
+    public function createChart(): static
+    {
+        $this->useApi()
+            ->createChart($this->symbol);
+
+        return $this;
+    }
+
     /**
      * Get the attributes that should be cast.
      *

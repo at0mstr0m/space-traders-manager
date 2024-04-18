@@ -23,7 +23,7 @@ class JumpShipData extends Data implements UpdatesShip, UpdatesAgent
         #[MapInputName('nav')]
         public NavigationData $nav,
         #[MapInputName('transaction')]
-        public TransactionData $transaction,
+        public MarketTransactionData $transaction,
         #[MapInputName('agent')]
         public AgentData $agent,
     ) {}

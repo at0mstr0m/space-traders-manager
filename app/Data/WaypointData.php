@@ -31,7 +31,7 @@ class WaypointData extends Data
         public int $y,
         #[MapInputName('faction.symbol')]
         #[WithCast(EnumCast::class)]
-        public FactionSymbols $faction,
+        public ?FactionSymbols $faction,
         #[MapInputName('orbitals')]
         public Collection $orbitals,
         #[MapInputName('traits')]

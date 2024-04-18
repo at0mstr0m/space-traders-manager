@@ -19,7 +19,9 @@ return new class() extends Migration {
             $table->string('symbol')
                 ->unique();
             $table->enum('type', WaypointTypes::values());
-            $table->foreignId('faction_id')->constrained();
+            $table->foreignId('faction_id')
+                ->nullable()
+                ->constrained();
             $table->smallInteger('x');
             $table->smallInteger('y');
             $table->tinyText('orbits')

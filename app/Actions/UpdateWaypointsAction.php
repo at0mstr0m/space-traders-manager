@@ -34,6 +34,10 @@ class UpdateWaypointsAction
         $waypointModifiers = $this->extractRelation($waypoints, 'modifiers', WaypointModifier::class);
 
         $waypoints->each(function (WaypointData $waypointData) use ($waypointTraits, $waypointModifiers) {
+            /** @var ?int */
+            $factionId = $waypointData->faction
+                ? Faction::findBySymbol($waypointData->faction)->id
+                : null;
             /** @var Waypoint */
             $waypoint = Waypoint::updateOrCreate(
                 ['symbol' => $waypointData->symbol],
@@ -41,7 +45,7 @@ class UpdateWaypointsAction
                     'type' => $waypointData->type,
                     'x' => $waypointData->x,
                     'y' => $waypointData->y,
-                    'faction_id' => Faction::findBySymbol($waypointData->faction)->id,
+                    'faction_id' => $factionId,
                     'orbits' => $waypointData->orbits,
                     'is_under_construction' => $waypointData->isUnderConstruction,
                 ]
