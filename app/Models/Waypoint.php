@@ -113,6 +113,16 @@ class Waypoint extends Model
         return $this->hasMany(TradeOpportunity::class, 'waypoint_symbol', 'symbol');
     }
 
+    public function ships(): HasMany
+    {
+        return $this->hasMany(Ship::class, 'waypoint_symbol', 'symbol');
+    }
+
+    public function system(): BelongsTo
+    {
+        return $this->belongsTo(System::class, 'system_symbol', 'symbol');
+    }
+
     public function scopeCanRefuel(Builder $query): Builder
     {
         return $query->whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)

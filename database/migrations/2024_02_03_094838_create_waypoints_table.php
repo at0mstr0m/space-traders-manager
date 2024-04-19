@@ -18,6 +18,7 @@ return new class() extends Migration {
             $table->timestamps();
             $table->string('symbol')
                 ->unique();
+            $table->string('system_symbol');
             $table->enum('type', WaypointTypes::values());
             $table->foreignId('faction_id')
                 ->nullable()

@@ -42,6 +42,7 @@ class UpdateWaypointsAction
             $waypoint = Waypoint::updateOrCreate(
                 ['symbol' => $waypointData->symbol],
                 [
+                    'system_symbol' => $waypointData->systemSymbol,
                     'type' => $waypointData->type,
                     'x' => $waypointData->x,
                     'y' => $waypointData->y,

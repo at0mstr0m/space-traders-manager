@@ -50,6 +50,7 @@ use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;
 use App\Models\Ship;
+use App\Models\Waypoint;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Response as HttpResponse;
@@ -618,7 +619,14 @@ class SpaceTraders
                 $systemSymbol,
                 waypointTrait: WaypointTraitSymbols::MARKETPLACE,
                 all: true
-            )->map(fn (WaypointData $waypoint) => $this->getMarket($waypoint->symbol))
+            )->map(function (WaypointData $waypoint) {
+                // avoid making a request if there is no ship present
+                $waypointSymbol = $waypoint->symbol;
+
+                return Waypoint::findBySymbol($waypointSymbol)->ships()->exists()
+                    ? $this->getMarket($waypointSymbol)
+                    : null;
+            })->filter()
         );
     }
 

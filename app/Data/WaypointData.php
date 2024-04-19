@@ -22,6 +22,8 @@ class WaypointData extends Data
     public function __construct(
         #[MapInputName('symbol')]
         public string $symbol,
+        #[MapInputName('systemSymbol')]
+        public string $systemSymbol,
         #[MapInputName('type')]
         #[WithCast(EnumCast::class)]
         public WaypointTypes $type,

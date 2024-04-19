@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -268,6 +269,18 @@ class Ship extends Model
     public function waypoint(): HasOne
     {
         return $this->hasOne(Waypoint::class, 'symbol', 'waypoint_symbol');
+    }
+
+    public function system(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            System::class,
+            Waypoint::class,
+            'symbol',
+            'symbol',
+            'waypoint_symbol',
+            'system_symbol'
+        );
     }
 
     public function refetch(): static
