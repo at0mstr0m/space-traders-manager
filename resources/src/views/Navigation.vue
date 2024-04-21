@@ -2,77 +2,38 @@
 <template>
   <v-container
     fluid
-    class="d-flex justify-center align-center"
-    :style="{
-      width: '50%',
-      height: '70%',
-    }"
+    class="justify-center align-center"
   >
-    <v-system-map :data="data" />
+    <v-row no-gutters>
+      <v-col>
+        <v-sheet class="pa-6 ma-1">
+          <v-system-map />
+        </v-sheet>
+      </v-col>
+      <v-col>
+        <v-sheet class="pa-2 ma-1">
+          <v-sector-map height="600" />
+        </v-sheet>
+      </v-col>
+
+      <v-responsive width="100%" />
+
+      <v-col>
+        <v-sheet class="pa-2 ma-1">
+          .v-col-auto
+        </v-sheet>
+      </v-col>
+
+      <v-col>
+        <v-sheet class="pa-2 ma-1">
+          .v-col-auto
+        </v-sheet>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script setup>
-import VSystemMap from '@/components/VSystemMap.vue';
-
-const data = {
-  datasets: [
-    {
-      label: 'Scatter Dataset 1',
-      fill: false,
-      borderColor: '#f87979',
-      backgroundColor: '#f87979',
-      data: [
-        {
-          x: -2,
-          y: 4
-        },
-        {
-          x: -1,
-          y: 1
-        },
-        {
-          x: 0,
-          y: 0
-        },
-        {
-          x: 1,
-          y: 1
-        },
-        {
-          x: 2,
-          y: 4
-        }
-      ]
-    },
-    {
-      label: 'Scatter Dataset 2',
-      fill: false,
-      borderColor: '#7acbf9',
-      backgroundColor: '#7acbf9',
-      data: [
-        {
-          x: -2,
-          y: -4
-        },
-        {
-          x: -1,
-          y: -1
-        },
-        {
-          x: 0,
-          y: 1
-        },
-        {
-          x: 1,
-          y: -1
-        },
-        {
-          x: 2,
-          y: -4
-        }
-      ]
-    }
-  ]
-};
+import VSectorMap from '@/components/Maps/VSectorMap.vue';
+import VSystemMap from '@/components/Maps/VSystemMap.vue';
 </script>

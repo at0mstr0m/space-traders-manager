@@ -1,5 +1,6 @@
 <template>
   <scatter
+    v-bind="{...$attrs, ...$props}"
     :options="options"
     :data="props.data"
   />
@@ -51,8 +52,7 @@ const options = {
   maintainAspectRatio: false,
   plugins: {
     customCanvasBackgroundColor: {
-    //   color: '#0F172A',
-      color: '#FFFFFF',
+      color: '#0F172A',
     },
     zoom: {
       zoom: {

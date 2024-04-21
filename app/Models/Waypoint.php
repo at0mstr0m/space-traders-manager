@@ -64,6 +64,7 @@ class Waypoint extends Model
 
     protected $fillable = [
         'symbol',
+        'system_symbol',
         'type',
         'x',
         'y',
@@ -179,6 +180,7 @@ class Waypoint extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'symbol' => 'string',
+            'system_symbol' => 'string',
             'type' => WaypointTypes::class,
             'x' => 'integer',
             'y' => 'integer',

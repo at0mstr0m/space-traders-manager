@@ -1,6 +1,6 @@
 import { ModelRepository } from "@/repos/";
 
-class ShipsRepository extends ModelRepository {
+class ShipRepository extends ModelRepository {
   refetch() {
     return this._get(this.resource + "/refetch");
   }
@@ -25,4 +25,4 @@ class ShipsRepository extends ModelRepository {
   }
 }
 
-export default new ShipsRepository("ships");
+export default new ShipRepository("ships");

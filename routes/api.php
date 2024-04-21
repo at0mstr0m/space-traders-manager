@@ -6,6 +6,7 @@ use App\Http\Controllers\ContractController;
 use App\Http\Controllers\LiveDataController;
 use App\Http\Controllers\PotentialTradeRouteController;
 use App\Http\Controllers\ShipController;
+use App\Http\Controllers\SystemController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TradeOpportunityController;
 use App\Http\Controllers\TransactionController;
@@ -24,6 +25,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('contracts')
+        ->as('contracts.')
+        ->controller(ContractController::class)
+        ->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::get('refetch', 'refetch')->name('refetch');
+            Route::post('{contract}/accept', 'accept')->name('accept');
+        });
+
     Route::prefix('live-data')
         ->as('live-data.')
         ->controller(LiveDataController::class)
@@ -33,6 +43,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('construction-site-in-starting-system', 'constructionSiteInStartingSystem')
                 ->name('construction-site-in-starting-system');
         });
+
+    Route::prefix('potential-trade-routes')
+        ->as('potential-trade-routes.')
+        ->controller(PotentialTradeRouteController::class)
+        ->group(function () {
+            Route::get('refetch', 'refetch')->name('refetch');
+        });
+
+    Route::apiResource('potential-trade-routes', PotentialTradeRouteController::class);
 
     Route::prefix('ships')
         ->as('ships.')
@@ -52,24 +71,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::patch('update-flight-mode', 'updateFlightMode')->name('update-flight-mode');
             Route::patch('update-task', 'updateTask')->name('update-task');
         });
+    Route::apiResource('systems', SystemController::class)
+        ->only(['index', 'show']);
 
-    Route::prefix('contracts')
-        ->as('contracts.')
-        ->controller(ContractController::class)
+    Route::prefix('systems/{system}')
+        ->as('systems.')
+        ->controller(SystemController::class)
         ->group(function () {
-            Route::get('', 'index')->name('index');
-            Route::get('refetch', 'refetch')->name('refetch');
-            Route::post('{contract}/accept', 'accept')->name('accept');
+            Route::get('waypoints', 'waypoints')->name('waypoints');
         });
-
-    Route::prefix('potential-trade-routes')
-        ->as('potential-trade-routes.')
-        ->controller(PotentialTradeRouteController::class)
-        ->group(function () {
-            Route::get('refetch', 'refetch')->name('refetch');
-        });
-
-    Route::apiResource('potential-trade-routes', PotentialTradeRouteController::class);
 
     Route::prefix('trade-opportunities')
         ->as('trade-opportunities.')

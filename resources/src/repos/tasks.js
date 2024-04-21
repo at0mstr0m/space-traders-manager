@@ -1,6 +1,6 @@
 import { ModelRepository } from "@/repos/";
 
-class TasksRepository extends ModelRepository {
+class TaskRepository extends ModelRepository {
   store(newTaskData) {
     return this._post(this.resource, newTaskData);
   }
@@ -18,4 +18,4 @@ class TasksRepository extends ModelRepository {
   }
 }
 
-export default new TasksRepository("tasks");
+export default new TaskRepository("tasks");

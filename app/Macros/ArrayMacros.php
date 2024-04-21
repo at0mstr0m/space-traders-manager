@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Macros;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
+/**
+ * @mixin Arr
+ */
 class ArrayMacros
 {
     public function transformKeys(): callable

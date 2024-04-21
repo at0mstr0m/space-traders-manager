@@ -1,11 +1,12 @@
+import contractRepository from "@/repos/contracts.js";
 import liveDataRepository from "@/repos/liveData.js";
 import potentialTradeRouteRepository from "@/repos/potentialTradeRoutes.js";
 import shipRepository from "@/repos/ships.js";
-import contractRepository from "@/repos/contracts.js";
-import tradeOpportunitiesRepository from "@/repos/tradeOpportunities.js";
-import transactionsRepository from "@/repos/transactions.js";
-import tasksRepository from "@/repos/tasks.js";
-import waypointsRepository from "@/repos/waypoints.js";
+import systemRepository from "@/repos/systems.js";
+import taskRepository from "@/repos/tasks.js";
+import tradeOpportunityRepository from "@/repos/tradeOpportunities.js";
+import transactionRepository from "@/repos/transactions.js";
+import waypointRepository from "@/repos/waypoints.js";
 
 export function useRepository(resource) {
   switch (resource) {
@@ -17,14 +18,16 @@ export function useRepository(resource) {
       return potentialTradeRouteRepository;
     case "ships":
       return shipRepository;
+    case "systems":
+      return systemRepository;
     case "tasks":
-      return tasksRepository;
+      return taskRepository;
     case "trade-opportunities":
-      return tradeOpportunitiesRepository;
+      return tradeOpportunityRepository;
     case "transactions":
-      return transactionsRepository;
+      return transactionRepository;
     case "waypoints":
-      return waypointsRepository;
+      return waypointRepository;
     default:
       throw new Error(`No repository found for resource: ${resource}`);
   }
