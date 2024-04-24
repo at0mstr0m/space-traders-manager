@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SystemResource extends JsonResource
+class FactionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,13 +19,10 @@ class SystemResource extends JsonResource
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'symbol' => $this->symbol,
-            'sector_symbol' => $this->sector_symbol,
-            'type' => $this->type,
-            'x' => $this->x,
-            'y' => $this->y,
-            'faction' => $this->faction ? new FactionResource($this->faction) : null,
-            'ships_count' => $this->ships()->count(),
-            'waypoints_count' => $this->waypoints()->count(),
+            'name' => $this->name,
+            'headquarters' => $this->headquarters,
+            'description' => $this->description,
+            'is_recruiting' => $this->is_recruiting,
         ];
     }
 }

@@ -11,9 +11,16 @@
     />
   </v-row>
   <v-row>
+    <v-progress-linear
+      v-if="loading"
+      color="secondary" 
+      :model-value="page ? ((page - 1) / lastPage * 100) : 0"
+    />
     <v-scrollable-map
+      v-else
       :data="data"
       height="500"
+      @select="handleWaypointsSelected"
     />
   </v-row>
 </template>
@@ -29,12 +36,17 @@ import { getSystemColor } from '@/enums/systemTypes';
 
 const repo = useRepository('systems');
 
+const emit = defineEmits(['select']);
 const systemId = ref(null);
 const data = ref({ datasets: [] });
 const page = ref(0);
 const lastPage = ref(1);
 const loading = ref(false);
 const systemDropdown = ref(null);
+
+function handleWaypointsSelected(waypoints) {
+  emit('select', waypoints.length ? waypoints : null);
+}
 
 function addWaypointsToData(waypoints) {
   const currentData = _cloneDeep(data.value);
@@ -48,14 +60,12 @@ function addWaypointsToData(waypoints) {
         borderColor: color,
         backgroundColor: color,
         data: [{
-            x: waypoint.x,
-            y: waypoint.y
+            ...waypoint,
           }]
       });
     } else {
       currentData.datasets[index].data.push({
-        x: waypoint.x,
-        y: waypoint.y
+        ...waypoint,
       });
     }
   });
@@ -65,6 +75,7 @@ function addWaypointsToData(waypoints) {
 async function fetchWaypoints() {
   page.value++;
   if (page.value > lastPage.value) {
+    loading.value = false;
     return;
   }
   loading.value = true;
@@ -75,16 +86,8 @@ async function fetchWaypoints() {
 }
 
 watch(
-  data, (newValue) => {
-    if (newValue) {
-      loading.value = false;
-    }
-  },
-  { deep: true }
-);
-
-watch(
   systemId, (newValue) => {
+    emit('select', null);
     data.value = { datasets: [] };
     page.value = 0;
     if (newValue) {
@@ -110,4 +113,8 @@ watch(
     }
   }
 );
+
+defineExpose({
+  setSystem: (system) => systemDropdown.value.setCurrentItem(system),
+});
 </script>

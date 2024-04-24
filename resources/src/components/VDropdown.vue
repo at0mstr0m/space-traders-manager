@@ -100,7 +100,7 @@ async function fetchItems() {
     ...props.routeParams
   });
   lastPage.value = response.data.meta.last_page;
-  items.value = _uniqBy(items.value.concat(response.data.data), 'id');
+  items.value = _uniqBy(items.value.concat(response.data.data), props.itemValue);
 }
 
 async function fetchPreviouslySelected() {
@@ -110,6 +110,17 @@ async function fetchPreviouslySelected() {
 
 function handleModelUpdated(value) {
   currentItem.value = items.value.find((item) => item[props.itemValue] === value);
+}
+
+function setCurrentItem(element) {
+  if (
+    element 
+    && !items.value.find((item) => item[props.itemValue] === element[props.itemValue])
+  ) {
+    items.value.push(element);
+  }
+  currentItem.value = element ?? null;
+  selected.value = element ? element[props.itemValue] : null;
 }
 
 onMounted(() => {
@@ -124,5 +135,8 @@ onMounted(() => {
   }
 });
 
-defineExpose({ currentItem });
+defineExpose({
+  currentItem,
+  setCurrentItem
+});
 </script>

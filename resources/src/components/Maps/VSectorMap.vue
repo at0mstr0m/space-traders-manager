@@ -1,12 +1,17 @@
 <template>
+  <v-progress-linear
+    v-if="loading"
+    color="secondary" 
+    :model-value="page ? ((page - 1) / lastPage * 100) : 0"
+  />
   <v-scrollable-map
-    v-if="!loading"
+    v-else
     :data="data"
   />
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 import _cloneDeep from "lodash/cloneDeep";
 import VScrollableMap from '@/components/Maps/VScrollableMap.vue';
@@ -21,6 +26,7 @@ const data = ref({
       fill: false,
       borderColor: '#f87979',
       backgroundColor: '#f87979',
+      hoverRadius: 8,
       data: []
     },
   ]
@@ -33,8 +39,7 @@ function addSystemsToData(systems) {
   const currentData = _cloneDeep(data.value);
   systems.forEach((system) => {
     currentData.datasets[0].data.push({
-      x: system.x,
-      y: system.y
+      ...system
     });
   });
   data.value = currentData;
@@ -43,6 +48,7 @@ function addSystemsToData(systems) {
 async function fetchSystems() {
   page.value++;
   if (page.value > lastPage.value) {
+    loading.value = false;
     return;
   }
   loading.value = true;
@@ -51,15 +57,6 @@ async function fetchSystems() {
   addSystemsToData(response.data.data);
   setTimeout(fetchSystems, 500);
 }
-
-watch(
-  data, (newValue) => {
-    if (newValue) {
-      loading.value = false;
-    }
-  },
-  { deep: true }
-);
 
 onMounted(fetchSystems);
 </script>
