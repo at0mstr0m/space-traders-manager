@@ -1,4 +1,4 @@
-import TradeGoodTypes from "@/enums/tradeGoodTypes";
+import TradeGoodTypes from "@enums/tradeGoodTypes";
 
 const SupplyLevels = Object.freeze({
   SCARCE: "SCARCE",

@@ -9,7 +9,9 @@
     expandable
     show-expand
     expand-on-click
-    item-selectable
+    show-select
+    select-strategy="single"
+    @update:model-value="handleShipSelected"
   >
     <!-- :sort-by="{ type: 'type', order: 'asc' }" -->
     <template #top>
@@ -38,7 +40,7 @@
       <v-ship-expanded-details
         :ship="item"
         :columns="columns"
-        @update-row="emits('update')"
+        @update:row="emits('update:row')"
       />
     </template>
   </v-data-table>
@@ -60,5 +62,17 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(['update']);
+const emits = defineEmits([
+  'update:row',
+  'shipSelected',
+]);
+
+function handleShipSelected(shipId) {
+  emits(
+    'shipSelected',
+    shipId.length
+      ? props.ships.find((ship) => ship.id === shipId[0])
+      : null
+  );
+}
 </script>

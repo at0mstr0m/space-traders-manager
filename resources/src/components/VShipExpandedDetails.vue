@@ -234,11 +234,11 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['updateRow']);
+const emit = defineEmits(['update:row']);
 
 const ship = toRef(props, 'ship');
 
 function updateRow(updatedShip) {
-  emit('updateRow', updatedShip);
+  emit('update:row', updatedShip);
 }
 </script>

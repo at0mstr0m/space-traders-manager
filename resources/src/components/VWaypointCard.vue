@@ -40,13 +40,15 @@
     <template #text>
       <v-waypoint-market-table
         v-if="tradeOpportunities.length"
+        ref="marketTable"
         :trade-opportunities="tradeOpportunities"
       />
       <div v-if="ships.length">
         <v-divider class="mb-2" />
         <v-waypoint-ships-table 
           :ships="ships"
-          @update="fetchShips"
+          @update:row="fetchShips"
+          @ship-selected="setMarketplaceShip"
         />
       </div>
     </template>
@@ -70,6 +72,7 @@ const props = defineProps({
   },
 });
 
+const marketTable = ref(null);
 const tradeOpportunities = ref([]);
 const ships = ref([]);
 
@@ -86,6 +89,10 @@ async function fetchShips() {
   if (!props.waypoint.id) return;
   const response = await repo.ships(props.waypoint.id);
   ships.value = response.data.data;
+}
+
+function setMarketplaceShip(ship) {
+  marketTable.value?.setCurrentShip(ship);
 }
 
 onMounted(() => {

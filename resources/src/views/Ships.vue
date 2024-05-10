@@ -25,7 +25,7 @@
         <v-ship-expanded-details 
           :ship="item"
           :columns="columns"
-          @update-row="updateRow"
+          @update:row="updateRow"
         />
       </template>
 

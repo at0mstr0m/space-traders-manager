@@ -20,31 +20,34 @@
     <!-- disable footer -->
     <template #bottom />
 
-    <!-- eslint-disable-next-line vue/valid-v-slot -->
-    <template #item.purchase_price="{ item, value }">
-      <v-chip :color="getSupplyColor(item.type, item.supply)">
-        {{ value }}
-      </v-chip>
+    <template #[`item.purchase_price`]="{ item }">
+      <v-price-chip 
+        :item="item"
+        value-key="purchase_price"
+        :ship="currentShip"
+      />
     </template>
 
-    <!-- eslint-disable-next-line vue/valid-v-slot -->
-    <template #item.sell_price="{ item, value }">
-      <v-chip :color="getSupplyColor(item.type, item.supply)">
-        {{ value }}
-      </v-chip>
+    <template #[`item.sell_price`]="{ item }">
+      <v-price-chip 
+        :item="item"
+        value-key="sell_price"
+        :ship="currentShip"
+      />
     </template>
   </v-data-table>
 </template>
 
 <script setup>
+import VPriceChip from "@/components/VPriceChip.vue";
 import useTradeOpportunityUtils from "@/utils/tradeOpportunities";
 import { ref } from "vue";
 import { VDataTable } from "vuetify/lib/components/index.mjs";
-import { getSupplyColor } from "@enums/supplyLevels";
 
 const { marketTableColumns } = useTradeOpportunityUtils();
 
 const sortBy = ref([{ key: 'type', order: 'asc' }]);
+const currentShip = ref(null);
 
 const props = defineProps({
   tradeOpportunities: {
@@ -52,4 +55,10 @@ const props = defineProps({
     required: true,
   },
 });
+
+function setCurrentShip(ship) {
+  currentShip.value = ship;
+}
+
+defineExpose({ setCurrentShip });
 </script>
