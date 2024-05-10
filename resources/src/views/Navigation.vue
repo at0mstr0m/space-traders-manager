@@ -29,7 +29,11 @@
 
       <v-col>
         <v-sheet class="pa-2 ma-1">
-          .v-col-auto
+          <v-waypoint-card
+            v-for="waypoint in currentWaypoints"
+            :key="'waypoint_' + waypoint.id"
+            :waypoint="waypoint"
+          />
         </v-sheet>
       </v-col>
 
@@ -46,8 +50,10 @@
 import { ref } from 'vue';
 import VSectorMap from '@/components/Maps/VSectorMap.vue';
 import VSystemMap from '@/components/Maps/VSystemMap.vue';
+import VWaypointCard from '@/components/VWaypointCard.vue';
 
 const systemMap = ref(null);
+const currentWaypoints = ref([]);
 
 function handleSystemSelected(system) {
   if (!system.length) {
@@ -56,7 +62,7 @@ function handleSystemSelected(system) {
   systemMap.value.setSystem(system[0]);
 }
 
-function handleWaypointsSelected(system) {
-  console.log('handleWaypointsSelected system', system);
+function handleWaypointsSelected(waypoints) {
+  currentWaypoints.value = waypoints;
 }
 </script>

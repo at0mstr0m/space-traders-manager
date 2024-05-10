@@ -71,6 +71,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::patch('update-flight-mode', 'updateFlightMode')->name('update-flight-mode');
             Route::patch('update-task', 'updateTask')->name('update-task');
         });
+
     Route::apiResource('systems', SystemController::class)
         ->only(['index', 'show']);
 
@@ -111,4 +112,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::apiResource('waypoints', WaypointController::class)
         ->only(['index', 'show']);
+
+    Route::prefix('waypoints/{waypoint}')
+        ->as('waypoints.')
+        ->controller(WaypointController::class)
+        ->group(function () {
+            Route::get('market', 'market')->name('market');
+            Route::get('ships', 'ships')->name('ships');
+        });
 });

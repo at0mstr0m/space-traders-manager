@@ -37,6 +37,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./resources/src", import.meta.url)),
+      "@enums": fileURLToPath(new URL("./resources/src/enums", import.meta.url)),
     },
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },

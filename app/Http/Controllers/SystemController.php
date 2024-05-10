@@ -43,6 +43,7 @@ class SystemController extends Controller
         return WaypointResource::collection(
             $system->refresh()
                 ->waypoints()
+                ->withCount('ships')
                 ->orderBy('symbol')
                 ->paginate()
         );

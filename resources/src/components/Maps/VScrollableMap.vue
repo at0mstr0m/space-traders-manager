@@ -19,7 +19,7 @@ import {
   Legend
 } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom';
-import { Scatter, getElementsAtEvent } from 'vue-chartjs'
+import { Scatter, getElementAtEvent } from 'vue-chartjs'
 
 const props = defineProps({
   data: {
@@ -121,7 +121,7 @@ const options = computed(() => ({
 }));
 
 function onClick(event) {
-  const elements = getElementsAtEvent(scatterPlot.value.chart, event)
+  const elements = getElementAtEvent(scatterPlot.value.chart, event)
     ?.map(({ datasetIndex, index }) =>  props.data.datasets[datasetIndex].data[index]);
 
   emit('select', elements);
