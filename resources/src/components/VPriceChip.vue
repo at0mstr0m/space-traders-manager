@@ -6,17 +6,26 @@
         :variant="getVariant(isHovering)"
         density="comfortable"
         :color="color"
+        @click="handleClick"
       >
         {{ props.item[props.valueKey] }}
       </v-chip>
     </template>
   </v-hover>
+  <v-purchase-sell-modal
+    v-if="props.ship"
+    v-model:visible="showModal"
+    :trade-opportunity="props.item"
+    :ship="props.ship"
+    :action="props.valueKey === 'purchase_price' ? 'Purchase' : 'Sell'"
+  />
 </template>
 
 <script setup>
+import VPurchaseSellModal from '@/components/VPurchaseSellModal.vue';
 import { getSupplyColor } from "@enums/supplyLevels";
 import TradeGoodTypes from "@enums/tradeGoodTypes";
-import { computed } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
   item: {
@@ -33,6 +42,7 @@ const props = defineProps({
   },
 });
 
+const showModal = ref(false);
 const color = computed(() => getSupplyColor(props.item.type, props.item.supply));
 const transactionImpossible = computed(() =>
     !props.ship
@@ -54,6 +64,12 @@ function getVariant(isHovering) {
       return 'flat';
     default:
       return 'outlined';
+  }
+}
+
+function handleClick() {
+  if (!transactionImpossible.value) {
+    showModal.value = true;
   }
 }
 </script>
