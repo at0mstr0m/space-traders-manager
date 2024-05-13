@@ -1,5 +1,6 @@
 <template>
   <v-data-table
+    v-model="selectedShips"
     v-model:expanded="expanded"
     :items="props.ships"
     :headers="waypointTableColumns"
@@ -54,6 +55,7 @@ import useShipUtils from "@/utils/ships";
 
 const { waypointTableColumns } = useShipUtils();
 const expanded = ref([]);
+const selectedShips = ref([]);
 
 const props = defineProps({
   ships: {
@@ -75,4 +77,10 @@ function handleShipSelected(shipId) {
       : null
   );
 }
+
+function setSelectedShip(ship) {
+  selectedShips.value = [ship];
+}
+
+defineExpose({ setSelectedShip });
 </script>

@@ -42,10 +42,12 @@
         v-if="tradeOpportunities.length"
         ref="marketTable"
         :trade-opportunities="tradeOpportunities"
+        @refresh="refresh"
       />
       <div v-if="ships.length">
         <v-divider class="mb-2" />
-        <v-waypoint-ships-table 
+        <v-waypoint-ships-table
+          ref="shipsTable"
           :ships="ships"
           @update:row="fetchShips"
           @ship-selected="setMarketplaceShip"
@@ -73,6 +75,7 @@ const props = defineProps({
 });
 
 const marketTable = ref(null);
+const shipsTable = ref(null);
 const tradeOpportunities = ref([]);
 const ships = ref([]);
 
@@ -95,8 +98,15 @@ function setMarketplaceShip(ship) {
   marketTable.value?.setCurrentShip(ship);
 }
 
-onMounted(() => {
+function refresh() {
+  shipsTable.value.setSelectedShip(null);
+  load();
+}
+
+function load() {
   fetchTradeOpportunities();
   fetchShips();
-});
+}
+
+onMounted(load);
 </script>

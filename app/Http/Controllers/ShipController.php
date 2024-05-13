@@ -6,9 +6,11 @@ namespace App\Http\Controllers;
 
 use App\Actions\UpdateShipAction;
 use App\Enums\ShipTypes;
+use App\Enums\TradeSymbols;
 use App\Helpers\SpaceTraders;
+use App\Http\Requests\BuyShipRequest;
 use App\Http\Requests\PaginationRequest;
-use App\Http\Requests\PurchaseShipRequest;
+use App\Http\Requests\ShipPurchaseSellRequest;
 use App\Http\Requests\UpdateFlightModeRequest;
 use App\Http\Requests\UpdateShipTaskRequest;
 use App\Http\Resources\ShipResource;
@@ -65,9 +67,9 @@ class ShipController extends Controller
     }
 
     /**
-     * Purchase ship.
+     * Buy ship.
      */
-    public function purchase(PurchaseShipRequest $request): ShipResource
+    public function buy(BuyShipRequest $request): ShipResource
     {
         $validated = $request->validated();
         $purchaseShipData = $this->api->purchaseShip(
@@ -103,5 +105,31 @@ class ShipController extends Controller
         $ship->task()->associate(Task::find($taskId))->save();
 
         return $this->show($ship);
+    }
+
+    /**
+     * Purchase Cargo.
+     */
+    public function purchase(Ship $ship, ShipPurchaseSellRequest $request): ShipResource
+    {
+        return new ShipResource(
+            $ship->purchaseCargo(
+                $request->enum('symbol', TradeSymbols::class),
+                $request->integer('quantity'),
+            )
+        );
+    }
+
+    /**
+     * Sell Cargo.
+     */
+    public function sell(Ship $ship, ShipPurchaseSellRequest $request): ShipResource
+    {
+        return new ShipResource(
+            $ship->sellCargo(
+                $request->enum('symbol', TradeSymbols::class),
+                $request->integer('quantity'),
+            )
+        );
     }
 }

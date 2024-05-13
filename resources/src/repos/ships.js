@@ -5,8 +5,8 @@ class ShipRepository extends ModelRepository {
     return this._get(this.resource + "/refetch");
   }
 
-  purchase(shipType, waypointSymbol) {
-    return this._post(this.resource + "/purchase", {
+  buy(shipType, waypointSymbol) {
+    return this._post(this.resource + "/buy", {
       shipType: shipType,
       waypointSymbol: waypointSymbol,
     });
@@ -21,6 +21,20 @@ class ShipRepository extends ModelRepository {
   updateTask(shipId, taskId) {
     return this._patch(this.resource + "/" + shipId + "/update-task", {
       taskId: taskId,
+    });
+  }
+  
+  purchaseTradeGood(shipId, symbol, quantity) {
+    return this._post(this.resource + "/" + shipId + "/purchase", {
+      symbol: symbol,
+      quantity: quantity,
+    });
+  }
+
+  sellTradeGood(shipId, symbol, quantity) {
+    return this._post(this.resource + "/" + shipId + "/sell", {
+      symbol: symbol,
+      quantity: quantity,
     });
   }
 }

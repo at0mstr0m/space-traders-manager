@@ -58,7 +58,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->controller(ShipController::class)
         ->group(function () {
             Route::get('refetch', 'refetch')->name('refetch');
-            Route::post('purchase', 'purchase')->name('purchase');
+            Route::post('buy', 'buy')->name('buy');
         });
 
     Route::apiResource('ships', ShipController::class)
@@ -70,6 +70,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->group(function () {
             Route::patch('update-flight-mode', 'updateFlightMode')->name('update-flight-mode');
             Route::patch('update-task', 'updateTask')->name('update-task');
+            Route::post('purchase', 'purchase')->name('purchase');
+            Route::post('sell', 'sell')->name('sell');
         });
 
     Route::apiResource('systems', SystemController::class)

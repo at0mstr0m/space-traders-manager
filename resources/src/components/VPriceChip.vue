@@ -12,12 +12,14 @@
       </v-chip>
     </template>
   </v-hover>
+
   <v-purchase-sell-modal
     v-if="props.ship"
     v-model:visible="showModal"
     :trade-opportunity="props.item"
     :ship="props.ship"
     :action="props.valueKey === 'purchase_price' ? 'Purchase' : 'Sell'"
+    @transaction-done="emit('refresh')"
   />
 </template>
 
@@ -55,6 +57,8 @@ const transactionImpossible = computed(() =>
       )
     )
 );
+
+const emit = defineEmits(['refresh']);
 
 function getVariant(isHovering) {
   switch (true) {

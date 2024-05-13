@@ -7,7 +7,6 @@
     hover
     :items-per-page="0"
   >
-    <!-- :sort-by="{ type: 'type', order: 'asc' }" -->
     <template #top>
       <v-toolbar
         flat
@@ -17,14 +16,12 @@
       </v-toolbar>
     </template>
 
-    <!-- disable footer -->
-    <template #bottom />
-
     <template #[`item.purchase_price`]="{ item }">
       <v-price-chip 
         :item="item"
         value-key="purchase_price"
         :ship="currentShip"
+        @refresh="refresh"
       />
     </template>
 
@@ -33,8 +30,12 @@
         :item="item"
         value-key="sell_price"
         :ship="currentShip"
+        @refresh="refresh"
       />
     </template>
+    
+    <!-- disable footer -->
+    <template #bottom />
   </v-data-table>
 </template>
 
@@ -55,6 +56,13 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(['refresh']);
+
+function refresh() {
+  currentShip.value = null;
+  emit('refresh');
+}
 
 function setCurrentShip(ship) {
   currentShip.value = ship;

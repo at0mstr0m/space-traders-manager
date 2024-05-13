@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ShipTypes;
-use App\Rules\IsValidWaypointSymbol;
+use App\Enums\TradeSymbols;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PurchaseShipRequest extends FormRequest
+class ShipPurchaseSellRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -17,15 +16,14 @@ class PurchaseShipRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shipType' => [
+            'symbol' => [
                 'required',
-                'string',
-                Rule::enum(ShipTypes::class),
+                Rule::enum(TradeSymbols::class),
             ],
-            'waypointSymbol' => [
+            'quantity' => [
                 'required',
-                'string',
-                new IsValidWaypointSymbol(),
+                'integer',
+                'min:1',
             ],
         ];
     }

@@ -71,8 +71,16 @@ const quantity = ref(
       )
 );
 
+const emit = defineEmits(['transactionDone']);
 
 async function handleSubmit() {
-  console.log('handleSubmit');
+  const response = await repo[props.action.toLowerCase() + 'TradeGood'](
+    props.ship.id,
+    props.tradeOpportunity.symbol,
+    quantity.value
+  );
+
+  visible.value = false;
+  emit('transactionDone');
 }
 </script>
