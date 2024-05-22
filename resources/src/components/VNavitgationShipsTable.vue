@@ -1,18 +1,15 @@
 <template>
-  <v-data-table
+  <v-table
+    ref="table"
     v-model="selectedShips"
-    v-model:expanded="expanded"
-    :items="props.ships"
-    :headers="waypointTableColumns"
-    density="compact"
-    :items-per-page="0"
-    hover
+    title="Ships"
+    :columns="navigationTableColumns"
+    repo-name="ships"
     expandable
-    show-expand
-    expand-on-click
     show-select
     select-strategy="single"
     @update:model-value="handleShipSelected"
+    @items-fetched="handleItemsFetched"
   >
     <!-- :sort-by="{ type: 'type', order: 'asc' }" -->
     <template #top>
@@ -24,55 +21,42 @@
       </v-toolbar>
     </template>
 
-    <!-- disable footer -->
-    <template #bottom />
-
-    <!-- eslint-disable-next-line vue/valid-v-slot -->
-    <template #item.fuel_current="{ item }">
+    <template #[`item.fuel_current`]="{ item }">
       {{ item.fuel_current }} / {{ item.fuel_capacity }}
     </template>
 
     <!-- eslint-disable-next-line vue/valid-v-slot -->
-    <template #item.cargo_capacity="{ item }">
+    <template #[`item.cargo_capacity`]="{ item }">
       {{ item.cargo_units }} / {{ item.cargo_capacity }}
     </template>
-
+    
     <template #expanded-row="{ item, columns }">
       <v-ship-expanded-details
         :ship="item"
         :columns="columns"
-        @update:row="emits('update:row')"
+        @update:row="updateRow"
       />
     </template>
-  </v-data-table>
+  </v-table>
 </template>
 
 <script setup>
+import VTable from "@/components/VTable.vue";
 import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
-import { VDataTable } from "vuetify/lib/components/index.mjs";
 import { ref, watch } from 'vue';
 import useNavigationStore from "@/store/navigation";
 import { storeToRefs } from 'pinia';
 import useShipUtils from "@/utils/ships";
 
-const { waypointTableColumns } = useShipUtils();
 const navigationStore = useNavigationStore();
+const { navigationTableColumns } = useShipUtils();
 const { currentShip } = storeToRefs(navigationStore);
 
-const expanded = ref([]);
-const selectedShips = ref((() => currentShip.value ? [currentShip.value.id] : [])());
-
-const props = defineProps({
-  ships: {
-    type: Array,
-    required: true,
-  },
-});
-
-const emits = defineEmits(['update:row']);
+const selectedShips = ref((() => currentShip.value ? [currentShip.value] : [])());
+const table = ref(null);
 
 function findShip(id) {
-  return props.ships.find((ship) => ship.id === id);
+  return table.value.items.find((ship) => ship.id === id);
 }
 
 function handleShipSelected(shipId) {
@@ -81,9 +65,18 @@ function handleShipSelected(shipId) {
     : null;
 }
 
+function handleItemsFetched() {
+  const presentShip = findShip(currentShip.value?.id);
+  selectedShips.value = presentShip ? [presentShip.id] : [];
+}
+
+function updateRow(updatedShip) {
+  const index = table.value.items.findIndex((ship) => ship.id === updatedShip.id);
+  table.value.items.splice(index, 1, updatedShip);
+}
+
 watch(currentShip, (newShip) => {
   const presentShip = findShip(newShip?.id);
   selectedShips.value = presentShip ? [presentShip.id] : [];
 });
-
 </script>

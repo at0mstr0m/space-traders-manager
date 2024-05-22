@@ -71,6 +71,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['itemsFetched']);
+
 const busy = ref(false);
 const items = ref([]);
 const perPage = ref(props.initialPerPage);
@@ -105,6 +107,7 @@ async function fetchItems(options) {
   } catch (error) {
     console.error(error);
   }
+  emit('itemsFetched');
   busy.value = false;
 }
 

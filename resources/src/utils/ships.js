@@ -148,6 +148,51 @@ export default function useShipUtils() {
     },
   ];
 
+  const navigationTableColumns = [
+    {
+      title: "Symbol",
+      key: "symbol",
+      minWidth: "160px",
+    },
+    {
+      title: "Waypoint Symbol",
+      key: "waypoint_symbol",
+    },
+    {
+      title: "Role",
+      key: "role",
+    },
+    {
+      title: "Destination",
+      key: "destination",
+    },
+    {
+      title: "Task",
+      key: "task.type",
+    },
+    {
+      title: "Status",
+      key: "status",
+    },
+    {
+      title: "Flight Mode",
+      key: "flight_mode",
+    },
+    {
+      title: "Fuel",
+      key: "fuel_current",
+      minWidth: "100px",
+    },
+    {
+      title: "Cooldown",
+      key: "cooldown",
+    },
+    {
+      title: "Cargo",
+      key: "cargo_capacity",
+    },
+  ];
+
   const flightModes = [
     {
       title: "DRIFT",
@@ -171,5 +216,6 @@ export default function useShipUtils() {
     tableColumns,
     waypointTableColumns,
     flightModes,
+    navigationTableColumns,
   };
 }

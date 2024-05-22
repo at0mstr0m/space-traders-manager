@@ -29,6 +29,12 @@
 
       <v-col>
         <v-sheet class="pa-2 ma-1">
+          <v-navitgation-ships-table />
+        </v-sheet>
+      </v-col>
+      
+      <v-col>
+        <v-sheet class="pa-2 ma-1">
           <v-waypoint-card
             v-for="waypoint in currentWaypoints"
             :key="'waypoint_' + waypoint.id"
@@ -36,21 +42,16 @@
           />
         </v-sheet>
       </v-col>
-
-      <v-col>
-        <v-sheet class="pa-2 ma-1">
-          .v-col-auto
-        </v-sheet>
-      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import VSectorMap from '@/components/Maps/VSectorMap.vue';
 import VSystemMap from '@/components/Maps/VSystemMap.vue';
 import VWaypointCard from '@/components/VWaypointCard.vue';
+import VNavitgationShipsTable from '@/components/VNavitgationShipsTable.vue';
+import { ref } from 'vue';
 
 const systemMap = ref(null);
 const currentWaypoints = ref([]);
