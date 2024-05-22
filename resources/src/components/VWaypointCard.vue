@@ -39,18 +39,16 @@
 
     <template #text>
       <v-waypoint-market-table
-        v-if="tradeOpportunities.length"
-        ref="marketTable"
-        :trade-opportunities="tradeOpportunities"
-        @refresh="refresh"
+        v-if="tradeOpportunities[props.waypoint.id]?.length"
+        :waypoint="props.waypoint"
+        :trade-opportunities="tradeOpportunities[props.waypoint.id]"
       />
-      <div v-if="ships.length">
+
+      <div v-if="ships[props.waypoint.id]?.length">
         <v-divider class="mb-2" />
         <v-waypoint-ships-table
-          ref="shipsTable"
-          :ships="ships"
-          @update:row="fetchShips"
-          @ship-selected="setMarketplaceShip"
+          :ships="ships[props.waypoint.id]"
+          @update:row="navigationStore.fetchShips(props.waypoint)"
         />
       </div>
     </template>
@@ -61,11 +59,15 @@
 import VWaypointMarketTable from '@/components/VWaypointMarketTable.vue';
 import VWaypointShipsTable from '@/components/VWaypointShipsTable.vue';
 import waypointTypes, { getWaypointColor } from '@enums/waypointTypes';
-import waypointTraitSymbols from '@enums/waypointTraitSymbols';
-import { ref, onMounted } from 'vue';
-import { useRepository } from "@/repos/repoGenerator.js";
+import { onMounted } from 'vue';
+import useNavigationStore from "@/store/navigation";
+import { storeToRefs } from 'pinia';
 
-const repo = useRepository("waypoints");
+const navigationStore = useNavigationStore();
+const { 
+  tradeOpportunities,
+  ships,
+} = storeToRefs(navigationStore);
 
 const props = defineProps({
   waypoint: {
@@ -74,39 +76,5 @@ const props = defineProps({
   },
 });
 
-const marketTable = ref(null);
-const shipsTable = ref(null);
-const tradeOpportunities = ref([]);
-const ships = ref([]);
-
-async function fetchTradeOpportunities() {
-  const isMarketplace = props.waypoint.traits.some(
-    (trait) => trait.symbol === waypointTraitSymbols.MARKETPLACE
-  );
-  if (!isMarketplace) return;
-  const response = await repo.market(props.waypoint.id);
-  tradeOpportunities.value = response.data.data;
-}
-
-async function fetchShips() {
-  if (!props.waypoint.id) return;
-  const response = await repo.ships(props.waypoint.id);
-  ships.value = response.data.data;
-}
-
-function setMarketplaceShip(ship) {
-  marketTable.value?.setCurrentShip(ship);
-}
-
-function refresh() {
-  shipsTable.value.setSelectedShip(null);
-  load();
-}
-
-function load() {
-  fetchTradeOpportunities();
-  fetchShips();
-}
-
-onMounted(load);
+onMounted(() => navigationStore.load(props.waypoint));
 </script>

@@ -50,12 +50,17 @@
 <script setup>
 import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
 import { VDataTable } from "vuetify/lib/components/index.mjs";
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import useNavigationStore from "@/store/navigation";
+import { storeToRefs } from 'pinia';
 import useShipUtils from "@/utils/ships";
 
 const { waypointTableColumns } = useShipUtils();
+const navigationStore = useNavigationStore();
+const { currentShip } = storeToRefs(navigationStore);
+
 const expanded = ref([]);
-const selectedShips = ref([]);
+const selectedShips = ref((() => currentShip.value ? [currentShip.value] : [])());
 
 const props = defineProps({
   ships: {
@@ -64,23 +69,22 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits([
-  'update:row',
-  'shipSelected',
-]);
+const emits = defineEmits(['update:row']);
+
+function findShip(id) {
+  return props.ships.find((ship) => ship.id === id);
+}
 
 function handleShipSelected(shipId) {
-  emits(
-    'shipSelected',
-    shipId.length
-      ? props.ships.find((ship) => ship.id === shipId[0])
-      : null
-  );
+  currentShip.value = shipId.length
+    ? findShip(shipId[0])
+    : null;
 }
 
-function setSelectedShip(ship) {
-  selectedShips.value = [ship];
-}
+watch(currentShip, (newShip) => {
+  if (!findShip(newShip?.id)) {
+    selectedShips.value = [];
+  }
+});
 
-defineExpose({ setSelectedShip });
 </script>

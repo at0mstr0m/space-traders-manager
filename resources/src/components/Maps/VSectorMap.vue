@@ -48,14 +48,15 @@ function addSystemsToData(systems) {
 async function fetchSystems() {
   page.value++;
   if (page.value > lastPage.value) {
-    loading.value = false;
+    // loading.value = false;
     return;
   }
-  loading.value = true;
+  // loading.value = true;
   const response = await repo.index(page.value, 1000);
   lastPage.value = response.data.meta.last_page;
   addSystemsToData(response.data.data);
-  setTimeout(fetchSystems, 500);
+
+  // setTimeout(fetchSystems, 500);
 }
 
 onMounted(fetchSystems);
