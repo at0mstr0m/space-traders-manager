@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES6",
     "module": "esnext",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "moduleResolution": "node",
     "paths": {
       "@/*": [
-        "/resources/src/*"
+        "resources/src/*"
+      ],
+      "@enums/*": [
+        "resources/src/enums/*"
       ]
     },
     "lib": [
@@ -15,5 +18,12 @@
       "dom.iterable",
       "scripthost"
     ]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "public"
+  ],
+  "include": [
+    "./resources/src/**/*"
+  ]
 }
