@@ -14,7 +14,6 @@
     select-strategy="single"
     @update:model-value="handleShipSelected"
   >
-    <!-- :sort-by="{ type: 'type', order: 'asc' }" -->
     <template #top>
       <v-toolbar
         flat
@@ -27,13 +26,14 @@
     <!-- disable footer -->
     <template #bottom />
 
-    <!-- eslint-disable-next-line vue/valid-v-slot -->
-    <template #item.fuel_current="{ item }">
-      {{ item.fuel_current }} / {{ item.fuel_capacity }}
+    <template #[`item.fuel_current`]="{ item }">
+      <v-fuel-chip
+        :ship="item"
+        @refueled="emit('update:row')"
+      />
     </template>
 
-    <!-- eslint-disable-next-line vue/valid-v-slot -->
-    <template #item.cargo_capacity="{ item }">
+    <template #[`item.cargo_capacity`]="{ item }">
       {{ item.cargo_units }} / {{ item.cargo_capacity }}
     </template>
 
@@ -41,15 +41,16 @@
       <v-ship-expanded-details
         :ship="item"
         :columns="columns"
-        @update:row="emits('update:row')"
+        @update:row="emit('update:row')"
       />
     </template>
   </v-data-table>
 </template>
 
 <script setup>
-import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
 import { VDataTable } from "vuetify/lib/components/index.mjs";
+import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
+import VFuelChip from '@/components/VFuelChip.vue';
 import { ref, watch } from 'vue';
 import useNavigationStore from "@/store/navigation";
 import { storeToRefs } from 'pinia';
@@ -69,7 +70,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(['update:row']);
+const emit = defineEmits(['update:row']);
 
 function findShip(id) {
   return props.ships.find((ship) => ship.id === id);
@@ -85,5 +86,4 @@ watch(currentShip, (newShip) => {
   const presentShip = findShip(newShip?.id);
   selectedShips.value = presentShip ? [presentShip.id] : [];
 });
-
 </script>

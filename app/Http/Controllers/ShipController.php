@@ -132,4 +132,12 @@ class ShipController extends Controller
             )
         );
     }
+
+    /**
+     * Refuel Ship.
+     */
+    public function refuel(Ship $ship): ShipResource
+    {
+        return new ShipResource($ship->refuel());
+    }
 }

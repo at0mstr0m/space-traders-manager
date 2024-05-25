@@ -22,10 +22,12 @@
     </template>
 
     <template #[`item.fuel_current`]="{ item }">
-      {{ item.fuel_current }} / {{ item.fuel_capacity }}
+      <v-fuel-chip
+        :ship="item"
+        @refueled="updateRow"
+      />
     </template>
 
-    <!-- eslint-disable-next-line vue/valid-v-slot -->
     <template #[`item.cargo_capacity`]="{ item }">
       {{ item.cargo_units }} / {{ item.cargo_capacity }}
     </template>
@@ -43,6 +45,7 @@
 <script setup>
 import VTable from "@/components/VTable.vue";
 import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
+import VFuelChip from '@/components/VFuelChip.vue';
 import { ref, watch } from 'vue';
 import useNavigationStore from "@/store/navigation";
 import { storeToRefs } from 'pinia';
@@ -71,8 +74,7 @@ function handleItemsFetched() {
 }
 
 function updateRow(updatedShip) {
-  const index = table.value.items.findIndex((ship) => ship.id === updatedShip.id);
-  table.value.items.splice(index, 1, updatedShip);
+  table.value.updateItem(updatedShip);
 }
 
 watch(currentShip, (newShip) => {

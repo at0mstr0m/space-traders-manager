@@ -601,7 +601,7 @@ class Ship extends Model
         ));
     }
 
-    public function canRefuelAtCurrentLocation(): bool
+    public function getCanRefuelAtCurrentLocationAttribute(): bool
     {
         return $this->waypoint->can_refuel;
     }

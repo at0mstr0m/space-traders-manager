@@ -23,6 +23,7 @@ class ShipResource extends JsonResource
             'waypoint_symbol' => $this->waypoint_symbol,
             'destination' => $this->destination,
             'has_reached_destination' => $this->has_reached_destination,
+            'can_refuel_at_current_location' => $this->can_refuel_at_current_location,
             'status' => $this->status,
             'flight_mode' => $this->flight_mode,
             'crew_current' => $this->crew_current,

@@ -72,6 +72,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::patch('update-task', 'updateTask')->name('update-task');
             Route::post('purchase', 'purchase')->name('purchase');
             Route::post('sell', 'sell')->name('sell');
+            Route::post('refuel', 'refuel')->name('refuel');
         });
 
     Route::apiResource('systems', SystemController::class)

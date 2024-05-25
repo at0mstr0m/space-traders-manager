@@ -37,6 +37,10 @@ class ShipRepository extends ModelRepository {
       quantity: quantity,
     });
   }
+
+  refuel(shipId) {
+    return this._post(this.resource + "/" + shipId + "/refuel");
+  }
 }
 
 export default new ShipRepository("ships");

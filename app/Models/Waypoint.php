@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * App\Models\Waypoint.
@@ -73,15 +74,22 @@ class Waypoint extends Model
         'is_under_construction',
     ];
 
-    public function getCanRefuelAttribute(): bool
+    /**
+     * @return bool 
+     */
+    public function getCanRefuelAttribute()
     {
-        return $this->traits()
-            ->where('symbol', WaypointTraitSymbols::MARKETPLACE)
-            ->exists()
-            && $this->tradeOpportunities()
-                ->where('symbol', TradeSymbols::FUEL)
-                ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
-                ->exists();
+        return Cache::remember(
+            'waypoint_can_refuel:' . $this->symbol,
+            now()->addMinutes(15),
+            fn () => $this->traits()
+                ->where('symbol', WaypointTraitSymbols::MARKETPLACE)
+                ->exists()
+                && $this->tradeOpportunities()
+                    ->where('symbol', TradeSymbols::FUEL)
+                    ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+                    ->exists()
+        );
     }
 
     public function faction(): BelongsTo

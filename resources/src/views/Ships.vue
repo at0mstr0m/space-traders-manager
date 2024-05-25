@@ -128,7 +128,6 @@ async function refetchShips() {
 }
 
 function updateRow(updatedShip) {
-  const index = table.value.items.findIndex((ship) => ship.id === updatedShip.id);
-  table.value.items.splice(index, 1, updatedShip);
+  table.value.updateItem(updatedShip);
 }
 </script>
