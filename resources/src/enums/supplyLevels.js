@@ -8,6 +8,8 @@ const SupplyLevels = Object.freeze({
   ABUNDANT: "ABUNDANT",
 });
 
+export default SupplyLevels;
+
 function getSupplyColorAscending (supply)  {
   switch (supply) {
     case SupplyLevels.ABUNDANT:
@@ -42,7 +44,7 @@ function getSupplyColorDescending(supply) {
   }
 }
 
-function getSupplyColor(type, supply) {
+export function getSupplyColor(type, supply) {
   switch (type) {
     case TradeGoodTypes.EXPORT:
       return getSupplyColorAscending(supply);
@@ -52,7 +54,3 @@ function getSupplyColor(type, supply) {
       return "black";
   }
 }
-
-export default SupplyLevels;
-
-export { getSupplyColor };

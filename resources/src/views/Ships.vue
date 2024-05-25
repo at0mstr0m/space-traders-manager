@@ -29,15 +29,13 @@
         />
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.crew_morale="{ value }">
+      <template #[`item.crew_morale`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.fuel_current="{ item, value }">
+      <template #[`item.fuel_current`]="{ item, value }">
         <v-chip
           :color="
             item.fuel_capacity
@@ -49,43 +47,37 @@
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.frame_condition="{ value }">
+      <template #[`item.frame_condition`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.frame_integrity="{ value }">
+      <template #[`item.frame_integrity`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.reactor_condition="{ value }">
+      <template #[`item.reactor_condition`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.reactor_integrity="{ value }">
+      <template #[`item.reactor_integrity`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.engine_condition="{ value }">
+      <template #[`item.engine_condition`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.engine_integrity="{ value }">
+      <template #[`item.engine_integrity`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
@@ -97,7 +89,7 @@
 <script setup>
 import VTable from "@/components/VTable.vue";
 import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
-import { ref, } from "vue";
+import { ref } from "vue";
 import useShipUtils from "@/utils/ships.js";
 import useStringify from "@/utils/stringify";
 
@@ -108,11 +100,18 @@ const table = ref(false);
 const refreshing = ref(false);
 
 function getColor(number) {
-  if (number > 0.9) return "green";
-  else if (number > 0.75) return "lime";
-  else if (number > 0.5) return "yellow";
-  else if (number > 0.25) return "orange";
-  else return "red";
+  switch (true) {
+    case number > 0.9:
+      return "green";
+    case number > 0.75:
+      return "lime";
+    case number > 0.5:
+      return "yellow";
+    case number > 0.25:
+      return "orange";
+    default:
+      return "red";
+  }
 }
 
 async function refetchShips() {
