@@ -5,7 +5,7 @@
         v-bind="hoverProps"
         :variant="getVariant(isHovering)"
         color="grey"
-        @click="handleClick"
+        @click.stop.prevent="handleClick"
       >
         {{ props.ship.fuel_current }} / {{ props.ship.fuel_capacity }}
       </v-chip>

@@ -13,7 +13,7 @@
   <v-row>
     <v-progress-linear
       v-if="loading"
-      color="secondary" 
+      color="secondary"
       :model-value="page ? ((page - 1) / lastPage * 100) : 0"
     />
     <v-scrollable-map
@@ -43,6 +43,7 @@ const page = ref(0);
 const lastPage = ref(1);
 const loading = ref(false);
 const systemDropdown = ref(null);
+const preselectedWaypoint = ref(null);
 
 function handleWaypointsSelected(waypoints) {
   emit('select', waypoints.length ? waypoints : null);
@@ -60,8 +61,8 @@ function addWaypointsToData(waypoints) {
         borderColor: color,
         backgroundColor: color,
         data: [{
-            ...waypoint,
-          }]
+          ...waypoint,
+        }]
       });
     } else {
       currentData.datasets[index].data.push({
@@ -72,10 +73,41 @@ function addWaypointsToData(waypoints) {
   data.value = currentData;
 }
 
+function getWaypointsAtLocation({ x, y, symbol }) {
+  return data.value.datasets
+    .flatMap((dataset) => dataset.data)
+    .filter(
+      (waypointData) => waypointData.x === x
+        && waypointData.y === y
+        && waypointData.symbol !== symbol
+    );
+}
+
+function getWaypointBySymbol(symbol) {
+  return data.value.datasets
+    .flatMap((dataset) => dataset.data)
+    .find((waypoint) => waypoint.symbol === symbol);
+}
+
+function handleShipWaypointSelection(waypointSymbol) {
+  const waypoint = getWaypointBySymbol(waypointSymbol);
+  if (waypoint) {
+    // also other waypoints with similar coordinates, but selected waypoint first
+    handleWaypointsSelected([
+      waypoint,
+      ...getWaypointsAtLocation(waypoint)
+    ]);
+  }
+}
+
 async function fetchWaypoints() {
   page.value++;
   if (page.value > lastPage.value) {
     loading.value = false;
+    if (preselectedWaypoint.value) {
+      handleShipWaypointSelection(preselectedWaypoint.value)
+      preselectedWaypoint.value = null;
+    }
     return;
   }
   loading.value = true;
@@ -83,6 +115,19 @@ async function fetchWaypoints() {
   lastPage.value = response.data.meta.last_page;
   addWaypointsToData(response.data.data);
   fetchWaypoints();
+}
+
+function setSystem(system) {
+  systemDropdown.value.setCurrentItem(system);
+}
+
+function setWaypoint(data) {
+  if (systemId.value !== data.system.id) {
+    setSystem(data.system);
+    preselectedWaypoint.value = data.waypoint_symbol;
+    return;
+  }
+  handleShipWaypointSelection(data.waypoint_symbol);
 }
 
 watch(
@@ -99,7 +144,7 @@ watch(
             label: 'Center: ' + currentSystem.type,
             fill: false,
             borderColor: color,
-            backgroundColor:color,
+            backgroundColor: color,
             data: [
               {
                 x: 0,
@@ -115,6 +160,7 @@ watch(
 );
 
 defineExpose({
-  setSystem: (system) => systemDropdown.value.setCurrentItem(system),
+  setSystem,
+  setWaypoint
 });
 </script>

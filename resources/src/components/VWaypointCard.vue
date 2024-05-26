@@ -29,7 +29,7 @@
       <v-chip
         v-for="trait in props.waypoint.traits"
         :key="props.waypoint.id + '_' + trait.id"
-        variant="outlined"
+        variant="tonal"
         class="mr-1 mt-2"
       >
         <v-tooltip

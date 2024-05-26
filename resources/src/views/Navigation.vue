@@ -51,7 +51,9 @@
         <v-card-text>
           <v-tabs-window v-model="currentTab">
             <v-tabs-window-item value="ships">
-              <v-navitgation-ships-table />
+              <v-navitgation-ships-table
+                @waypoint-clicked="handleWaypointClicked"
+              />
             </v-tabs-window-item>
 
             <v-tabs-window-item value="waypoints">
@@ -83,15 +85,19 @@ const { currentTab } = storeToRefs(navigationStore);
 const systemMap = ref(null);
 const currentWaypoints = ref([]);
 
-function handleSystemSelected(system) {
-  if (!system.length) {
+function handleSystemSelected(systems) {
+  if (!systems.length) {
     return;
   }
-  systemMap.value.setSystem(system[0]);
+  systemMap.value.setSystem(systems[0]);
 }
 
 function handleWaypointsSelected(waypoints) {
   currentWaypoints.value = waypoints;
   currentTab.value = waypoints ? 'waypoints' : 'ships';
+}
+
+function handleWaypointClicked(data) {
+  systemMap.value.setWaypoint(data);
 }
 </script>

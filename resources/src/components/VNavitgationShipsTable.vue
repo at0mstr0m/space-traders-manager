@@ -10,6 +10,13 @@
     @update:model-value="handleShipSelected"
     @items-fetched="handleItemsFetched"
   >
+    <template #[`item.waypoint_symbol`]="{ item }">
+      <v-waypoint-chip
+        :ship="item"
+        @waypoint-clicked="handleWaypointClicked"
+      />
+    </template>
+
     <template #[`item.fuel_current`]="{ item }">
       <v-fuel-chip
         :ship="item"
@@ -34,6 +41,7 @@
 <script setup>
 import VTable from "@/components/VTable.vue";
 import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
+import VWaypointChip from '@/components/VWaypointChip.vue';
 import VFuelChip from '@/components/VFuelChip.vue';
 import { ref, watch } from 'vue';
 import useNavigationStore from "@/store/navigation";
@@ -43,6 +51,8 @@ import useShipUtils from "@/utils/ships";
 const navigationStore = useNavigationStore();
 const { navigationTableColumns } = useShipUtils();
 const { currentShip } = storeToRefs(navigationStore);
+
+const emit = defineEmits(['waypoint-clicked']);
 
 const selectedShips = ref((() => currentShip.value ? [currentShip.value] : [])());
 const table = ref(null);
@@ -64,6 +74,10 @@ function handleItemsFetched() {
 
 function updateRow(updatedShip) {
   table.value.updateItem(updatedShip);
+}
+
+function handleWaypointClicked(data) {
+  emit('waypoint-clicked', data);
 }
 
 watch(currentShip, (newShip) => {

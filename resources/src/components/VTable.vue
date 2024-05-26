@@ -104,6 +104,7 @@ async function fetchItems(options) {
     items.value = data;
     totalPages.value = meta.last_page;
     totalItems.value = meta.total;
+    expanded.value = [];
   } catch (error) {
     console.error(error);
   }

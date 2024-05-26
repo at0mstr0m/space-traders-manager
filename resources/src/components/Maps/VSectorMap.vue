@@ -11,12 +11,14 @@
 </template>
 
 <script setup>
+import VScrollableMap from '@/components/Maps/VScrollableMap.vue';
 import { ref, onMounted } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 import _cloneDeep from "lodash/cloneDeep";
-import VScrollableMap from '@/components/Maps/VScrollableMap.vue';
+import useNavigationStore from "@/store/navigation";
 
 const repo = useRepository('systems');
+const navigationStore = useNavigationStore();
 
 const data = ref({
   datasets: [
@@ -52,9 +54,10 @@ async function fetchSystems() {
     return;
   }
   // loading.value = true;
-  const response = await repo.index(page.value, 1000);
-  lastPage.value = response.data.meta.last_page;
-  addSystemsToData(response.data.data);
+  const { data: { data, meta } } = await repo.index(page.value, 1000);
+  lastPage.value = meta.last_page;
+  navigationStore.addToAllSystems(data);
+  addSystemsToData(data);
 
   // setTimeout(fetchSystems, 500);
 }

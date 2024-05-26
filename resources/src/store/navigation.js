@@ -7,6 +7,7 @@ import _uniqBy from "lodash/uniqBy";
 const useNavigationStore = defineStore("navigation", () => {
   const repo = useRepository("waypoints");
 
+  const allSystems = ref([]);
   const currentTab = ref(null);
   const currentSystem = ref(null);
   const currentShip = ref(null);
@@ -49,7 +50,17 @@ const useNavigationStore = defineStore("navigation", () => {
     currentWaypoints.value = [];
   }
 
+  function addToAllSystems(systems) {
+    allSystems.value = _uniqBy([...allSystems.value, ...systems], 'id');
+  }
+
+  function getSystemFromWaypointSymbol(waypointSymbol) {
+    const systemSymbol = waypointSymbol.substring(0, waypointSymbol.lastIndexOf('-'));
+    return allSystems.value.find((system) => system.symbol === systemSymbol);
+  }
+
   return {
+    allSystems,
     currentTab,
     currentSystem,
     currentShip,
@@ -60,6 +71,8 @@ const useNavigationStore = defineStore("navigation", () => {
     load,
     refresh,
     reset,
+    addToAllSystems,
+    getSystemFromWaypointSymbol
   };
 });
 
