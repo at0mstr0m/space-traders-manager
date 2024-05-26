@@ -125,7 +125,9 @@ async function refresh() {
 
 function updateItem(updatedItem) {
   const index = items.value.findIndex((item) => item.id === updatedItem.id);
-  items.value.splice(index, 1, updatedItem);
+  if (index !== -1) {
+    items.value.splice(index, 1, updatedItem);
+  }
 }
 
 defineExpose({

@@ -17,6 +17,7 @@ use App\Http\Resources\ShipResource;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use App\Models\Task;
+use App\Models\Waypoint;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -139,5 +140,13 @@ class ShipController extends Controller
     public function refuel(Ship $ship): ShipResource
     {
         return new ShipResource($ship->refuel());
+    }
+
+    /**
+     * Navigate Ship to Waypoint.
+     */
+    public function navigate(Ship $ship, Waypoint $waypoint): ShipResource
+    {
+        return new ShipResource($ship->navigateTo($waypoint->symbol));
     }
 }

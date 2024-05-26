@@ -89,8 +89,8 @@ function handleClick() {
   }
 }
 
-function handleModalSubmitted() {
+function handleModalSubmitted(ship) {
   currentShip.value = null;
-  navigationStore.load(props.waypoint);
+  navigationStore.load(props.waypoint, ship);
 }
 </script>

@@ -80,6 +80,6 @@ async function handleSubmit() {
     quantity.value
   );
   visible.value = false;
-  emit('submitted');
+  emit('submitted', response.data.data);
 }
 </script>

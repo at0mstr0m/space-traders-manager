@@ -73,6 +73,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::post('purchase', 'purchase')->name('purchase');
             Route::post('sell', 'sell')->name('sell');
             Route::post('refuel', 'refuel')->name('refuel');
+            Route::post('navigate/{waypoint}', 'navigate')->name('navigate');
         });
 
     Route::apiResource('systems', SystemController::class)

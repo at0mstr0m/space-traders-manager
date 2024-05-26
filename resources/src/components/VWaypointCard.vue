@@ -9,6 +9,7 @@
       >
         {{ props.waypoint.type }}
       </v-chip>
+      
       <v-chip
         v-if="props.waypoint.type === waypointTypes.JUMP_GATE"
         :color="waypoint.is_under_construction ? 'red' : 'green'"
@@ -17,6 +18,11 @@
       >
         {{ waypoint.is_under_construction ? 'Under Construction' : 'Operational' }}
       </v-chip>
+      
+      <v-navigate-here-chip 
+        v-if="currentShip && currentShip.waypoint_symbol !== props.waypoint.symbol"
+        :waypoint="props.waypoint"
+      />
     </template>
 
     <template #subtitle>
@@ -56,6 +62,7 @@
 </template>
 
 <script setup>
+import VNavigateHereChip from '@/components/VNavigateHereChip.vue';
 import VWaypointMarketTable from '@/components/VWaypointMarketTable.vue';
 import VWaypointShipsTable from '@/components/VWaypointShipsTable.vue';
 import waypointTypes, { getWaypointColor } from '@enums/waypointTypes';
@@ -67,6 +74,7 @@ const navigationStore = useNavigationStore();
 const { 
   tradeOpportunities,
   ships,
+  currentShip
 } = storeToRefs(navigationStore);
 
 const props = defineProps({

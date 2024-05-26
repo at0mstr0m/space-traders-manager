@@ -81,4 +81,18 @@ watch(currentShip, (newShip) => {
   const presentShip = findShip(newShip?.id);
   selectedShips.value = presentShip ? [presentShip.id] : [];
 });
+
+navigationStore.onAction('refresh', ({ args, after }) => {
+  const updatedShip = args[0];
+  if (updatedShip) {
+    after(() => table.value.updateItem(updatedShip));
+  }
+});
+
+navigationStore.onAction('load', ({ args, after }) => {
+  const updatedShip = args[1];
+  if (updatedShip) {
+    after(() => table.value.updateItem(updatedShip));
+  }
+});
 </script>

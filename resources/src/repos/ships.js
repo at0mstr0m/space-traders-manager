@@ -41,6 +41,10 @@ class ShipRepository extends ModelRepository {
   refuel(shipId) {
     return this._post(this.resource + "/" + shipId + "/refuel");
   }
+
+  navigate(shipId, waypointId) {
+    return this._post(this.resource + "/" + shipId + "/navigate/" + waypointId);
+  }
 }
 
 export default new ShipRepository("ships");
