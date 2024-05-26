@@ -7,6 +7,7 @@ import _uniqBy from "lodash/uniqBy";
 const useNavigationStore = defineStore("navigation", () => {
   const repo = useRepository("waypoints");
 
+  const currentTab = ref(null);
   const currentSystem = ref(null);
   const currentShip = ref(null);
   const tradeOpportunities = ref({});
@@ -49,6 +50,7 @@ const useNavigationStore = defineStore("navigation", () => {
   }
 
   return {
+    currentTab,
     currentSystem,
     currentShip,
     tradeOpportunities,

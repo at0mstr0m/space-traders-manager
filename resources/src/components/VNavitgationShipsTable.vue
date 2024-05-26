@@ -2,7 +2,6 @@
   <v-table
     ref="table"
     v-model="selectedShips"
-    title="Ships"
     :columns="navigationTableColumns"
     repo-name="ships"
     expandable
@@ -11,16 +10,6 @@
     @update:model-value="handleShipSelected"
     @items-fetched="handleItemsFetched"
   >
-    <!-- :sort-by="{ type: 'type', order: 'asc' }" -->
-    <template #top>
-      <v-toolbar
-        flat
-        density="compact"
-      >
-        <v-toolbar-title>Ships</v-toolbar-title>
-      </v-toolbar>
-    </template>
-
     <template #[`item.fuel_current`]="{ item }">
       <v-fuel-chip
         :ship="item"
