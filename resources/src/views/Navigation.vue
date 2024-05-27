@@ -6,23 +6,27 @@
   >
     <v-row no-gutters>
       <v-col>
-        <v-sheet class="pa-2 ma-1">
+        <v-card
+          ref="sectorMapCard"
+          class="pa-2 ma-1"
+          :height="width * 6 / 7"
+        >
           <v-sector-map 
-            height="600"
             @select="handleSystemSelected"
           />
-        </v-sheet>
+        </v-card>
       </v-col>
       <v-col>
-        <v-sheet
-          class="pa-5 ma-1"
-          height="600"
+        <v-card 
+          class="pa-2 ma-1"
+          :height="width * 6 / 7"
         >
           <v-system-map
             ref="systemMap"
+            :height="width * 6 / 7"
             @select="handleWaypointsSelected"
           />
-        </v-sheet>
+        </v-card>
       </v-col>
 
       <v-responsive width="100%" />
@@ -76,13 +80,17 @@ import VSystemMap from '@/components/Maps/VSystemMap.vue';
 import VWaypointCard from '@/components/VWaypointCard.vue';
 import VNavitgationShipsTable from '@/components/VNavitgationShipsTable.vue';
 import { ref } from 'vue';
-import useNavigationStore from "@/store/navigation";
+import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia';
+import useNavigationStore from "@/store/navigation";
 
 const navigationStore = useNavigationStore();
 const { currentTab } = storeToRefs(navigationStore);
 
 const systemMap = ref(null);
+const sectorMapCard = ref(null);
+const { width } = useElementSize(sectorMapCard);
+
 const currentWaypoints = ref([]);
 
 function handleSystemSelected(systems) {

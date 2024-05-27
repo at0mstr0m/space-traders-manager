@@ -1,42 +1,55 @@
 <template>
-  <v-row>
-    <v-dropdown
-      ref="systemDropdown"
-      v-model:selected="systemId"
-      item-title="symbol"
-      item-value="id"
-      repo-name="systems"
-      label="System"
-      clearable
-    />
-  </v-row>
-  <v-row>
-    <v-progress-linear
-      v-if="loading"
-      color="secondary"
-      :model-value="page ? ((page - 1) / lastPage * 100) : 0"
-    />
-    <v-scrollable-map
-      v-else
-      :data="data"
-      height="500"
-      @select="handleWaypointsSelected"
-    />
-  </v-row>
+  <v-col>
+    <v-row>
+      <v-dropdown
+        ref="systemDropdown"
+        v-model:selected="systemId"
+        item-title="symbol"
+        item-value="id"
+        repo-name="systems"
+        label="System"
+        clearable
+      />
+    </v-row>
+    <!-- <v-row class="fill-height"> -->
+    <v-row class="d-flex flex-column fill-height">
+      <!-- <v-row> -->
+      <v-progress-linear
+        v-if="loading"
+        color="secondary"
+        :model-value="page ? ((page - 1) / lastPage * 100) : 0"
+      />
+      <v-scrollable-map
+        v-else
+        :data="data"
+        :height="mapHeight"
+        @select="handleWaypointsSelected"
+      />
+    </v-row>
+  </v-col>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { useRepository } from "@/repos/repoGenerator.js";
-import _cloneDeep from "lodash/cloneDeep";
 import VScrollableMap from '@/components/Maps/VScrollableMap.vue';
 import VDropdown from '@/components/VDropdown.vue';
+import { computed, ref, watch } from 'vue';
+import { useRepository } from "@/repos/repoGenerator.js";
+import _cloneDeep from "lodash/cloneDeep";
+import { useElementSize } from '@vueuse/core'
 import { getWaypointColor } from '@/enums/waypointTypes';
 import { getSystemColor } from '@/enums/systemTypes';
 
 const repo = useRepository('systems');
 
 const emit = defineEmits(['select']);
+
+const props = defineProps({
+  height: {
+    type: Number,
+    required: true,
+  },
+});
+
 const systemId = ref(null);
 const data = ref({ datasets: [] });
 const page = ref(0);
@@ -44,6 +57,10 @@ const lastPage = ref(1);
 const loading = ref(false);
 const systemDropdown = ref(null);
 const preselectedWaypoint = ref(null);
+
+const { height: systemDropdownHeight } = useElementSize(systemDropdown);
+
+const mapHeight = computed(() => props.height - (systemDropdownHeight.value * 1.2));
 
 function handleWaypointsSelected(waypoints) {
   emit('select', waypoints.length ? waypoints : null);
