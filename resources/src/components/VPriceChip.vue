@@ -90,7 +90,6 @@ function handleClick() {
 }
 
 function handleModalSubmitted(ship) {
-  currentShip.value = null;
   navigationStore.load(props.waypoint, ship);
 }
 </script>

@@ -57,21 +57,24 @@ const props = defineProps({
   },
 });
 
-const quantity = ref(
-  props.action === 'Purchase'
-    ? Math.min(
-      props.ship.cargo_capacity - props.ship.cargo_units,
-      props.tradeOpportunity.trade_volume
-    )
-    : (
-        props.ship
-          .cargos.find((cargo) => cargo.symbol === props.tradeOpportunity.symbol)
-          ?.units 
-        || 0
-      )
-);
+const quantity = ref(initialQuantity());
 
 const emit = defineEmits(['submitted']);
+
+function initialQuantity() {
+  if (props.action === 'Purchase') {
+    return Math.min(
+      props.ship.cargo_capacity - props.ship.cargo_units,
+      props.tradeOpportunity.trade_volume
+    );
+  } else {
+    const currentUnits = props.ship
+        .cargos
+        .find((cargo) => cargo.symbol === props.tradeOpportunity.symbol)
+        ?.units;
+    return currentUnits ? Math.min(currentUnits, props.tradeOpportunity.trade_volume) : 0;
+  }
+}
 
 async function handleSubmit() {
   const response = await repo[props.action.toLowerCase() + 'TradeGood'](
