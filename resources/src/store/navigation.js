@@ -8,7 +8,7 @@ const useNavigationStore = defineStore("navigation", () => {
   const repo = useRepository("waypoints");
 
   const allSystems = ref([]);
-  const currentTab = ref(null);
+  const currentTab = ref('ships');
   const currentSystem = ref(null);
   const currentShip = ref(null);
   const tradeOpportunities = ref({});

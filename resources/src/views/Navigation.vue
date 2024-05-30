@@ -79,7 +79,7 @@ import VSectorMap from '@/components/Maps/VSectorMap.vue';
 import VSystemMap from '@/components/Maps/VSystemMap.vue';
 import VWaypointCard from '@/components/VWaypointCard.vue';
 import VNavitgationShipsTable from '@/components/VNavitgationShipsTable.vue';
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia';
 import useNavigationStore from "@/store/navigation";
@@ -108,4 +108,6 @@ function handleWaypointsSelected(waypoints) {
 function handleWaypointClicked(data) {
   systemMap.value.setWaypoint(data);
 }
+
+onBeforeMount(navigationStore.hardReset);
 </script>
