@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Agent.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -33,16 +31,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent query()
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereCredits($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereHeadquarters($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereShipCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereStartingFaction($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Agent whereUserId($value)
  *
  * @mixin \Eloquent
  */

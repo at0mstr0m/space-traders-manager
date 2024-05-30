@@ -29,18 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Transaction query()
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereAgentSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction wherePricePerUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereShipSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereTimestamp($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereTotalPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereTradeSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereUnits($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Transaction whereWaypointSymbol($value)
  *
  * @mixin \Eloquent
  */

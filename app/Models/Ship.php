@@ -28,8 +28,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
- * App\Models\Ship.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -62,6 +60,7 @@ use Illuminate\Support\Collection;
  * @property int $cargo_capacity
  * @property int $cargo_units
  * @property int|null $task_id
+ * @property string|null $destination
  * @property-read Agent $agent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Cargo> $cargos
  * @property-read int|null $cargos_count
@@ -69,7 +68,9 @@ use Illuminate\Support\Collection;
  * @property-read Faction $faction
  * @property-read Frame $frame
  * @property-read int $available_cargo_capacity
+ * @property-read bool $can_refuel_at_current_location
  * @property-read bool $cargo_is_empty
+ * @property-read bool $has_reached_destination
  * @property-read bool $is_docked
  * @property-read bool $is_fully_loaded
  * @property-read bool $is_in_orbit
@@ -80,53 +81,17 @@ use Illuminate\Support\Collection;
  * @property-read int|null $mounts_count
  * @property-read PotentialTradeRoute|null $potentialTradeRoute
  * @property-read Reactor $reactor
+ * @property-read System|null $system
  * @property-read Task|null $task
  * @property-read Waypoint|null $waypoint
- * @property string|null $destination
- * @property-read bool $can_refuel_at_current_location
- * @property-read bool $has_reached_destination
- * @property-read System|null $system
  *
+ * @method static Builder|Ship canSurvey()
  * @method static Builder|Ship newModelQuery()
  * @method static Builder|Ship newQuery()
  * @method static Builder|Ship onlyHaulers()
  * @method static Builder|Ship onlyMiners()
  * @method static Builder|Ship onlySiphoners()
  * @method static Builder|Ship query()
- * @method static Builder|Ship whereAgentId($value)
- * @method static Builder|Ship whereCargoCapacity($value)
- * @method static Builder|Ship whereCargoUnits($value)
- * @method static Builder|Ship whereCooldown($value)
- * @method static Builder|Ship whereCreatedAt($value)
- * @method static Builder|Ship whereCrewCapacity($value)
- * @method static Builder|Ship whereCrewCurrent($value)
- * @method static Builder|Ship whereCrewMorale($value)
- * @method static Builder|Ship whereCrewRequired($value)
- * @method static Builder|Ship whereCrewRotation($value)
- * @method static Builder|Ship whereCrewWages($value)
- * @method static Builder|Ship whereEngineCondition($value)
- * @method static Builder|Ship whereEngineId($value)
- * @method static Builder|Ship whereEngineIntegrity($value)
- * @method static Builder|Ship whereFactionId($value)
- * @method static Builder|Ship whereFlightMode($value)
- * @method static Builder|Ship whereFrameCondition($value)
- * @method static Builder|Ship whereFrameId($value)
- * @method static Builder|Ship whereFrameIntegrity($value)
- * @method static Builder|Ship whereFuelCapacity($value)
- * @method static Builder|Ship whereFuelConsumed($value)
- * @method static Builder|Ship whereFuelCurrent($value)
- * @method static Builder|Ship whereId($value)
- * @method static Builder|Ship whereReactorCondition($value)
- * @method static Builder|Ship whereReactorId($value)
- * @method static Builder|Ship whereReactorIntegrity($value)
- * @method static Builder|Ship whereRole($value)
- * @method static Builder|Ship whereStatus($value)
- * @method static Builder|Ship whereSymbol($value)
- * @method static Builder|Ship whereTaskId($value)
- * @method static Builder|Ship whereUpdatedAt($value)
- * @method static Builder|Ship whereWaypointSymbol($value)
- * @method static Builder|Ship canSurvey()
- * @method static Builder|Ship whereDestination($value)
  *
  * @mixin \Eloquent
  */

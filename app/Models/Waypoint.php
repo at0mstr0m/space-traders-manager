@@ -18,50 +18,37 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * App\Models\Waypoint.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string $symbol
+ * @property string $system_symbol
  * @property WaypointTypes $type
- * @property int $faction_id
+ * @property int|null $faction_id
  * @property int $x
  * @property int $y
  * @property string|null $orbits
  * @property bool|null $is_under_construction
- * @property-read Faction $faction
+ * @property-read Faction|null $faction
+ * @property-read bool $can_refuel
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointModifier> $modifiers
  * @property-read int|null $modifiers_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Waypoint> $orbitals
  * @property-read int|null $orbitals_count
  * @property-read Waypoint|null $orbitedWaypoint
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
+ * @property-read int|null $ships_count
+ * @property-read System|null $system
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TradeOpportunity> $tradeOpportunities
  * @property-read int|null $trade_opportunities_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointTrait> $traits
  * @property-read int|null $traits_count
- * @property string $system_symbol
- * @property-read bool $can_refuel
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
- * @property-read int|null $ships_count
- * @property-read System|null $system
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint bySystem(string $systemSymbol)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint canRefuel()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint query()
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereFactionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereIsUnderConstruction($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereOrbits($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereX($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereY($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereSystemSymbol($value)
  *
  * @mixin \Eloquent
  */

@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Cargo.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -25,14 +23,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo query()
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereShipId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereUnits($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Cargo whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

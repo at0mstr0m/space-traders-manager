@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Module.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -30,17 +28,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Module newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Module newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Module query()
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereCapacity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereRange($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereRequiredCrew($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereRequiredPower($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereRequiredSlots($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Module whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

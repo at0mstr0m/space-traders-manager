@@ -12,8 +12,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Survey.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -30,15 +28,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Survey newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Survey newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Survey query()
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereAgentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereExpiration($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereRawResponse($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereSignature($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereSize($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Survey whereWaypointSymbol($value)
  *
  * @mixin \Eloquent
  */

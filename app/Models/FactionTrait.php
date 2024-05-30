@@ -8,8 +8,6 @@ use App\Enums\FactionTraits;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\FactionTrait.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -22,12 +20,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait query()
- * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FactionTrait whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

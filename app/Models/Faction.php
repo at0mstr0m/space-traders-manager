@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Faction.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -28,14 +26,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Faction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Faction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Faction query()
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereHeadquarters($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereIsRecruiting($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Faction whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

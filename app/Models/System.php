@@ -30,14 +30,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|System newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|System newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|System query()
- * @method static \Illuminate\Database\Eloquent\Builder|System whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|System whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|System whereSectorSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|System whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|System whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|System whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|System whereX($value)
- * @method static \Illuminate\Database\Eloquent\Builder|System whereY($value)
  *
  * @mixin \Eloquent
  */

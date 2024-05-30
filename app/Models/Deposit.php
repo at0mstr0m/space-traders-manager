@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Deposit.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -25,10 +23,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Deposit query()
- * @method static \Illuminate\Database\Eloquent\Builder|Deposit whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Deposit whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Deposit whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Deposit whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

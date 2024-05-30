@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Reactor.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -26,14 +24,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Reactor newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Reactor newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Reactor query()
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor wherePowerOutput($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor whereRequiredCrew($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Reactor whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

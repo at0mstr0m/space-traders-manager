@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\WaypointTrait.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -23,12 +21,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait query()
- * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

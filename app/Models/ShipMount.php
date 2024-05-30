@@ -7,8 +7,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
- * App\Models\ShipMount.
- *
  * @method static \Illuminate\Database\Eloquent\Builder|ShipMount newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ShipMount newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ShipMount query()
