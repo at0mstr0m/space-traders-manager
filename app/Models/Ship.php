@@ -82,6 +82,10 @@ use Illuminate\Support\Collection;
  * @property-read Reactor $reactor
  * @property-read Task|null $task
  * @property-read Waypoint|null $waypoint
+ * @property string|null $destination
+ * @property-read bool $can_refuel_at_current_location
+ * @property-read bool $has_reached_destination
+ * @property-read System|null $system
  *
  * @method static Builder|Ship newModelQuery()
  * @method static Builder|Ship newQuery()
@@ -121,6 +125,8 @@ use Illuminate\Support\Collection;
  * @method static Builder|Ship whereTaskId($value)
  * @method static Builder|Ship whereUpdatedAt($value)
  * @method static Builder|Ship whereWaypointSymbol($value)
+ * @method static Builder|Ship canSurvey()
+ * @method static Builder|Ship whereDestination($value)
  *
  * @mixin \Eloquent
  */

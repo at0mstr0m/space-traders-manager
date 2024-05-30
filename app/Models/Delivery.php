@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUnitsFulfilled($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUnitsRequired($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Delivery onlyUnfulfilled()
  *
  * @mixin \Eloquent
  */

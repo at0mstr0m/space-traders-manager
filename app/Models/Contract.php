@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read Agent $agent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Delivery> $deliveries
  * @property-read int|null $deliveries_count
+ * @property int|null $ship_id
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Contract newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Contract newQuery()
@@ -48,6 +49,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Contract wherePaymentOnFulfilled($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contract whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contract whereShipId($value)
  *
  * @mixin \Eloquent
  */

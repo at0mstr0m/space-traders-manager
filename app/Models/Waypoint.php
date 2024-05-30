@@ -40,6 +40,11 @@ use Illuminate\Support\Facades\Cache;
  * @property-read int|null $trade_opportunities_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointTrait> $traits
  * @property-read int|null $traits_count
+ * @property string $system_symbol
+ * @property-read bool $can_refuel
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
+ * @property-read int|null $ships_count
+ * @property-read System|null $system
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint bySystem(string $systemSymbol)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint canRefuel()
@@ -56,6 +61,7 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereY($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereSystemSymbol($value)
  *
  * @mixin \Eloquent
  */
@@ -75,7 +81,7 @@ class Waypoint extends Model
     ];
 
     /**
-     * @return bool 
+     * @return bool
      */
     public function getCanRefuelAttribute()
     {

@@ -63,6 +63,12 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereTradeVolumeAtOrigin($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereUpdatedAt($value)
  *
+ * @property string|null $origin_type
+ * @property string|null $destination_type
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereDestinationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereOriginType($value)
+ *
  * @mixin \Eloquent
  */
 class PotentialTradeRoute extends Model
