@@ -23,6 +23,14 @@
       />
     </template>
 
+    <template #[`footer.prepend`]>
+      <v-icon 
+        icon="mdi-refresh"
+        class="mr-4"
+        @click="refresh"
+      />
+    </template>
+    
     <template
       v-if="props.title"
       #top
