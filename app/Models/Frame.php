@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Frame newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Frame newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Frame query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Frame searchBySymbol(string $search = '')
  *
  * @mixin \Eloquent
  */

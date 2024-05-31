@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|System newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|System newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|System query()
+ * @method static \Illuminate\Database\Eloquent\Builder|System searchBySymbol(string $search = '')
  *
  * @mixin \Eloquent
  */

@@ -92,6 +92,7 @@ use Illuminate\Support\Collection;
  * @method static Builder|Ship onlyMiners()
  * @method static Builder|Ship onlySiphoners()
  * @method static Builder|Ship query()
+ * @method static Builder|Ship searchBySymbol(string $search = '')
  *
  * @mixin \Eloquent
  */

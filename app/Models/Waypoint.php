@@ -49,6 +49,9 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyCanBeMined()
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyCanBeSiphoned()
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint searchBySymbol(string $search = '')
  *
  * @mixin \Eloquent
  */

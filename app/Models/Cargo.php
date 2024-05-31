@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Cargo query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cargo searchBySymbol(string $search = '')
  *
  * @mixin \Eloquent
  */

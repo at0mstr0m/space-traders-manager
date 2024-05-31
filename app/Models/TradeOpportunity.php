@@ -37,6 +37,7 @@ use Illuminate\Support\Collection;
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity query()
+ * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity searchBySymbol(string $search = '')
  *
  * @mixin \Eloquent
  */

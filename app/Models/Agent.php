@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Agent searchBySymbol(string $search = '')
  *
  * @mixin \Eloquent
  */
