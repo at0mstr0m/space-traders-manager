@@ -67,7 +67,9 @@ const { height: systemDropdownHeight } = useElementSize(systemDropdown);
 const mapHeight = computed(() => props.height - (systemDropdownHeight.value * 1.2));
 
 function handleWaypointsSelected(waypoints) {
-  emit('select', waypoints.length ? waypoints : null);
+  if (waypoints.length){
+    emit('select', waypoints);
+  }
 }
 
 function addWaypointsToData(waypoints) {
