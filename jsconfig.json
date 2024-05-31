@@ -13,6 +13,9 @@
       ],
       "@piniaPlugins/*": [
         "resources/src/store/plugins/*"
+      ],
+      "@helpers": [
+        "resources/src/utils/helpers.js"
       ]
     },
     "lib": [

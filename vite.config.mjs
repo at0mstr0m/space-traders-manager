@@ -39,6 +39,7 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./resources/src", import.meta.url)),
       "@enums": fileURLToPath(new URL("./resources/src/enums", import.meta.url)),
       "@piniaPlugins": fileURLToPath(new URL("./resources/src/store/plugins", import.meta.url)),
+      "@helpers": fileURLToPath(new URL("./resources/src/utils/helpers.js", import.meta.url)),
     },
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },

@@ -33,13 +33,17 @@
 import VScrollableMap from '@/components/Maps/VScrollableMap.vue';
 import VDropdown from '@/components/VDropdown.vue';
 import { computed, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRepository } from "@/repos/repoGenerator.js";
 import _cloneDeep from "lodash/cloneDeep";
 import { useElementSize } from '@vueuse/core'
 import { getWaypointColor } from '@/enums/waypointTypes';
 import { getSystemColor } from '@/enums/systemTypes';
+import useNavigationStore from "@/store/navigation";
 
 const repo = useRepository('systems');
+const navigationStore = useNavigationStore();
+const { currentSystem } = storeToRefs(navigationStore);
 
 const emit = defineEmits(['select']);
 
@@ -147,34 +151,32 @@ function setWaypoint(data) {
   handleShipWaypointSelection(data.waypoint_symbol);
 }
 
-watch(
-  systemId, (newValue) => {
-    emit('select', null);
-    data.value = { datasets: [] };
-    page.value = 0;
-    if (newValue) {
-      const currentSystem = systemDropdown.value.currentItem;
-      const color = getSystemColor(currentSystem.type);
-      data.value = {
-        datasets: [
-          {
-            label: 'Center: ' + currentSystem.type,
-            fill: false,
-            borderColor: color,
-            backgroundColor: color,
-            data: [
-              {
-                x: 0,
-                y: 0
-              }
-            ]
-          },
-        ]
-      };
-      fetchWaypoints();
-    }
+watch(systemId, (newValue) => {
+  emit('select', null);
+  data.value = { datasets: [] };
+  page.value = 0;
+  currentSystem.value = systemDropdown.value.currentItem || null;
+  if (newValue) {
+    const color = getSystemColor(currentSystem.value.type);
+    data.value = {
+      datasets: [
+        {
+          label: 'Center: ' + currentSystem.value.type,
+          fill: false,
+          borderColor: color,
+          backgroundColor: color,
+          data: [
+            {
+              x: 0,
+              y: 0
+            }
+          ]
+        },
+      ]
+    };
+    fetchWaypoints();
   }
-);
+});
 
 defineExpose({
   setSystem,
