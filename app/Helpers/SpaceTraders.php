@@ -58,13 +58,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\RateLimiter;
 
 class SpaceTraders
 {
-    private const LIMITER_ONE = 'REQUEST_COUNT_1';
-
-    private const LIMITER_TWO = 'REQUEST_COUNT_2';
-
     private const MAX_PER_PAGE = 20;
 
     public function __construct(
@@ -863,24 +860,22 @@ class SpaceTraders
             ->map(fn (Collection $marketplaces) => $marketplaces->first());
     }
 
-    // only allow 2 requests per second
-    private function avoidRateLimit(): void
+    private function baseRequest(int $attempts = 0): PendingRequest
     {
-        if (!Cache::get(static::LIMITER_ONE) && !Cache::get(static::LIMITER_TWO)) {
-            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
-        } elseif (Cache::get(static::LIMITER_ONE) && Cache::get(static::LIMITER_TWO)) {
-            sleep(1);
-            Cache::remember(static::LIMITER_ONE, now()->addSecond(), fn () => true);
-        } elseif (Cache::get(static::LIMITER_ONE)) {
-            Cache::remember(static::LIMITER_TWO, now()->addSecond(), fn () => true);
+        if ($attempts > 40) {
+            throw new \Exception('Too many attempts.');
         }
-    }
 
-    private function baseRequest(): PendingRequest
-    {
-        $this->avoidRateLimit();
+        /** @var bool|PendingRequest */
+        $executed = RateLimiter::attempt('API_REQUESTS', 2, fn () => Http::withToken($this->token), 1);
 
-        return Http::withToken($this->token);
+        if (!$executed) {
+            sleep(1);
+
+            return $this->baseRequest($attempts + 1);
+        }
+
+        return $executed;
     }
 
     private function get(string $path = '', array $query = []): Response
