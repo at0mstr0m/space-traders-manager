@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\UpdateWaypointsAction;
+use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\SystemResource;
 use App\Http\Resources\WaypointResource;
 use App\Models\System;
@@ -15,10 +16,11 @@ class SystemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): AnonymousResourceCollection
+    public function index(PaginationRequest $request): AnonymousResourceCollection
     {
         return SystemResource::collection(
-            System::searchBySymbol()->paginate()
+            System::searchBySymbol()
+                ->paginate(perPage: $request->perPage())
         );
     }
 
