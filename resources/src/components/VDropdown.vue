@@ -76,7 +76,7 @@ const props = defineProps({
     type: String,
     default: 'index',
   },
-  routeParams: {
+  additionalParams: {
     type: Object,
     default: () => ({}),
   },
@@ -96,8 +96,10 @@ async function fetchItems() {
   const response = await repo[props.repoMethod]({
     page: page.value,
     perPage: 15,
-    params: props.requestParams,
-    ...props.routeParams
+    params: {
+      ...props.requestParams,
+      ...props.additionalParams,
+    },
   });
   lastPage.value = response.data.meta.last_page;
   items.value = _uniqBy(items.value.concat(response.data.data), props.itemValue);

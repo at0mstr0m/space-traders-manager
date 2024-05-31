@@ -127,7 +127,7 @@ class LocationHelper
         $graph = Cache::tags(['graphs'])
             ->rememberForever($fuelCapacity, function () use ($fuelCapacity) {
                 $graph = new Dijkstra();
-                Waypoint::canRefuel()
+                Waypoint::onlyCanRefuel()
                     ->get()
                     ->pipe(fn (EloquentCollection $waypoints) => $waypoints->crossJoin($waypoints))
                     ->reject(fn (array $waypoints) => $waypoints[0]->symbol === $waypoints[1]->symbol)

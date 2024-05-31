@@ -45,7 +45,7 @@ use Illuminate\Support\Facades\Cache;
  * @property-read int|null $traits_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint bySystem(string $systemSymbol)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint canRefuel()
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyCanRefuel()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint query()
@@ -125,7 +125,7 @@ class Waypoint extends Model
         return $this->belongsTo(System::class, 'system_symbol', 'symbol');
     }
 
-    public function scopeCanRefuel(Builder $query): Builder
+    public function scopeOnlyCanRefuel(Builder $query): Builder
     {
         return $query->whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
             ->whereRelation(
@@ -140,11 +140,11 @@ class Waypoint extends Model
         return $query->where('symbol', 'like', $systemSymbol . '-%');
     }
 
-    public function closestRefuelingWaypoint(bool $excludeThis = true): ?static
+    public function closestRefuelingWaypoint(bool $excludeSelf = true): ?static
     {
-        $waypoints = Waypoint::canRefuel()
+        $waypoints = Waypoint::onlyCanRefuel()
             ->when(
-                $excludeThis,
+                $excludeSelf,
                 fn (Builder $query) => $query->where([
                     ['symbol', '<>', $this->symbol],
                     ['x', '<>', $this->x],
