@@ -6,13 +6,13 @@
 import { useRouter, useRoute } from "vue-router";
 import useUserStore from "@/store/user";
 
-console.log(window.USER);
+// console.log(window.USER);
 
 const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 
-console.log(userStore.isAuthenticated());
+// console.log(userStore.isAuthenticated());
 
 if (!userStore.isAuthenticated() && route.name !== "Login") {
   router.push({ name: "login" });
