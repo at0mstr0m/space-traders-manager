@@ -9,6 +9,8 @@ use App\Http\Resources\ShipResource;
 use App\Http\Resources\TradeOpportunityResource;
 use App\Http\Resources\WaypointResource;
 use App\Models\Waypoint;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class WaypointController extends Controller
@@ -16,9 +18,21 @@ class WaypointController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return WaypointResource::collection(Waypoint::orderBy('symbol')->paginate());
+        return WaypointResource::collection(
+            Waypoint::orderBy('symbol')
+                ->searchBySymbol()
+                ->when(
+                    $request->boolean('onlyAsteroids'),
+                    fn (Builder $query) => $query->onlyCanBeMined()
+                )
+                ->when(
+                    $request->boolean('onlyGasGiants'),
+                    fn (Builder $query) => $query->onlyCanBeSiphoned()
+                )
+                ->paginate()
+        );
     }
 
     /**

@@ -26,6 +26,10 @@
             item-value="symbol"
             repo-name="waypoints"
             label="Extraction Location"
+            :additional-params="{ 
+              onlyAsteroids: task.type === taskTypes.COLLECTIVE_MINING,
+              onlyGasGiants: task.type === taskTypes.COLLECTIVE_SIPHONING,
+            }"
           />
           <v-dropdown
             v-if="task.type === taskTypes.SUPPORT_COLLECTIVE_MINERS"

@@ -9,6 +9,7 @@
     no-filter
     hide-selected
     @update:model-value="handleModelUpdated"
+    @update:search="updateSearch"
   >
     <template
       v-for="(index, name) in $slots"
@@ -39,6 +40,7 @@
 import { ref, defineModel, onMounted } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 import _uniqBy from "lodash/uniqBy";
+import _debounce from "lodash/debounce";
 
 const selected = defineModel(
   'selected',
@@ -51,6 +53,8 @@ const items = ref([]);
 const page = ref(0);
 const lastPage = ref(1);
 const currentItem = ref(null);
+const search = ref('');
+const debouncer = ref(_debounce(executeSearch, 600));
 
 const props = defineProps({
   itemTitle: {
@@ -97,6 +101,7 @@ async function fetchItems() {
     page: page.value,
     perPage: 15,
     params: {
+      ...search.value ? { search: search.value } : {},
       ...props.requestParams,
       ...props.additionalParams,
     },
@@ -112,6 +117,21 @@ async function fetchPreviouslySelected() {
 
 function handleModelUpdated(value) {
   currentItem.value = items.value.find((item) => item[props.itemValue] === value);
+}
+
+function updateSearch(newSearchTerm) {
+  search.value = newSearchTerm;
+  debouncer.value();
+}
+
+function executeSearch() {
+  if (search.value === selected.value) {
+    return;
+  }
+  items.value = [];
+  page.value = 0;
+  lastPage.value = 1;
+  fetchItems();
 }
 
 function setCurrentItem(element) {

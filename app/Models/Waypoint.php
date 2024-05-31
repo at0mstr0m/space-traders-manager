@@ -135,6 +135,19 @@ class Waypoint extends Model
             );
     }
 
+    public function scopeOnlyCanBeMined(Builder $query): Builder
+    {
+        return $query->whereIn(
+            'type',
+            [WaypointTypes::ASTEROID, WaypointTypes::ENGINEERED_ASTEROID]
+        );
+    }
+
+    public function scopeOnlyCanBeSiphoned(Builder $query): Builder
+    {
+        return $query->where('type', WaypointTypes::GAS_GIANT);
+    }
+
     public function scopeBySystem(Builder $query, string $systemSymbol): Builder
     {
         return $query->where('symbol', 'like', $systemSymbol . '-%');
