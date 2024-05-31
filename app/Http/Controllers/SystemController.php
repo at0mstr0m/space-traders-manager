@@ -20,6 +20,8 @@ class SystemController extends Controller
     {
         return SystemResource::collection(
             System::searchBySymbol()
+                ->withCount('ships')
+                ->withCount('waypoints')
                 ->paginate(perPage: $request->perPage())
         );
     }

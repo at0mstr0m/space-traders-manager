@@ -21,7 +21,7 @@ class WaypointController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         return WaypointResource::collection(
-            Waypoint::orderBy('symbol')
+            Waypoint::withCount('ships')
                 ->searchBySymbol()
                 ->when(
                     $request->boolean('onlyAsteroids'),
@@ -31,6 +31,7 @@ class WaypointController extends Controller
                     $request->boolean('onlyGasGiants'),
                     fn (Builder $query) => $query->onlyCanBeSiphoned()
                 )
+                ->orderBy('symbol')
                 ->paginate()
         );
     }

@@ -24,8 +24,8 @@ class SystemResource extends JsonResource
             'x' => $this->x,
             'y' => $this->y,
             'faction' => $this->faction ? new FactionResource($this->faction) : null,
-            'ships_count' => $this->ships()->count(),
-            'waypoints_count' => $this->waypoints()->count(),
+            'ships_count' => $this->whenCounted('ships'),
+            'waypoints_count' => $this->whenCounted('waypoints'),
         ];
     }
 }
