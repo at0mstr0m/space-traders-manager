@@ -1,6 +1,6 @@
 import { ModelRepository } from "@/repos/";
 
-class ContractsRepository extends ModelRepository {
+class ContractRepository extends ModelRepository {
   refetch() {
     return this._get(this.resource + "/refetch");
   }
@@ -9,4 +9,4 @@ class ContractsRepository extends ModelRepository {
   }
 }
 
-export default new ContractsRepository("contracts");
+export default new ContractRepository("contracts");

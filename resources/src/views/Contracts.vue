@@ -224,11 +224,18 @@ async function refetchContracts() {
 }
 
 function getColor(number) {
-  if (number > 90) return "green";
-  else if (number > 75) return "lime";
-  else if (number > 50) return "yellow";
-  else if (number > 25) return "orange";
-  else return "red";
+  switch (true) {
+    case number > 90:
+      return "green";
+    case number > 75:
+      return "lime";
+    case number > 50:
+      return "yellow";
+    case number > 25:
+      return "orange";
+    default:
+      return "red";
+  }
 }
 
 async function acceptContract(contract) {

@@ -44,7 +44,7 @@ class NavigateShipAction
         $destinationWaypoint = Waypoint::findBySymbol($destinationWaypointSymbol);
         $distanceToDestinationWaypoint = $ship->distanceTo($destinationWaypoint);
         $canReachDestinationWithoutRefueling = $distanceToDestinationWaypoint <= $ship->fuel_current;
-        $canRefuelAtCurrenLocation = $ship->canRefuelAtCurrentLocation();
+        $canRefuelAtCurrenLocation = $ship->can_refuel_at_current_location;
 
         if ($ship->distanceTo($destinationWaypoint) <= $ship->fuel_capacity) {
             if ($canReachDestinationWithoutRefueling) {

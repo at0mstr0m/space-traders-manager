@@ -189,7 +189,7 @@
           elevation="1"
           :loading="buying"
           color="primary"
-          @click="purchaseShip(item)"
+          @click="buyShip(item)"
         >
           Buy
           <template #loader>
@@ -291,10 +291,10 @@ function uniqueItemId(item) {
   return item.type + item.waypointSymbol;
 }
 
-async function purchaseShip(item) {
+async function buyShip(item) {
   buying.value = true;
   try {
-    await shipRepo.purchase(item.type, item.waypointSymbol);
+    await shipRepo.buy(item.type, item.waypointSymbol);
     buying.value = false;
     getShips();
   } catch (error) {

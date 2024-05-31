@@ -74,6 +74,12 @@
         value="Transactions"
         @click="navigateTo('transactions')"
       />
+      <v-list-item
+        prepend-icon="mdi-map-outline"
+        title="Navigation"
+        value="navigation"
+        @click="navigateTo('navigation')"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>

@@ -49,7 +49,7 @@ abstract class ShipJob implements ShouldQueue
         }
 
         if (!$this->ship->has_reached_destination) {
-            dump("{$this->ship->symbol} has not reached its destination");
+            dump("{$this->ship->symbol} has not reached its destination, currently at {$this->ship->waypoint_symbol}");
             $this->flyToLocation($this->ship->destination);
 
             return;

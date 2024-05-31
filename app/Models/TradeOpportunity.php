@@ -16,8 +16,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
- * App\Models\TradeOpportunity.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -39,17 +37,6 @@ use Illuminate\Support\Collection;
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity query()
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereActivity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity wherePurchasePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereSellPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereSupply($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereTradeVolume($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TradeOpportunity whereWaypointSymbol($value)
  *
  * @mixin \Eloquent
  */

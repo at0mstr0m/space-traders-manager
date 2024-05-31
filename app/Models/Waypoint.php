@@ -15,26 +15,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
- * App\Models\Waypoint.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string $symbol
+ * @property string $system_symbol
  * @property WaypointTypes $type
- * @property int $faction_id
+ * @property int|null $faction_id
  * @property int $x
  * @property int $y
  * @property string|null $orbits
  * @property bool|null $is_under_construction
- * @property-read Faction $faction
+ * @property-read Faction|null $faction
+ * @property-read bool $can_refuel
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointModifier> $modifiers
  * @property-read int|null $modifiers_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Waypoint> $orbitals
  * @property-read int|null $orbitals_count
  * @property-read Waypoint|null $orbitedWaypoint
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
+ * @property-read int|null $ships_count
+ * @property-read System|null $system
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TradeOpportunity> $tradeOpportunities
  * @property-read int|null $trade_opportunities_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointTrait> $traits
@@ -45,16 +49,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint query()
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereFactionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereIsUnderConstruction($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereOrbits($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereX($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint whereY($value)
  *
  * @mixin \Eloquent
  */
@@ -64,6 +58,7 @@ class Waypoint extends Model
 
     protected $fillable = [
         'symbol',
+        'system_symbol',
         'type',
         'x',
         'y',
@@ -72,15 +67,22 @@ class Waypoint extends Model
         'is_under_construction',
     ];
 
-    public function getCanRefuelAttribute(): bool
+    /**
+     * @return bool
+     */
+    public function getCanRefuelAttribute()
     {
-        return $this->traits()
-            ->where('symbol', WaypointTraitSymbols::MARKETPLACE)
-            ->exists()
-            && $this->tradeOpportunities()
-                ->where('symbol', TradeSymbols::FUEL)
-                ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
-                ->exists();
+        return Cache::remember(
+            'waypoint_can_refuel:' . $this->symbol,
+            now()->addMinutes(15),
+            fn () => $this->traits()
+                ->where('symbol', WaypointTraitSymbols::MARKETPLACE)
+                ->exists()
+                && $this->tradeOpportunities()
+                    ->where('symbol', TradeSymbols::FUEL)
+                    ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+                    ->exists()
+        );
     }
 
     public function faction(): BelongsTo
@@ -111,6 +113,16 @@ class Waypoint extends Model
     public function tradeOpportunities(): HasMany
     {
         return $this->hasMany(TradeOpportunity::class, 'waypoint_symbol', 'symbol');
+    }
+
+    public function ships(): HasMany
+    {
+        return $this->hasMany(Ship::class, 'waypoint_symbol', 'symbol');
+    }
+
+    public function system(): BelongsTo
+    {
+        return $this->belongsTo(System::class, 'system_symbol', 'symbol');
     }
 
     public function scopeCanRefuel(Builder $query): Builder
@@ -169,6 +181,7 @@ class Waypoint extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'symbol' => 'string',
+            'system_symbol' => 'string',
             'type' => WaypointTypes::class,
             'x' => 'integer',
             'y' => 'integer',

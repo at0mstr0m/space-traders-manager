@@ -71,6 +71,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['itemsFetched']);
+
 const busy = ref(false);
 const items = ref([]);
 const perPage = ref(props.initialPerPage);
@@ -102,9 +104,11 @@ async function fetchItems(options) {
     items.value = data;
     totalPages.value = meta.last_page;
     totalItems.value = meta.total;
+    expanded.value = [];
   } catch (error) {
     console.error(error);
   }
+  emit('itemsFetched');
   busy.value = false;
 }
 
@@ -120,11 +124,19 @@ async function refresh() {
   return fetchItems(currentTableOptions.value);
 }
 
+function updateItem(updatedItem) {
+  const index = items.value.findIndex((item) => item.id === updatedItem.id);
+  if (index !== -1) {
+    items.value.splice(index, 1, updatedItem);
+  }
+}
+
 defineExpose({
   setIsBusy,
   setNotBusy,
   repo,
   items,
   refresh,
+  updateItem,
 })
 </script>

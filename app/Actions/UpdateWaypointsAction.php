@@ -21,12 +21,12 @@ class UpdateWaypointsAction
 {
     use AsAction;
 
-    public function handle()
+    public function handle(?string $systemSymbol = null): void
     {
         /** @var SpaceTraders $api */
         $api = app(SpaceTraders::class);
 
-        $waypoints = LocationHelper::systemsWithShips()
+        $waypoints = collect($systemSymbol ?? LocationHelper::systemsWithShips())
             ->map(fn (string $systemSymbol) => $api->listWaypointsInSystem($systemSymbol, all: true))
             ->flatten(1);
 
@@ -42,6 +42,7 @@ class UpdateWaypointsAction
             $waypoint = Waypoint::updateOrCreate(
                 ['symbol' => $waypointData->symbol],
                 [
+                    'system_symbol' => $waypointData->systemSymbol,
                     'type' => $waypointData->type,
                     'x' => $waypointData->x,
                     'y' => $waypointData->y,

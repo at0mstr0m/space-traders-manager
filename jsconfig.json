@@ -1,12 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES6",
     "module": "esnext",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "moduleResolution": "node",
     "paths": {
       "@/*": [
-        "/resources/src/*"
+        "resources/src/*"
+      ],
+      "@enums/*": [
+        "resources/src/enums/*"
+      ],
+      "@piniaPlugins/*": [
+        "resources/src/store/plugins/*"
+      ],
+      "@helpers": [
+        "resources/src/utils/helpers.js"
       ]
     },
     "lib": [
@@ -15,5 +24,12 @@
       "dom.iterable",
       "scripthost"
     ]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "public"
+  ],
+  "include": [
+    "./resources/src/**/*"
+  ]
 }

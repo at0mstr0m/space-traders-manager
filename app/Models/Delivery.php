@@ -9,8 +9,6 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Delivery.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -25,15 +23,8 @@ use Illuminate\Support\Carbon;
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Delivery onlyUnfulfilled()
  * @method static \Illuminate\Database\Eloquent\Builder|Delivery query()
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereContractId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereDestinationSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereTradeSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUnitsFulfilled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUnitsRequired($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Delivery whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\PotentialTradeRoute.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -27,6 +25,8 @@ use Illuminate\Support\Carbon;
  * @property SupplyLevels|null $supply_at_destination
  * @property ActivityLevels|null $activity_at_destination
  * @property int|null $trade_volume_at_destination
+ * @property string|null $origin_type
+ * @property string|null $destination_type
  * @property int $origin_x
  * @property int $origin_y
  * @property int $destination_x
@@ -40,28 +40,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute query()
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereActivityAtDestination($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereActivityAtOrigin($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereDestination($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereDestinationX($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereDestinationY($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereDistance($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereOrigin($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereOriginX($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereOriginY($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereProfit($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereProfitPerFlight($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute wherePurchasePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereSellPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereShipId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereSupplyAtDestination($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereSupplyAtOrigin($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereTradeSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereTradeVolumeAtDestination($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereTradeVolumeAtOrigin($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

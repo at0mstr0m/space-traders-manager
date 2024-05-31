@@ -1,13 +1,14 @@
 <template>
   <v-autocomplete
     v-model="selected"
-    v-bind="{...$attrs, ...$props}"
+    v-bind="{ ...$attrs, ...$props }"
     :items="items"
     :item-title="props.itemTitle"
     :item-value="props.itemValue"
     :label="props.label"
     no-filter
     hide-selected
+    @update:model-value="handleModelUpdated"
   >
     <template
       v-for="(index, name) in $slots"
@@ -39,10 +40,17 @@ import { ref, defineModel, onMounted } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 import _uniqBy from "lodash/uniqBy";
 
-const selected = defineModel('selected', { required: false, type: [String, Number, Object, Array, Boolean]});
+const selected = defineModel(
+  'selected',
+  {
+    required: false,
+    type: [String, Number, Object, Array, Boolean]
+  }
+);
 const items = ref([]);
 const page = ref(0);
 const lastPage = ref(1);
+const currentItem = ref(null);
 
 const props = defineProps({
   itemTitle: {
@@ -64,6 +72,18 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  repoMethod: {
+    type: String,
+    default: 'index',
+  },
+  routeParams: {
+    type: Object,
+    default: () => ({}),
+  },
+  requestParams: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 
 const repo = useRepository(props.repoName);
@@ -73,14 +93,34 @@ async function fetchItems() {
   if (page.value > lastPage.value) {
     return;
   }
-  const response = await repo.index(page.value, 15);
+  const response = await repo[props.repoMethod]({
+    page: page.value,
+    perPage: 15,
+    params: props.requestParams,
+    ...props.routeParams
+  });
   lastPage.value = response.data.meta.last_page;
-  items.value = _uniqBy(items.value.concat(response.data.data), 'id');
+  items.value = _uniqBy(items.value.concat(response.data.data), props.itemValue);
 }
 
 async function fetchPreviouslySelected() {
   const response = await repo.show(selected.value);
   items.value.push(response.data.data);
+}
+
+function handleModelUpdated(value) {
+  currentItem.value = items.value.find((item) => item[props.itemValue] === value);
+}
+
+function setCurrentItem(element) {
+  if (
+    element 
+    && !items.value.find((item) => item[props.itemValue] === element[props.itemValue])
+  ) {
+    items.value.push(element);
+  }
+  currentItem.value = element ?? null;
+  selected.value = element ? element[props.itemValue] : null;
 }
 
 onMounted(() => {
@@ -93,5 +133,10 @@ onMounted(() => {
   ) {
     fetchPreviouslySelected();
   }
+});
+
+defineExpose({
+  currentItem,
+  setCurrentItem
 });
 </script>

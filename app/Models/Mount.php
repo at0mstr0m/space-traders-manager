@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Mount.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -28,15 +26,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Mount newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Mount newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Mount query()
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereRequiredCrew($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereRequiredPower($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereStrength($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mount whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

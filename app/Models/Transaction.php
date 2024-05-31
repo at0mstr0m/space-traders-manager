@@ -7,7 +7,31 @@ namespace App\Models;
 use App\Enums\TradeSymbols;
 use App\Enums\TransactionTypes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string $agent_symbol
+ * @property string $ship_symbol
+ * @property string $waypoint_symbol
+ * @property Carbon $timestamp
+ * @property TransactionTypes $type
+ * @property TradeSymbols|null $trade_symbol
+ * @property int $units
+ * @property int $price_per_unit
+ * @property int $total_price
+ * @property-read Agent|null $agent
+ * @property-read Ship|null $ship
+ * @property-read Waypoint|null $waypoint
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Transaction query()
+ *
+ * @mixin \Eloquent
+ */
 class Transaction extends Model
 {
     protected $fillable = [

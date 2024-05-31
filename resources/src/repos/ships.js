@@ -1,12 +1,12 @@
 import { ModelRepository } from "@/repos/";
 
-class ShipsRepository extends ModelRepository {
+class ShipRepository extends ModelRepository {
   refetch() {
     return this._get(this.resource + "/refetch");
   }
 
-  purchase(shipType, waypointSymbol) {
-    return this._post(this.resource + "/purchase", {
+  buy(shipType, waypointSymbol) {
+    return this._post(this.resource + "/buy", {
       shipType: shipType,
       waypointSymbol: waypointSymbol,
     });
@@ -23,6 +23,28 @@ class ShipsRepository extends ModelRepository {
       taskId: taskId,
     });
   }
+  
+  purchaseTradeGood(shipId, symbol, quantity) {
+    return this._post(this.resource + "/" + shipId + "/purchase", {
+      symbol: symbol,
+      quantity: quantity,
+    });
+  }
+
+  sellTradeGood(shipId, symbol, quantity) {
+    return this._post(this.resource + "/" + shipId + "/sell", {
+      symbol: symbol,
+      quantity: quantity,
+    });
+  }
+
+  refuel(shipId) {
+    return this._post(this.resource + "/" + shipId + "/refuel");
+  }
+
+  navigate(shipId, waypointId) {
+    return this._post(this.resource + "/" + shipId + "/navigate/" + waypointId);
+  }
 }
 
-export default new ShipsRepository("ships");
+export default new ShipRepository("ships");

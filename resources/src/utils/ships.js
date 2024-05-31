@@ -18,7 +18,7 @@ export default function useShipUtils() {
       key: "destination",
     },
     {
-      title: "has_reached_destination",
+      title: "Has reached destination",
       key: "has_reached_destination",
     },
     {
@@ -107,6 +107,92 @@ export default function useShipUtils() {
     },
   ];
 
+  const waypointTableColumns = [
+    {
+      title: "Symbol",
+      key: "symbol",
+      minWidth: "160px",
+    },
+    {
+      title: "Role",
+      key: "role",
+    },
+    {
+      title: "Destination",
+      key: "destination",
+    },
+    {
+      title: "Task",
+      key: "task.type",
+    },
+    {
+      title: "Status",
+      key: "status",
+    },
+    {
+      title: "Flight Mode",
+      key: "flight_mode",
+    },
+    {
+      title: "Fuel",
+      key: "fuel_current",
+      minWidth: "100px",
+    },
+    {
+      title: "Cooldown",
+      key: "cooldown",
+    },
+    {
+      title: "Cargo",
+      key: "cargo_capacity",
+    },
+  ];
+
+  const navigationTableColumns = [
+    {
+      title: "Symbol",
+      key: "symbol",
+      minWidth: "160px",
+    },
+    {
+      title: "Waypoint Symbol",
+      key: "waypoint_symbol",
+    },
+    {
+      title: "Role",
+      key: "role",
+    },
+    {
+      title: "Destination",
+      key: "destination",
+    },
+    {
+      title: "Task",
+      key: "task.type",
+    },
+    {
+      title: "Status",
+      key: "status",
+    },
+    {
+      title: "Flight Mode",
+      key: "flight_mode",
+    },
+    {
+      title: "Fuel",
+      key: "fuel_current",
+      minWidth: "100px",
+    },
+    {
+      title: "Cooldown",
+      key: "cooldown",
+    },
+    {
+      title: "Cargo",
+      key: "cargo_capacity",
+    },
+  ];
+
   const flightModes = [
     {
       title: "DRIFT",
@@ -128,6 +214,8 @@ export default function useShipUtils() {
 
   return {
     tableColumns,
+    waypointTableColumns,
     flightModes,
+    navigationTableColumns,
   };
 }

@@ -20,11 +20,13 @@ class WaypointResource extends JsonResource
             'updated_at' => $this->updated_at->toDateTimeString(),
             'symbol' => $this->symbol,
             'type' => $this->type->value,
-            'faction_id' => $this->faction_id,
+            'faction' => $this->faction ? new FactionResource($this->faction) : null,
             'x' => $this->x,
             'y' => $this->y,
-            'orbits' => $this->orbits ? WaypointResource::new($this->orbitedWaypoint) : null,
+            'orbits' => $this->orbits ? new static($this->orbitedWaypoint) : null,
             'is_under_construction' => $this->is_under_construction,
+            'traits' => WaypointTraitResource::collection($this->traits),
+            'ship_count' => $this->whenCounted('ships'),
         ];
     }
 }

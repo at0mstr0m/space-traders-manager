@@ -21,234 +21,21 @@
       repo-name="ships"
       expandable
     >
-      <template #expanded-row="{ columns, item }">
-        <tr>
-          <td :colspan="columns.length">
-            <v-row>
-              <v-col cols="4">
-                <v-card
-                  variant="tonal"
-                  color="primary"
-                  class="ma-3"
-                  title="Task"
-                >
-                  <template #text>
-                    <v-update-ship-task
-                      :ship="item"
-                      @update="updateRow"
-                    />
-                  </template>
-                </v-card>
-              </v-col>
-
-              <v-col cols="4">
-                <v-card
-                  variant="tonal"
-                  color="primary"
-                  class="ma-3"
-                  title="Flight Mode"
-                >
-                  <template #text>
-                    <v-update-flight-mode
-                      :ship="item"
-                      @update="updateRow"
-                    />
-                  </template>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col cols="4">
-                <v-card
-                  variant="tonal"
-                  color="primary"
-                  class="ma-3"
-                  title="Frame"
-                  :subtitle="item.frame.name"
-                >
-                  <template #text>
-                    <v-row>
-                      <v-col>
-                        Module Slots: {{ item.frame.module_slots }}
-                      </v-col>
-                      <v-col>
-                        Mounting Points: {{ item.frame.mounting_points }}
-                      </v-col>
-                      <v-col>
-                        Fuel Capacity: {{ item.frame.fuel_capacity }}
-                      </v-col>
-                      <v-col>
-                        Fuel Capacity: {{ item.frame.required_power }}
-                      </v-col>
-                      <v-col>
-                        Required Crew: {{ item.frame.required_crew }}
-                      </v-col>
-                    </v-row>
-                    <v-card-text class="pa-1 mt-2">
-                      {{ item.frame.description }}
-                    </v-card-text>
-                  </template>
-                </v-card>
-              </v-col>
-              <v-col cols="4">
-                <v-card
-                  variant="tonal"
-                  color="primary"
-                  class="ma-3"
-                  title="Reactor"
-                  :subtitle="item.reactor.name"
-                >
-                  <template #text>
-                    <v-row>
-                      <v-col>
-                        Required Crew: {{ item.reactor.required_crew }}
-                      </v-col>
-                      <v-col>
-                        Power Output: {{ item.reactor.power_output }}
-                      </v-col>
-                    </v-row>
-                    <v-card-text class="pa-1 mt-2">
-                      {{ item.reactor.description }}
-                    </v-card-text>
-                  </template>
-                </v-card>
-              </v-col>
-              <v-col cols="4">
-                <v-card
-                  variant="tonal"
-                  color="primary"
-                  class="ma-3"
-                  title="Engine"
-                  :subtitle="item.engine.name"
-                >
-                  <template #text>
-                    <v-row>
-                      <v-col> Speed: {{ item.engine.speed }} </v-col>
-                      <v-col>
-                        Required Power: {{ item.engine.required_power }}
-                      </v-col>
-                      <v-col>
-                        Required Crew: {{ item.engine.required_crew }}
-                      </v-col>
-                    </v-row>
-                    <v-card-text class="pa-1 mt-2">
-                      {{ item.engine.description }}
-                    </v-card-text>
-                  </template>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-card
-                  v-if="item.modules?.length > 0"
-                  variant="tonal"
-                  color="primary"
-                  class="ma-3"
-                  title="Modules"
-                  :subtitle="'Quantity: ' + item.modules.length"
-                >
-                  <v-card
-                    v-for="module in item.modules"
-                    :key="'module_' + module.id"
-                    variant="tonal"
-                    color="primary"
-                    class="ma-3"
-                    :title="module.name"
-                    :subtitle="'Quantity: ' + module.quantity"
-                  >
-                    <template #text>
-                      <v-row>
-                        <v-col v-if="module.capacity">
-                          Capacity: {{ module.capacity }}
-                        </v-col>
-                        <v-col v-if="module.range">
-                          Range: {{ module.range }}
-                        </v-col>
-                        <v-col v-if="module.required_power">
-                          Required Power: {{ module.required_power }}
-                        </v-col>
-                        <v-col>
-                          Required Crew: {{ module.required_crew }}
-                        </v-col>
-                        <v-col>
-                          Required Slots: {{ module.required_slots }}
-                        </v-col>
-                      </v-row>
-                      <v-card-text class="pa-1 mt-2">
-                        {{ module.description }}
-                      </v-card-text>
-                    </template>
-                  </v-card>
-                </v-card>
-              </v-col>
-              <v-col>
-                <v-card
-                  v-if="item.mounts?.length > 0"
-                  variant="tonal"
-                  color="primary"
-                  class="ma-3"
-                  title="Mounts"
-                  :subtitle="'Quantity: ' + item.mounts.length"
-                >
-                  <v-card
-                    v-for="mount in item.mounts"
-                    variant="tonal"
-                    color="primary"
-                    :key="'mount_' + mount.id"
-                    class="ma-3"
-                    :title="mount.name"
-                    :subtitle="'Quantity: ' + mount.quantity"
-                  >
-                    <template #text>
-                      <v-row>
-                        <v-col> Strength: {{ mount.strength }} </v-col>
-                        <v-col>
-                          Required Power: {{ mount.required_power }}
-                        </v-col>
-                        <v-col>
-                          Required Crew: {{ mount.required_crew }}
-                        </v-col>
-                      </v-row>
-                      <v-card-text class="pa-1 mt-2">
-                        {{ mount.description }}
-                      </v-card-text>
-                    </template>
-                  </v-card>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-card
-                v-if="item.cargos?.length > 0"
-                class="ma-3"
-                title="Cargo"
-                :subtitle="'Quantity: ' + item.cargos.length"
-              >
-                <v-card
-                  v-for="cargo in item.cargos"
-                  :key="'cargo_' + cargo.id"
-                  class="ma-3"
-                  :title="cargo.name"
-                  :subtitle="'Units: ' + cargo.units"
-                  :text="cargo.description"
-                />
-              </v-card>
-            </v-row>
-          </td>
-        </tr>
+      <template #expanded-row="{ item, columns }">
+        <v-ship-expanded-details 
+          :ship="item"
+          :columns="columns"
+          @update:row="updateRow"
+        />
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.crew_morale="{ value }">
+      <template #[`item.crew_morale`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ value }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.fuel_current="{ item, value }">
+      <template #[`item.fuel_current`]="{ item, value }">
         <v-chip
           :color="
             item.fuel_capacity
@@ -260,43 +47,37 @@
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.frame_condition="{ value }">
+      <template #[`item.frame_condition`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.frame_integrity="{ value }">
+      <template #[`item.frame_integrity`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.reactor_condition="{ value }">
+      <template #[`item.reactor_condition`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.reactor_integrity="{ value }">
+      <template #[`item.reactor_integrity`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.engine_condition="{ value }">
+      <template #[`item.engine_condition`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
       </template>
 
-      <!-- eslint-disable-next-line vue/valid-v-slot -->
-      <template #item.engine_integrity="{ value }">
+      <template #[`item.engine_integrity`]="{ value }">
         <v-chip :color="getColor(value)">
           {{ decimal(value) }}
         </v-chip>
@@ -307,9 +88,8 @@
 
 <script setup>
 import VTable from "@/components/VTable.vue";
-import VUpdateFlightMode from '@/components/VUpdateFlightMode.vue';
-import VUpdateShipTask from '@/components/VUpdateShipTask.vue';
-import { ref, } from "vue";
+import VShipExpandedDetails from '@/components/VShipExpandedDetails.vue';
+import { ref } from "vue";
 import useShipUtils from "@/utils/ships.js";
 import useStringify from "@/utils/stringify";
 
@@ -320,11 +100,18 @@ const table = ref(false);
 const refreshing = ref(false);
 
 function getColor(number) {
-  if (number > 0.9) return "green";
-  else if (number > 0.75) return "lime";
-  else if (number > 0.5) return "yellow";
-  else if (number > 0.25) return "orange";
-  else return "red";
+  switch (true) {
+    case number > 0.9:
+      return "green";
+    case number > 0.75:
+      return "lime";
+    case number > 0.5:
+      return "yellow";
+    case number > 0.25:
+      return "orange";
+    default:
+      return "red";
+  }
 }
 
 async function refetchShips() {
@@ -340,7 +127,6 @@ async function refetchShips() {
 }
 
 function updateRow(updatedShip) {
-  const index = table.value.items.findIndex((ship) => ship.id === updatedShip.id);
-  table.value.items.splice(index, 1, updatedShip);
+  table.value.updateItem(updatedShip);
 }
 </script>

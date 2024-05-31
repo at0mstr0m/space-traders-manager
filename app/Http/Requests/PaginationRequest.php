@@ -26,7 +26,7 @@ class PaginationRequest extends FormRequest
                 'sometimes',
                 'integer',
                 'min:1',
-                'max:100',
+                'max:1000',
             ],
             'sortBy' => [
                 'required_with:sortDirection',

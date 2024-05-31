@@ -9,8 +9,6 @@ use App\Traits\FindableBySymbol;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Frame.
- *
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -28,17 +26,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Frame newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Frame newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Frame query()
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereFuelCapacity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereModuleSlots($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereMountingPoints($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereRequiredCrew($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereRequiredPower($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereSymbol($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Frame whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

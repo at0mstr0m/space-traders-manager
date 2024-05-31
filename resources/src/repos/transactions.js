@@ -1,5 +1,5 @@
 import { ModelRepository } from "@/repos/";
 
-class TransactionsRepository extends ModelRepository {}
+class TransactionRepository extends ModelRepository {}
 
-export default new TransactionsRepository("transactions");
+export default new TransactionRepository("transactions");
