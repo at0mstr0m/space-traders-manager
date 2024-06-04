@@ -58,6 +58,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 class SpaceTraders
@@ -69,7 +70,7 @@ class SpaceTraders
         private string $url = 'https://api.spacetraders.io/v2/',
     ) {}
 
-    public function getStatus()
+    public function getStatus(): Collection
     {
         return $this->get()->collect('data');
     }
@@ -878,22 +879,39 @@ class SpaceTraders
         return $executed;
     }
 
+    private function logRequest(
+        string $method,
+        string $path,
+        array $payload
+    ): void {
+        $stringPayload = json_encode($payload);
+
+        Log::channel('api_requests')
+            ->info("{$method} {$path} {$stringPayload}");
+    }
+
     private function get(string $path = '', array $query = []): Response
     {
+        $this->logRequest('GET', $path, $query);
+
         return $this->baseRequest()
             ->get($this->url . $path, $query)
             ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
-    private function post(string $path = '', array $payload = []): Response
+    private function post(string $path, array $payload = []): Response
     {
+        $this->logRequest('POST', $path, $payload);
+
         return $this->baseRequest()
             ->post($this->url . $path, $payload)
             ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
-    private function patch(string $path = '', array $payload = []): Response
+    private function patch(string $path, array $payload = []): Response
     {
+        $this->logRequest('PATCH', $path, $payload);
+
         return $this->baseRequest()
             ->patch($this->url . $path, $payload)
             ->throwUnlessStatus(HttpResponse::HTTP_OK);

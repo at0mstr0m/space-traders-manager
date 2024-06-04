@@ -6,7 +6,6 @@ use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Log Channel
@@ -54,7 +53,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'ship_jobs'],
             'ignore_exceptions' => false,
         ],
 
@@ -89,7 +88,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
@@ -126,6 +125,19 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
-    ],
 
+        'ship_jobs' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/ship_jobs.log'),
+            'level' => 'info',
+            'replace_placeholders' => true,
+        ],
+
+        'api_requests' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/api_requests.log'),
+            'level' => 'debug',
+            'replace_placeholders' => true,
+        ],
+    ],
 ];
