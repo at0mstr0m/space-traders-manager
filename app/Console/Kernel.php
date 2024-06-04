@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTwoMinutes();
         $schedule->job(TriggerTasks::makeUniqueJob())->hourly();
         $schedule->command('model:prune')->everyMinute();
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
     }
 
     /**
