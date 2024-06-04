@@ -861,60 +861,59 @@ class SpaceTraders
             ->map(fn (Collection $marketplaces) => $marketplaces->first());
     }
 
-    private function baseRequest(int $attempts = 0): PendingRequest
-    {
-        if ($attempts > 40) {
-            throw new \Exception('Too many attempts.');
-        }
-
-        /** @var bool|PendingRequest */
-        $executed = RateLimiter::attempt('API_REQUESTS', 2, fn () => Http::withToken($this->token), 1);
-
-        if (!$executed) {
-            sleep(1);
-
-            return $this->baseRequest($attempts + 1);
-        }
-
-        return $executed;
-    }
-
     private function logRequest(
         string $method,
         string $path,
         array $payload
     ): void {
-        $stringPayload = json_encode($payload);
+        $method = strtoupper($method);
+        $payload = json_encode($payload);
 
         Log::channel('api_requests')
-            ->info("{$method} {$path} {$stringPayload}");
+            ->info("{$method} {$path} {$payload}");
+    }
+
+    private function baseRequest(
+        string $method,
+        string $path,
+        array $payload,
+        int $attempts = 0
+    ): Response {
+        if ($attempts > 30) {
+            throw new \Exception('Too many attempts.');
+        }
+
+        /** @var bool|PendingRequest */
+        $request = RateLimiter::attempt('API_REQUESTS', 2, fn () => Http::withToken($this->token), 1);
+
+        if (!$request) {
+            sleep(1);
+
+            return $this->baseRequest(...[
+                ...func_get_args(),
+                'attempts' => $attempts + 1,
+            ]);
+        }
+
+        $this->logRequest($method, $path, $payload);
+
+        return $request->{$method}($this->url . $path, $payload)
+            ->throwUnlessStatus(HttpResponse::HTTP_OK);
     }
 
     private function get(string $path = '', array $query = []): Response
     {
-        $this->logRequest('GET', $path, $query);
-
-        return $this->baseRequest()
-            ->get($this->url . $path, $query)
-            ->throwUnlessStatus(HttpResponse::HTTP_OK);
+        return $this->baseRequest('get', $path, $query);
     }
 
     private function post(string $path, array $payload = []): Response
     {
-        $this->logRequest('POST', $path, $payload);
-
-        return $this->baseRequest()
-            ->post($this->url . $path, $payload)
-            ->throwUnlessStatus(HttpResponse::HTTP_OK);
+        return $this->baseRequest('post', $path, $payload);
     }
 
     private function patch(string $path, array $payload = []): Response
     {
-        $this->logRequest('PATCH', $path, $payload);
-
-        return $this->baseRequest()
-            ->patch($this->url . $path, $payload)
-            ->throwUnlessStatus(HttpResponse::HTTP_OK);
+        return $this->baseRequest('patch', $path, $payload);
     }
 
     private function getAllPagesData(
