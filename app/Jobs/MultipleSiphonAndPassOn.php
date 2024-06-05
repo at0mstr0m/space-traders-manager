@@ -39,15 +39,12 @@ class MultipleSiphonAndPassOn extends MultipleShipsJob implements ShouldBeUnique
     protected function handleShips(): void
     {
         $this->extractionLocation = $this->task->payload['extraction_location'];
-        dump(now()->toTimeString() . " extraction location: {$this->extractionLocation}");
+        $this->log("extraction location: {$this->extractionLocation}");
         /** @var Task */
         $companionTask = Task::firstWhere([
             'type' => TaskTypes::SUPPORT_COLLECTIVE_MINERS,
             'payload->waiting_location' => $this->extractionLocation,
         ]);
-
-        dump(now()->toTimeString());
-        dump($companionTask->attributesToArray());
 
         $this->companions = $companionTask->ships
             ->reject(function (Ship $companion) {
@@ -57,7 +54,7 @@ class MultipleSiphonAndPassOn extends MultipleShipsJob implements ShouldBeUnique
                     || $companion->waypoint_symbol !== $this->extractionLocation;
 
                 if ($result) {
-                    dump(now()->toTimeString() . " companion {$companion->symbol} is not available");
+                    $this->log("companion {$companion->symbol} is not available");
                     WaitAndSell::dispatch($companion->symbol);
                 }
 
@@ -65,47 +62,47 @@ class MultipleSiphonAndPassOn extends MultipleShipsJob implements ShouldBeUnique
             });
 
         if ($this->noCompanionPresent() && $this->ships->every(fn (Ship $ship) => $ship->is_fully_loaded)) {
-            dump(now()->toTimeString() . ' no companion present and all ships are fully loaded, self dispatching...');
+            $this->log('no companion present and all ships are fully loaded, self dispatching...');
             $this->selfDispatch()->delay(60);
 
             return;
         }
 
         $this->ships->each(fn (Ship $ship) => $this->handleShip($ship));
-        dump(now()->toTimeString() . ' done handling ships, self dispatching...');
+        $this->log('done handling ships, self dispatching...');
         $this->selfDispatch()->delay($this->ships->max('cooldown'));
-        dump(now()->toTimeString() . " cooldown: {$this->ships->max('cooldown')}");
+        $this->log("cooldown: {$this->ships->max('cooldown')}");
     }
 
     private function handleShip(Ship $ship): void
     {
-        dump(now()->toTimeString() . " handling {$ship->symbol}");
+        $this->log("handling {$ship->symbol}");
 
         if ($ship->waypoint_symbol !== $this->extractionLocation) {
             $ship->navigateTo($this->extractionLocation);
-            dump(now()->toTimeString() . " navigate {$ship->symbol} to {$this->extractionLocation}");
+            $this->log("navigate {$ship->symbol} to {$this->extractionLocation}");
 
             return;
         }
         $this->transferCargoToCompanionShip($ship);
         if ($ship->is_fully_loaded) {
-            dump(now()->toTimeString() . " {$ship->symbol} is fully loaded, cannot extract resources");
+            $this->log('is fully loaded, cannot extract resources', $ship);
 
             return;
         }
 
-        dump(now()->toTimeString() . " {$ship->symbol} siphoning resources");
+        $this->log('siphoning resources', $ship);
         $ship = $ship->siphonResources()->refresh();
-        dump(now()->toTimeString() . " {$ship->symbol} done extracting resources");
+        $this->log('done extracting resources', $ship);
 
         $this->transferCargoToCompanionShip($ship);
     }
 
     private function transferCargoToCompanionShip(Ship $ship): void
     {
-        dump(now()->toTimeString() . " {$ship->symbol} transferring cargo to companion");
+        $this->log('transferring cargo to companion', $ship);
         if ($this->noCompanionPresent()) {
-            dump(now()->toTimeString() . " {$ship->symbol} no companion present");
+            $this->log('no companion present', $ship);
 
             return;
         }
@@ -115,9 +112,9 @@ class MultipleSiphonAndPassOn extends MultipleShipsJob implements ShouldBeUnique
 
     private function handleTransferCargoToCompanionShip(Ship $ship, Cargo $cargo): void
     {
-        dump(now()->toTimeString() . " handling cargo {$cargo->symbol->value} for {$ship->symbol}");
+        $this->log("handling cargo {$cargo->symbol->value} for {$ship->symbol}");
         if ($this->noCompanionPresent()) {
-            dump(now()->toTimeString() . " {$ship->symbol} no companion present");
+            $this->log('no companion present', $ship);
 
             return;
         }
@@ -128,15 +125,15 @@ class MultipleSiphonAndPassOn extends MultipleShipsJob implements ShouldBeUnique
             ->first();
 
         if (!$companion) {
-            dump(now()->toTimeString() . " {$ship->symbol} no companion present");
+            $this->log('no companion present', $ship);
 
             return;
         }
-        dump(now()->toTimeString() . " companion: {$companion->symbol}");
+        $this->log("companion: {$companion->symbol}");
         $companion = $companion->refresh();
 
         if ($companion->is_fully_loaded) {
-            dump(now()->toTimeString() . " companion {$companion->symbol} is fully loaded already");
+            $this->log("companion {$companion->symbol} is fully loaded already");
             WaitAndSell::dispatch($companion->symbol);
             $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
 
@@ -147,7 +144,7 @@ class MultipleSiphonAndPassOn extends MultipleShipsJob implements ShouldBeUnique
         $companion = $companion->refresh();
 
         if ($companion->is_fully_loaded) {
-            dump(now()->toTimeString() . " companion {$companion->symbol} is fully loaded now");
+            $this->log("companion {$companion->symbol} is fully loaded now");
             WaitAndSell::dispatch($companion->symbol);
             $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
         }

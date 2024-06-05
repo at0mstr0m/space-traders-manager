@@ -36,9 +36,9 @@ trait InteractsWithPotentialTradeRoutes
                 ['supply_at_destination', '<>', SupplyLevels::ABUNDANT],
             ])
         )->get();
-            // ->filter(fn (PotentialTradeRoute $route) => $this->routeDistanceIsPossible($route));
+        // ->filter(fn (PotentialTradeRoute $route) => $this->routeDistanceIsPossible($route));
 
-        dump("{$this->ship->symbol} found {$this->possibleTradeRoutes->count()} possible trade routes");
+        $this->log("found {$this->possibleTradeRoutes->count()} possible trade routes");
     }
 
     // override this method in child classes to specify query conditions
@@ -52,7 +52,7 @@ trait InteractsWithPotentialTradeRoutes
 
     protected function chooseNewRoute(): void
     {
-        dump("{$this->ship->symbol} choosing new trade route, dissociating old one");
+        $this->log('choosing new trade route, dissociating old one');
         if ($this->ship->potentialTradeRoute) {
             $this->ship->potentialTradeRoute->ship()->dissociate()->save();
         }
@@ -61,10 +61,10 @@ trait InteractsWithPotentialTradeRoutes
 
         $count = $possibleRoutes->count();
 
-        dump("{$this->ship->symbol} found {$count} possible trade routes");
+        $this->log("found {$count} possible trade routes");
 
         if ($count === 0) {
-            dump("{$this->ship->symbol} no new trade routes found");
+            $this->log('no new trade routes found');
 
             return;
         }
@@ -73,9 +73,9 @@ trait InteractsWithPotentialTradeRoutes
         $newRoute = $possibleRoutes->first();
 
         if ($newRoute) {
-            dump("{$this->ship->symbol} new trade route {$newRoute->origin} -> {$newRoute->destination} with {$newRoute->trade_symbol->value} profit per flight {$newRoute->profit_per_flight}");
+            $this->log("new trade route {$newRoute->origin} -> {$newRoute->destination} with {$newRoute->trade_symbol->value} profit per flight {$newRoute->profit_per_flight}");
         } else {
-            dump("{$this->ship->symbol} no unserved trade route found!");
+            $this->log('no unserved trade route found!');
         }
 
         $newRoute->ship()->associate($this->ship)->save();

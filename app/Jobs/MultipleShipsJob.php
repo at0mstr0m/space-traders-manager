@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 abstract class MultipleShipsJob implements ShouldQueue
 {
@@ -80,10 +81,23 @@ abstract class MultipleShipsJob implements ShouldQueue
             ->reject(function (Ship $ship) {
                 $result = $ship->is_in_transit || $ship->cooldown;
                 if ($result) {
-                    dump("{$ship->symbol} is in transit or on cooldown");
+                    $this->log('is in transit or on cooldown', $ship);
                 }
 
                 return $result;
             });
+    }
+
+    protected function log(string $message, ?Ship $ship = null): void
+    {
+        $symbol = $ship?->symbol;
+        Log::channel('ship_jobs')
+            ->info(
+                ($symbol ? $symbol . ' ' : '')
+                . static::class
+                . ' "'
+                . $message
+                . '"'
+            );
     }
 }

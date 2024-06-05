@@ -12,6 +12,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 abstract class ShipJob implements ShouldQueue
 {
@@ -42,14 +44,14 @@ abstract class ShipJob implements ShouldQueue
         $this->initShip();
 
         if ($this->ship->is_in_transit || $this->ship->cooldown) {
-            dump("{$this->ship->symbol} is in transit or on cooldown");
+            $this->log('is in transit or on cooldown');
             $this->selfDispatch()->delay($this->ship->cooldown ?: 60);
 
             return;
         }
 
         if (!$this->ship->has_reached_destination) {
-            dump("{$this->ship->symbol} has not reached its destination, currently at {$this->ship->waypoint_symbol}");
+            $this->log("has not reached its destination, currently at {$this->ship->waypoint_symbol}");
             $this->flyToLocation($this->ship->destination);
 
             return;
@@ -70,7 +72,7 @@ abstract class ShipJob implements ShouldQueue
 
     protected function flyToLocation(string $waypointSymbol): void
     {
-        dump("fly to {$waypointSymbol}");
+        $this->log("fly to {$waypointSymbol}");
 
         $cooldown = $this->ship
             ->navigateTo($waypointSymbol)
@@ -81,6 +83,19 @@ abstract class ShipJob implements ShouldQueue
     protected function initApi(): void
     {
         $this->api ??= app(SpaceTraders::class);
+    }
+
+    protected function log(string $message, array $replacements = []): void
+    {
+        Log::channel('ship_jobs')
+            ->info(
+                $this->ship->symbol
+                . ' '
+                . static::class
+                . ' "'
+                . Str::replaceArray(':?', $replacements, $message)
+                . '"'
+            );
     }
 
     private function initShip(): void

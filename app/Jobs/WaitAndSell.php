@@ -39,17 +39,17 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
         $this->initApi();
         $currentLocation = $this->ship->waypoint_symbol;
         if (!$this->ship->task?->payload) {
-            dump("{$this->ship->symbol} no longer has this task");
+            $this->log("no longer has this task");
 
             return;
         }
         $waitingLocation = $this->ship->task->payload['waiting_location'];
-        dump("{$this->ship->symbol} current location: {$currentLocation}");
+        $this->log("current location: {$currentLocation}");
 
         if ($this->ship->cargo_is_empty) {
-            dump('cargo is empty');
+            $this->log('cargo is empty');
             if ($currentLocation !== $waitingLocation) {
-                dump('nothing to sell, fly to waiting location');
+                $this->log('nothing to sell, fly to waiting location');
                 $this->flyToLocation($waitingLocation);
             }
 
@@ -88,7 +88,7 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
                             // );
 
                         if ($exchanges->isEmpty()) {
-                            dump("cannot even sell {$cargo->symbol->value} at exchange, jettison {$cargo->units} units");
+                            $this->log("cannot even sell {$cargo->symbol->value} at exchange, jettison {$cargo->units} units");
 
                             $this->ship->jettisonCargo($cargo->symbol);
                             $didJettison = true;
@@ -96,7 +96,7 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
                             return;
                         }
 
-                        dump("keeping {$cargo->symbol->value} to sell at exchange");
+                        $this->log("keeping {$cargo->symbol->value} to sell at exchange");
 
                         $marketData->put($cargo->symbol->value, $exchanges->random());
                     });
@@ -106,7 +106,7 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
             ->sortBy('distance');
 
         if ($didJettison && $currentLocation === $waitingLocation) {
-            dump('not fully loaded after jettisoning, keep waiting');
+            $this->log('not fully loaded after jettisoning, keep waiting');
 
             return;
         }
@@ -114,20 +114,20 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
         $this->closestTradeOpportunity = $markets->first();
 
         if (!$this->closestTradeOpportunity) {
-            dump('no trade opportunities');
+            $this->log('no trade opportunities');
             if ($currentLocation !== $waitingLocation) {
-                dump('no trade opportunities, fly to waiting location');
+                $this->log('no trade opportunities, fly to waiting location');
                 $this->flyToLocation($waitingLocation);
             }
 
             return;
         }
 
-        dump($markets);
-        dump($this->closestTradeOpportunity);
+        $this->log('Markets: :?', [(string) $markets]);
+        $this->log('closestTradeOpportunity: :?', [json_encode($this->closestTradeOpportunity)]);
 
         if ($markets->isEmpty()) {
-            dump('no markets, fly to waiting location');
+            $this->log('no markets, fly to waiting location');
             $this->flyToLocation($waitingLocation);
 
             return;
@@ -137,19 +137,19 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
 
         // fly to market
         if ($currentLocation !== $waypointSymbol) {
-            dump("fly to market at {$waypointSymbol}");
+            $this->log("fly to market at {$waypointSymbol}");
             $this->flyToLocation($waypointSymbol);
 
             return;
         }
 
         // sell all cargos that can be sold at this market
-        dump('sell cargo');
+        $this->log('sell cargo');
         $markets->filter(
             fn (array $market) => $market['waypoint_symbol'] === $currentLocation
         )->each(
             function (array $market) {
-                dump("selling cargo {$market['symbol']->value} at {$market['waypoint_symbol']}");
+                $this->log("selling cargo {$market['symbol']->value} at {$market['waypoint_symbol']}");
 
                 while ($cargo = $this->ship->refresh()->cargos()->firstWhere('symbol', $market['symbol'])) {
                     $this->ship->sellCargo(
@@ -166,15 +166,15 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
         );
 
         if ($markets->isEmpty()) {
-            dump('markets empty, fly to waiting location');
+            $this->log('markets empty, fly to waiting location');
             $this->flyToLocation($waitingLocation);
         } else {
-            dump('markets still not empty');
+            $this->log('markets still not empty');
             $this->flyToLocation($markets->first()['waypoint_symbol']);
 
             return;
         }
 
-        dump('done');
+        $this->log('done');
     }
 }

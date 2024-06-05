@@ -53,7 +53,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single', 'ship_jobs'],
+            'channels' => ['single'],
             'ignore_exceptions' => false,
         ],
 
@@ -129,7 +129,6 @@ return [
         'ship_jobs' => [
             'driver' => 'single',
             'path' => storage_path('logs/ship_jobs.log'),
-            'level' => 'info',
             'replace_placeholders' => true,
         ],
 

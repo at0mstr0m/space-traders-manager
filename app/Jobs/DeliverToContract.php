@@ -22,43 +22,43 @@ class DeliverToContract extends ShipJob
     protected function handleShip(): void
     {
         if ($this->delivery->units_to_be_delivered > $this->ship->cargo_capacity && !$this->ship->is_fully_loaded) {
-            dump("{$this->ship->symbol} is not fully loaded.");
+            $this->log('is not fully loaded.');
 
             return;
         }
         if ($this->ship->cargo_units < $this->delivery->units_to_be_delivered) {
-            dump("{$this->ship->symbol} is not loaded with enough cargo.");
+            $this->log('is not loaded with enough cargo.');
 
             return;
         }
 
         if ($this->delivery->refresh()->is_done) {
-            dump("{$this->ship->symbol} delivery is already done.");
+            $this->log('delivery is already done.');
 
             return;
         }
 
         $contract = $this->delivery->contract->refetch();
         if ($contract) {
-            dump("{$this->ship->symbol} contract is already fulfilled.");
+            $this->log('contract is already fulfilled.');
 
             return;
         }
 
         if (!$this->ship->isLoadedWith($this->tradedGood)) {
-            dump("{$this->ship->symbol} is not loaded with {$this->tradedGood->value}.");
+            $this->log("is not loaded with {$this->tradedGood->value}.");
 
             return;
         }
 
         if ($this->ship->waypoint_symbol !== $this->delivery->destination_symbol) {
-            dump("{$this->ship->symbol} is not at the delivery destination.");
+            $this->log('is not at the delivery destination.');
             $this->flyToLocation($this->delivery->destination_symbol);
 
             return;
         }
 
-        dump("{$this->ship->symbol} is at the delivery destination.");
+        $this->log('is at the delivery destination.');
 
         $this->ship->deliverCargoToContract(
             $contract->identification,
@@ -68,16 +68,16 @@ class DeliverToContract extends ShipJob
                 : $this->ship->cargo_capacity
         );
 
-        dump("{$this->ship->symbol} delivered {$this->tradedGood->value} to contract {$contract->identification}.");
+        $this->log("delivered {$this->tradedGood->value} to contract {$contract->identification}.");
 
         // todo: add automatic contract fulfillment
         // if ($contract->refresh()->is_done) {
-        //     dump("{$this->ship->symbol} delivery is done.");
+        //     $this->log("delivery is done.");
         //     $contract->fulfill();
         // }
 
         $this->flyToLocation($this->waitingLocation);
 
-        dump('done');
+        $this->log('done');
     }
 }

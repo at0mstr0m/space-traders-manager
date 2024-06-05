@@ -17,6 +17,9 @@ use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * @deprecated
+ */
 class MineAndDeliver implements ShouldQueue
 {
     use Dispatchable;
