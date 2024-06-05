@@ -189,7 +189,7 @@
           elevation="1"
           :loading="buying"
           color="primary"
-          @click="buyShip(item)"
+          @click.stop="buyShip(item)"
         >
           Buy
           <template #loader>

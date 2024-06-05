@@ -889,10 +889,7 @@ class SpaceTraders
         if (!$request) {
             sleep(1);
 
-            return $this->baseRequest(...[
-                ...func_get_args(),
-                'attempts' => $attempts + 1,
-            ]);
+            return $this->baseRequest($method, $path, $payload, $attempts + 1);
         }
 
         $this->logRequest($method, $path, $payload);
