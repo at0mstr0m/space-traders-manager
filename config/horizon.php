@@ -3,7 +3,6 @@
 use Illuminate\Support\Str;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Horizon Domain
@@ -56,7 +55,7 @@ return [
 
     'prefix' => env(
         'HORIZON_PREFIX',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_horizon:'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_horizon:'
     ),
 
     /*
@@ -186,27 +185,23 @@ return [
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 2,
-            'maxTime' => 90,
+            'maxTime' => env('QUEUE_MAX_TIME', 90),
             'maxJobs' => 0,
             'memory' => 128,
-            'tries' => 2,
+            'tries' => 1,
             'timeout' => 60,
             'nice' => 0,
         ],
     ],
-
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+                'maxProcesses' => 1,
             ],
         ],
-
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 2,
+                'maxProcesses' => 1,
             ],
         ],
     ],

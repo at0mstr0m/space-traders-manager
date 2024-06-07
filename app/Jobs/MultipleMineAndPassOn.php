@@ -79,7 +79,7 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
         }
         $this->transferCargoToCompanionShip($ship);
         if ($ship->is_fully_loaded) {
-            $this->log("is fully loaded, cannot extract resources");
+            $this->log('is fully loaded, cannot extract resources');
 
             return;
         }
@@ -88,19 +88,19 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
             $ship->extractResourcesWithSurvey($this->survey)
                 ->refresh();
         } else {
-            $this->log("extracting resources normally");
+            $this->log('extracting resources normally');
             $ship = $ship->extractResources()
                 ->refresh();
         }
-        $this->log("done extracting resources");
+        $this->log('done extracting resources');
         $this->transferCargoToCompanionShip($ship);
     }
 
     private function transferCargoToCompanionShip(Ship $ship): void
     {
-        $this->log("transferring cargo to companion");
+        $this->log('transferring cargo to companion');
         if ($this->noCompanionPresent()) {
-            $this->log("no companion present");
+            $this->log('no companion present');
 
             return;
         }
@@ -110,34 +110,25 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
     private function handleTransferCargoToCompanionShip(Ship $ship, Cargo $cargo): void
     {
-        $this->log("handling {$cargo->units} units of cargo {$cargo->symbol->value} for {$ship->symbol}");
-        if ($this->noCompanionPresent()) {
-            $this->log("no companion present");
-
-            return;
-        }
+        $this->log("handling {$cargo->units} units of cargo {$cargo->symbol->value}", $ship);
 
         /** @var Ship */
-        $companion = $this->companions
-            ->sortByDesc('cargo_units') // prefer fullest for efficiency
-            ->first();
+        $companion = $this->companions->firstWhere(
+            fn (Ship $ship) => !$ship->refresh()->is_fully_loaded 
+                // prefer ship already loaded with this cargo
+                && $ship->isLoadedWith($cargo->symbol)
+        )
+            ?? $this->companions
+                ->sortByDesc('cargo_units') // prefer fullest for efficiency
+                ->firstWhere(fn (Ship $ship) => !$ship->is_fully_loaded);
 
         if (!$companion) {
-            $this->log("no companion present");
+            $this->log('no companion present');
 
             return;
         }
+
         $this->log("companion: {$companion->symbol}");
-        $companion = $companion->refresh();
-
-        if ($companion->is_fully_loaded) {
-            $this->log("companion {$companion->symbol} is fully loaded already");
-            WaitAndSell::dispatch($companion->symbol);
-            $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
-
-            return;
-        }
-
         $ship->transferCargoTo($companion, $cargo);
         $companion = $companion->refresh();
 
@@ -145,6 +136,12 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
             $this->log("companion {$companion->symbol} is fully loaded now");
             WaitAndSell::dispatch($companion->symbol);
             $this->companions = $this->companions->whereNotIn('id', [$companion->id]);
+        }
+
+        // check if all cargo coult be transferred to compaion or if there is still cargo left to transfer to a companion
+        if ($cargo = $ship->cargos()->firstWhere('symbol', $cargo->symbol)) {
+            $this->log("still has some units of {$cargo->symbol->value} left to transfer to a companion", $ship);
+            $this->handleTransferCargoToCompanionShip($ship, $cargo);
         }
     }
 
