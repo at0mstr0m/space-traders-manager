@@ -188,7 +188,7 @@ return [
             'maxTime' => env('QUEUE_MAX_TIME', 90),
             'maxJobs' => 0,
             'memory' => 128,
-            'tries' => 1,
+            'tries' => 3,
             'timeout' => 60,
             'nice' => 0,
         ],
