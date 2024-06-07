@@ -42,6 +42,7 @@ abstract class ShipJob implements ShouldQueue
     public function handle(): void
     {
         $this->initShip();
+        $this->log('START');
 
         if ($this->ship->is_in_transit || $this->ship->cooldown) {
             $this->log('is in transit or on cooldown');
@@ -58,6 +59,22 @@ abstract class ShipJob implements ShouldQueue
         }
 
         $this->handleShip();
+        $this->log('END');
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?\Throwable $exception): void
+    {
+        Log::channel('ship_jobs')
+            ->error(
+                $this->ship->symbol
+                . ' '
+                . static::class
+                . ' FAILED: '
+                . ($exception ? $exception->getMessage() : 'null')
+            );
     }
 
     abstract protected function handleShip(): void;

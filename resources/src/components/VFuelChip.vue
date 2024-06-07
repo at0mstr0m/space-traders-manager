@@ -37,6 +37,7 @@ function getVariant(isHovering) {
   switch (true) {
     case props.ship.status === ShipNavStatus.IN_TRANSIT:
     case props.ship.fuel_current === props.ship.fuel_capacity:
+    case !props.ship.can_refuel_at_current_location:
       return 'tonal';
     case isHovering:
       return 'flat';

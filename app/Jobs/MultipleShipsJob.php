@@ -44,6 +44,7 @@ abstract class MultipleShipsJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $this->log('START');
         $this->task = Task::find($this->taskId);
         UpdateShips::dispatchSync();
         $this->ships = $this->initTasksShips($this->task);
@@ -57,6 +58,15 @@ abstract class MultipleShipsJob implements ShouldQueue
         }
 
         $this->handleShips();
+        $this->log('END');
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?\Throwable $exception): void
+    {
+        $this->log('FAILED :' . $exception ? $exception->getMessage() : 'null');
     }
 
     abstract protected function handleShips(): void;
