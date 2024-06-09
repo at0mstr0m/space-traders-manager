@@ -93,8 +93,10 @@ class TradeOpportunity extends Model
      *
      * @return Collection<TWaypointSymbol, array>
      */
-    public static function marketplacesForCargos(Ship $ship): Collection
-    {
+    public static function marketplacesForCargos(
+        Ship $ship,
+        bool $onlyDirectlyReachable = true
+    ): Collection {
         return static::forCargos($ship)
             ->get()
             ->map(fn (self $tradeOpportunity) => [
@@ -111,7 +113,7 @@ class TradeOpportunity extends Model
             ])
             ->groupBy('symbol')
             ->when(
-                $ship->fuel_capacity > 0,
+                $onlyDirectlyReachable && $ship->fuel_capacity > 0,
                 fn (Collection $tradeOpportunities) => $tradeOpportunities->map(
                     fn (Collection $tradeOpportunities) => $tradeOpportunities
                         ->filter(fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $ship->fuel_capacity)
@@ -125,14 +127,15 @@ class TradeOpportunity extends Model
      *
      * @return Collection<TWaypointSymbol, array>
      */
-    public static function bestMarketplacesForCargos(Ship $ship): Collection
-    {
-        return static::marketplacesForCargos($ship)
+    public static function mostEfficientMarketplacesForCargos(
+        Ship $ship,
+        bool $onlyDirectlyReachable = true
+    ): Collection {
+        return static::marketplacesForCargos($ship, $onlyDirectlyReachable)
             ->map(
                 fn (Collection $tradeOpportunities) => $tradeOpportunities
-                    ->sortBy(
-                        fn (array $tradeOpportunity) => $tradeOpportunity['sell_price'] / $tradeOpportunity['distance'],
-                        descending: true
+                    ->sortByDesc(
+                        fn (array $tradeOpportunity) => $tradeOpportunity['sell_price'] / $tradeOpportunity['distance']
                     )
                     ->first()
             );
@@ -143,10 +146,31 @@ class TradeOpportunity extends Model
      *
      * @return Collection<TWaypointSymbol, array>
      */
-    public static function randomMarketplacesForCargos(Ship $ship): Collection
-    {
-        return static::marketplacesForCargos($ship)
-            ->map(fn (Collection $tradeOpportunities) => $tradeOpportunities->random());
+    public static function randomMarketplacesForCargos(
+        Ship $ship,
+        bool $onlyDirectlyReachable = true
+    ): Collection {
+        return static::marketplacesForCargos($ship, $onlyDirectlyReachable)
+            ->map(
+                fn (Collection $tradeOpportunities) => $tradeOpportunities->random()
+            );
+    }
+
+    /**
+     * @template TWaypointSymbol string
+     *
+     * @return Collection<TWaypointSymbol, array>
+     */
+    public static function bestPriceMarketplacesForCargos(
+        Ship $ship,
+        bool $onlyDirectlyReachable = true
+    ): Collection {
+        return static::marketplacesForCargos($ship, $onlyDirectlyReachable)
+            ->map(
+                fn (Collection $tradeOpportunities) => $tradeOpportunities
+                    ->sortByDesc('sell_price')
+                    ->first()
+            );
     }
 
     /**

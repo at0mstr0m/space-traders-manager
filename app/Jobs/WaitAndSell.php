@@ -39,7 +39,7 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
         $this->initApi();
         $currentLocation = $this->ship->waypoint_symbol;
         if (!$this->ship->task?->payload) {
-            $this->log("no longer has this task");
+            $this->log('no longer has this task');
 
             return;
         }
@@ -57,7 +57,7 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
         }
 
         $didJettison = false;
-        $markets = TradeOpportunity::randomMarketplacesForCargos($this->ship)
+        $markets = TradeOpportunity::bestPriceMarketplacesForCargos($this->ship, false)
             ->pipe(function (Collection $marketData) use (&$didJettison) {
                 $this->ship
                     ->cargos()
@@ -80,12 +80,12 @@ class WaitAndSell extends ShipJob implements ShouldBeUniqueUntilProcessing
                                     $tradeOpportunity->waypoint_symbol
                                 ),
                             ]);
-                            // ->when(
-                            //     $this->ship->fuel_capacity > 0,
-                            //     fn (Collection $tradeOpportunities) => $tradeOpportunities->filter(
-                            //         fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $this->ship->fuel_capacity
-                            //     )
-                            // );
+                        // ->when(
+                        //     $this->ship->fuel_capacity > 0,
+                        //     fn (Collection $tradeOpportunities) => $tradeOpportunities->filter(
+                        //         fn (array $tradeOpportunity) => $tradeOpportunity['distance'] <= $this->ship->fuel_capacity
+                        //     )
+                        // );
 
                         if ($exchanges->isEmpty()) {
                             $this->log("cannot even sell {$cargo->symbol->value} at exchange, jettison {$cargo->units} units");
