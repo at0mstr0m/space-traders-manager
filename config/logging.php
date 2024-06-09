@@ -128,13 +128,13 @@ return [
 
         'ship_jobs' => [
             'driver' => 'single',
-            'path' => storage_path('logs/ship_jobs.log'),
+            'path' => storage_path('logs/ship-jobs-' . now()->toDateString() .'.log'),
             'replace_placeholders' => true,
         ],
 
         'api_requests' => [
             'driver' => 'single',
-            'path' => storage_path('logs/api_requests.log'),
+            'path' => storage_path('logs/api-requests-' . now()->toDateString() .'.log'),
             'level' => 'debug',
             'replace_placeholders' => true,
         ],
