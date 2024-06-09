@@ -10,6 +10,7 @@ use App\Jobs\FulfillProcurement;
 use App\Jobs\MultipleMineAndPassOn;
 use App\Jobs\MultipleSiphonAndPassOn;
 use App\Jobs\ServeBestTradeRoute;
+use App\Jobs\ServeHighestProfitTradeRoute;
 use App\Jobs\ServeRandomTradeRoute;
 use App\Jobs\SupplyConstructionSite;
 use App\Models\Ship;
@@ -32,6 +33,12 @@ class TriggerTasks
             ->each(
                 fn (Task $task) => $task->ships->each(
                     fn (Ship $ship) => ServeBestTradeRoute::dispatch($ship->symbol)
+                )
+            );
+        Task::where('type', TaskTypes::SERVE_HIGHEST_PROFIT_TRADE_ROUTE)
+            ->each(
+                fn (Task $task) => $task->ships->each(
+                    fn (Ship $ship) => ServeHighestProfitTradeRoute::dispatch($ship->symbol)
                 )
             );
         Task::where('type', TaskTypes::COLLECTIVE_MINING)
