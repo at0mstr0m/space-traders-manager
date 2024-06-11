@@ -1,6 +1,16 @@
 <template>
   <v-card outlined>
     <template #title>
+      <v-chip
+        color="white"
+        variant="flat"
+        class="mr-2"
+      >
+        <v-icon 
+          icon="mdi-refresh"
+          @click="refresh"
+        />
+      </v-chip>
       {{ props.waypoint.symbol }}
       <v-chip
         :color="getWaypointColor(props.waypoint.type)"
@@ -84,5 +94,9 @@ const props = defineProps({
   },
 });
 
-onMounted(() => navigationStore.load(props.waypoint));
+function refresh() {
+  navigationStore.load(props.waypoint);
+}
+
+onMounted(refresh);
 </script>
