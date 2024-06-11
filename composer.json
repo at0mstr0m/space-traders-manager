@@ -12,6 +12,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
         "lorisleiva/laravel-actions": "^2.7",
+        "nicmart/tree": "^0.8.0",
         "spatie/laravel-data": "^4.4",
         "tightenco/ziggy": "^2.2"
     },
