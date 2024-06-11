@@ -79,12 +79,14 @@ import VSectorMap from '@/components/Maps/VSectorMap.vue';
 import VSystemMap from '@/components/Maps/VSystemMap.vue';
 import VWaypointCard from '@/components/VWaypointCard.vue';
 import VNavitgationShipsTable from '@/components/VNavitgationShipsTable.vue';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia';
 import useNavigationStore from "@/store/navigation";
+import useUserStore from "@/store/user";
 
 const navigationStore = useNavigationStore();
+const userStore = useUserStore();
 const { currentTab } = storeToRefs(navigationStore);
 
 const systemMap = ref(null);
@@ -110,4 +112,7 @@ function handleWaypointClicked(data) {
 }
 
 onBeforeMount(navigationStore.hardReset);
+
+// set headquarter as default waypoint
+onMounted(() => systemMap.value.setSystem(userStore.getStartingSystem()));
 </script>

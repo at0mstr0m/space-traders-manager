@@ -23,6 +23,7 @@ class AgentResource extends JsonResource
             'credits' => $this->credits,
             'starting_faction' => $this->starting_faction,
             'ship_count' => $this->ship_count,
+            'starting_system' => SystemResource::make($this->starting_system),
         ];
     }
 }

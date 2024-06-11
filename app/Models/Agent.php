@@ -68,6 +68,11 @@ class Agent extends Model
         return $this->hasMany(Survey::class);
     }
 
+    public function getStartingSystemAttribute(): System
+    {
+        return Waypoint::firstWhere('symbol', $this->headquarters)->system;
+    }
+
     /**
      * Get the attributes that should be cast.
      *
