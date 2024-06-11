@@ -113,6 +113,6 @@ function handleWaypointClicked(data) {
 
 onBeforeMount(navigationStore.hardReset);
 
-// set headquarter as default waypoint
+// set starting system as default system
 onMounted(() => systemMap.value.setSystem(userStore.getStartingSystem()));
 </script>
