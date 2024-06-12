@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Carbon;
 
 /**
@@ -24,6 +27,8 @@ use Illuminate\Support\Carbon;
  */
 class FireBaseReference extends Model
 {
+    use Prunable;
+
     protected $fillable = [
         'key',
     ];
@@ -31,6 +36,17 @@ class FireBaseReference extends Model
     public function model(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Get the prunable model query.
+     */
+    public function prunable(): Builder
+    {
+        return static::doesntHave(
+            'model',
+            callback: fn (Builder $query) => $query->withoutGlobalScope(SoftDeletingScope::class)
+        );
     }
 
     /**

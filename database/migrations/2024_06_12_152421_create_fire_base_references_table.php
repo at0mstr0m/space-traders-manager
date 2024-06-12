@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('table_fire_base_references');
+        Schema::dropIfExists('fire_base_references');
     }
 };

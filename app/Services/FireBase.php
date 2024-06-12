@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Task;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Kreait\Firebase\Auth;
 use Kreait\Firebase\Auth\SignInResult;
 use Kreait\Firebase\Database;
@@ -29,11 +30,9 @@ class FireBase
         $this->database = app('firebase.database');
     }
 
-    public function getTasks()
+    public function getTaskData(): Collection
     {
-        return $this->database
-            ->getReference('jobs/' . $this->userId)
-            ->getValue();
+        return collect($this->taskReference()->getValue());
     }
 
     public function uploadTask(Task $task): Reference
@@ -41,21 +40,27 @@ class FireBase
         $data = $task->only(['payload', 'type']);
 
         if ($task->fireBaseReference()->exists()) {
-            return $this->database
-                ->getReference('tasks/' . $this->userId . '/' . $task->fireBaseReference->key)
+            return $this->taskReference($task->fireBaseReference->key)
                 ->set($data);
         }
 
-        $newKey = $this->database
-            ->getReference('tasks/' . $this->userId)
-            ->push()
-            ->getKey();
-
+        // let the database generate a new key
+        $newKey = $this->taskReference()->push()->getKey();
+        // save key for future updates
         $task->fireBaseReference()->create(['key' => $newKey]);
 
+        return $this->taskReference($newKey)->set($data);
+    }
+
+    public function deleteTask(string $key): void
+    {
+        $this->taskReference($key)->remove();
+    }
+
+    private function taskReference(string $path = ''): Reference
+    {
         return $this->database
-            ->getReference('tasks/' . $this->userId . '/' . $newKey)
-            ->set($data);
+            ->getReference('tasks/' . $this->userId . '/' . $path);
     }
 
     private function signIn(): void

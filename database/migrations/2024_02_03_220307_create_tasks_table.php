@@ -21,7 +21,8 @@ return new class() extends Migration {
         Schema::table('ships', function (Blueprint $table) {
             $table->foreignId('task_id')
                 ->nullable()
-                ->constrained();
+                ->constrained()
+                ->nullOnDelete();
         });
     }
 
