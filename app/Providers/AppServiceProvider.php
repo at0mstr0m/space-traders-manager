@@ -7,10 +7,11 @@ namespace App\Providers;
 use App\Helpers\SpaceTraders;
 use App\Macros\ArrayMacros;
 use App\Macros\CollectionMacros;
-use Illuminate\Support\Collection;
-use Illuminate\Support\ServiceProvider;
+use App\Services\FireBase;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SpaceTraders::class, function (Application $app) {
             return new SpaceTraders(env('API_TOKEN'));
         });
+
+        $this->app->bind(FireBase::class, fn () => new FireBase());
     }
 
     /**

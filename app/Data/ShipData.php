@@ -13,7 +13,7 @@ use App\Models\Engine;
 use App\Models\Faction;
 use App\Models\Frame;
 use App\Models\Reactor;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Attributes\Computed;
 use Spatie\LaravelData\Attributes\MapInputName;

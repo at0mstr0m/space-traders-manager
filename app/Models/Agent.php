@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ship> $ships
  * @property-read int|null $ships_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Survey> $surveys
+ * @property-read System $starting_system
  * @property-read int|null $surveys_count
  * @property-read User $user
  *
