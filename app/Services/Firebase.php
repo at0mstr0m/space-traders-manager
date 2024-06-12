@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Ship;
 use App\Models\Task;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -12,7 +13,7 @@ use Kreait\Firebase\Auth\SignInResult;
 use Kreait\Firebase\Database;
 use Kreait\Firebase\Database\Reference;
 
-class FireBase
+class Firebase
 {
     private Auth $auth;
 
@@ -57,10 +58,27 @@ class FireBase
         $this->taskReference($key)->remove();
     }
 
+    public function getShipTaskRelations(): Collection
+    {
+        return collect($this->shipTaskReference()->getValue());
+    }
+
+    public function setShipTaskRelation(Ship $ship): Reference
+    {
+        return $this->shipTaskReference($ship->symbol)
+            ->set($ship?->task?->fireBaseReference?->key);
+    }
+
     private function taskReference(string $path = ''): Reference
     {
         return $this->database
             ->getReference('tasks/' . $this->userId . '/' . $path);
+    }
+
+    private function shipTaskReference(string $path = ''): Reference
+    {
+        return $this->database
+            ->getReference('ship_task/' . $this->userId . '/' . $path);
     }
 
     private function signIn(): void

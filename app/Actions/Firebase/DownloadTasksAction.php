@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Actions;
+namespace App\Actions\Firebase;
 
 use App\Models\FireBaseReference;
 use App\Models\Task;
-use App\Services\FireBase;
+use App\Services\Firebase;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class DownloadTasksAction
 {
     use AsAction;
 
-    private FireBase $firebase;
+    private Firebase $firebase;
 
     public function __construct()
     {
-        $this->firebase = app(FireBase::class);
+        $this->firebase = app(Firebase::class);
     }
 
     public function handle(bool $purge = false)

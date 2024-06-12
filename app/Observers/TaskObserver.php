@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Task;
-use App\Services\FireBase;
+use App\Services\Firebase;
 
 class TaskObserver
 {
@@ -33,8 +33,8 @@ class TaskObserver
         $key = $task->fireBaseReference?->key;
 
         dispatch(function () use ($key) {
-            /** @var FireBase */
-            $firebase = app(FireBase::class);
+            /** @var Firebase */
+            $firebase = app(Firebase::class);
             $firebase->deleteTask($key);
         })->afterResponse();
     }
@@ -42,8 +42,8 @@ class TaskObserver
     private function uploadTask(Task $task): void
     {
         dispatch(function () use ($task) {
-            /** @var FireBase */
-            $firebase = app(FireBase::class);
+            /** @var Firebase */
+            $firebase = app(Firebase::class);
             $firebase->uploadTask($task);
         })->afterResponse();
     }
