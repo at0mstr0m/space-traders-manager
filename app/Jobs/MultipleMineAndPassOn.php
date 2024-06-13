@@ -219,6 +219,6 @@ class MultipleMineAndPassOn extends MultipleShipsJob implements ShouldBeUniqueUn
 
     private function noCompanionPresent(): bool
     {
-        return $this->companions?->isEmpty();
+        return $this->companions?->isEmpty() ?? false;
     }
 }
