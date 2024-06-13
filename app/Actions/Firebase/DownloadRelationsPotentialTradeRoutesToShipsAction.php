@@ -36,9 +36,9 @@ class DownloadRelationsPotentialTradeRoutesToShipsAction
                 }
 
                 $shipId = Ship::findBySymbol($shipSymbol)->id;
-
                 PotentialTradeRoute::firstWhere(Arr::except($data, 'ship_symbol'))
-                    ->updateQuietly(['ship_id' => $shipId]);
+                    ->setAttribute('ship_id', $shipId)
+                    ->saveQuietly();
             });
     }
 }
