@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Jobs\Firebase\SetShipRelationJob;
 use App\Models\Ship;
-use App\Services\Firebase;
 
 class ShipObserver
 {
@@ -15,11 +15,7 @@ class ShipObserver
     public function updated(Ship $ship): void
     {
         if ($ship->isDirty('task_id')) {
-            dispatch(function () use ($ship) {
-                /** @var Firebase */
-                $firebase = app(Firebase::class);
-                $firebase->setShipTaskRelation($ship);
-            })->afterResponse();
+            SetShipRelationJob::dispatch($ship->id)->afterResponse();
         }
     }
 }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Jobs\Firebase\DeleteTaskJob;
+use App\Jobs\Firebase\UploadTaskJob;
 use App\Models\Task;
-use App\Services\Firebase;
 
 class TaskObserver
 {
@@ -14,7 +15,7 @@ class TaskObserver
      */
     public function created(Task $task): void
     {
-        $this->uploadTask($task);
+        UploadTaskJob::dispatch($task->id)->afterResponse();
     }
 
     /**
@@ -22,7 +23,7 @@ class TaskObserver
      */
     public function updated(Task $task): void
     {
-        $this->uploadTask($task);
+        UploadTaskJob::dispatch($task->id)->afterResponse();
     }
 
     /**
@@ -31,20 +32,6 @@ class TaskObserver
     public function deleted(Task $task): void
     {
         $key = $task->fireBaseReference?->key;
-
-        dispatch(function () use ($key) {
-            /** @var Firebase */
-            $firebase = app(Firebase::class);
-            $firebase->deleteTask($key);
-        })->afterResponse();
-    }
-
-    private function uploadTask(Task $task): void
-    {
-        dispatch(function () use ($task) {
-            /** @var Firebase */
-            $firebase = app(Firebase::class);
-            $firebase->uploadTask($task);
-        })->afterResponse();
+        DeleteTaskJob::dispatch($key)->afterResponse();
     }
 }

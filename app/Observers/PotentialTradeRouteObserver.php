@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Jobs\Firebase\DeletePotentialTradeRouteJob;
+use App\Jobs\Firebase\UploladPotentialTradeRouteJob;
 use App\Models\PotentialTradeRoute;
-use App\Services\Firebase;
 
 class PotentialTradeRouteObserver
 {
@@ -14,11 +15,8 @@ class PotentialTradeRouteObserver
      */
     public function created(PotentialTradeRoute $potentialTradeRoute): void
     {
-        dispatch(function () use ($potentialTradeRoute) {
-            /** @var Firebase */
-            $firebase = app(Firebase::class);
-            $firebase->uploadPotentialTradeRoute($potentialTradeRoute);
-        })->afterResponse();
+        UploladPotentialTradeRouteJob::dispatch($potentialTradeRoute->id)
+            ->afterResponse();
     }
 
     /**
@@ -28,10 +26,6 @@ class PotentialTradeRouteObserver
     {
         $key = $potentialTradeRoute->fireBaseReference?->key;
 
-        dispatch(function () use ($key) {
-            /** @var Firebase */
-            $firebase = app(Firebase::class);
-            $firebase->deletePotentialTradeRoute($key);
-        })->afterResponse();
+        DeletePotentialTradeRouteJob::dispatch($key)->afterResponse();
     }
 }

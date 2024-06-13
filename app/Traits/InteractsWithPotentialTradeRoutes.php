@@ -7,9 +7,9 @@ namespace App\Traits;
 use App\Actions\UpdateOrRemovePotentialTradeRoutesAction;
 use App\Enums\SupplyLevels;
 use App\Helpers\LocationHelper;
+use App\Jobs\Firebase\UploladPotentialTradeRouteJob;
 use App\Jobs\ShipJob;
 use App\Models\PotentialTradeRoute;
-use App\Services\Firebase;
 use Illuminate\Contracts\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
@@ -57,11 +57,8 @@ trait InteractsWithPotentialTradeRoutes
         if ($this->ship->potentialTradeRoute) {
             $oldRoute = $this->ship->potentialTradeRoute;
             $this->ship->potentialTradeRoute->ship()->dissociate()->save();
-            dispatch(function () use ($oldRoute) {
-                /** @var Firebase */
-                $firebase = app(Firebase::class);
-                $firebase->uploadPotentialTradeRoute($oldRoute);
-            });
+            UploladPotentialTradeRouteJob::dispatch($oldRoute->id)
+                ->afterResponse();
         }
 
         $possibleRoutes = $this->getPossibleTradeRoutes()->whereNull('ship_id');
@@ -86,11 +83,8 @@ trait InteractsWithPotentialTradeRoutes
         }
 
         $newRoute->ship()->associate($this->ship)->save();
-        dispatch(function () use ($newRoute) {
-            /** @var Firebase */
-            $firebase = app(Firebase::class);
-            $firebase->uploadPotentialTradeRoute($newRoute);
-        });
+        UploladPotentialTradeRouteJob::dispatch($newRoute->id)
+            ->afterResponse();
     }
 
     protected function routeIsStillPossible(): bool
