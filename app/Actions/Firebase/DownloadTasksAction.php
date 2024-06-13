@@ -24,7 +24,7 @@ class DownloadTasksAction
     {
         // using deleteQuietly, to not trigger TaskObserver
         if ($purge) {
-            FireBaseReference::query()->delete();
+            FireBaseReference::getQuery()->delete();
             Task::getQuery()->delete();
         }
 
