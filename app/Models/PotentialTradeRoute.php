@@ -8,6 +8,7 @@ use App\Enums\ActivityLevels;
 use App\Enums\SupplyLevels;
 use App\Enums\TradeSymbols;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -68,6 +69,11 @@ class PotentialTradeRoute extends Model
     public function ship(): BelongsTo
     {
         return $this->belongsTo(Ship::class);
+    }
+
+    public function fireBaseReference(): MorphOne
+    {
+        return $this->morphOne(FireBaseReference::class, 'model');
     }
 
     /**

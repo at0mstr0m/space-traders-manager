@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\PotentialTradeRoute;
 use App\Models\Ship;
 use App\Models\Task;
 use Illuminate\Support\Carbon;
@@ -58,6 +59,42 @@ class Firebase
         $this->taskReference($key)->remove();
     }
 
+    public function getPotentialTradeRouteData(): Collection
+    {
+        return collect($this->potentialTradeRouteReference()->getValue());
+    }
+
+    public function uploadPotentialTradeRoute(
+        PotentialTradeRoute $potentialTradeRoute
+    ): Reference {
+        $data = [
+            ...$potentialTradeRoute->only([
+                'trade_symbol',
+                'origin',
+                'destination',
+            ]),
+            'ship_symbol' => $potentialTradeRoute->ship?->symbol,
+        ];
+
+        if ($potentialTradeRoute->fireBaseReference()->exists()) {
+            return $this->potentialTradeRouteReference(
+                $potentialTradeRoute->fireBaseReference->key
+            )->set($data);
+        }
+
+        // let the database generate a new key
+        $newKey = $this->potentialTradeRouteReference()->push()->getKey();
+        // save key for future updates
+        $potentialTradeRoute->fireBaseReference()->create(['key' => $newKey]);
+
+        return $this->potentialTradeRouteReference($newKey)->set($data);
+    }
+
+    public function deletePotentialTradeRoute(string $key): void
+    {
+        $this->potentialTradeRouteReference($key)->remove();
+    }
+
     public function getShipTaskRelations(): Collection
     {
         return collect($this->shipTaskReference()->getValue());
@@ -67,6 +104,17 @@ class Firebase
     {
         return $this->shipTaskReference($ship->symbol)
             ->set($ship?->task?->fireBaseReference?->key);
+    }
+
+    private function potentialTradeRouteReference(string $path = ''): Reference
+    {
+        return $this->database
+            ->getReference(
+                'potential_trade_routes/'
+                . $this->userId
+                . '/'
+                . $path
+            );
     }
 
     private function taskReference(string $path = ''): Reference
