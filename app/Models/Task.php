@@ -32,6 +32,15 @@ class Task extends Model
         'payload',
     ];
 
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'payload' => '{}',
+    ];
+
     public function ships(): HasMany
     {
         return $this->hasMany(Ship::class);
