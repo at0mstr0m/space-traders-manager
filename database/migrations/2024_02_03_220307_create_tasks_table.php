@@ -15,7 +15,8 @@ return new class() extends Migration {
             $table->id();
             $table->timestamps();
             $table->enum('type', TaskTypes::values());
-            $table->json('payload');
+            $table->json('payload')
+                ->default('{}');
         });
 
         Schema::table('ships', function (Blueprint $table) {
