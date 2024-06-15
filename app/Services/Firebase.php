@@ -106,6 +106,13 @@ class Firebase
             ->set($ship?->task?->fireBaseReference?->key);
     }
 
+    public function deleteAll(): Reference
+    {
+        return $this->database
+            ->getReference()
+            ->remove();
+    }
+
     private function potentialTradeRouteReference(string $path = ''): Reference
     {
         return $this->database

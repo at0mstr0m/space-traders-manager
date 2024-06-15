@@ -62,7 +62,7 @@ class Task extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'type' => TaskTypes::class,
-            'payload' => 'json',
+            'payload' => 'array',
         ];
     }
 }
