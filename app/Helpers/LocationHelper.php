@@ -128,8 +128,11 @@ class LocationHelper
             : null;
     }
 
-    public static function getRoutePath(string $origin, string $destination, int $fuelCapacity): ?array
-    {
+    public static function getRoutePath(
+        string $origin,
+        string $destination,
+        int $fuelCapacity
+    ): ?array {
         $graph = Cache::tags(['graphs'])
             ->rememberForever($fuelCapacity, function () use ($fuelCapacity) {
                 $graph = new Dijkstra();

@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\App\Helpers;
+
 use App\Helpers\LocationHelper;
 
 test('parseLocation splits a string at dash', function (string $input, array $output) {
