@@ -14,7 +14,7 @@ class FirebasePurge extends Command
      *
      * @var string
      */
-    protected $signature = 'firebase-purge';
+    protected $signature = 'firebase:purge';
 
     /**
      * The console command description.

@@ -17,7 +17,7 @@ class FirebaseUpload extends Command
      *
      * @var string
      */
-    protected $signature = 'firebase-upload {--purge}';
+    protected $signature = 'firebase:upload {--purge}';
 
     /**
      * The console command description.

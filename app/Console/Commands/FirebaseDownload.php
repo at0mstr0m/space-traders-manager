@@ -16,7 +16,7 @@ class FirebaseDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'firebase-download {--purge}';
+    protected $signature = 'firebase:download {--purge}';
 
     /**
      * The console command description.
