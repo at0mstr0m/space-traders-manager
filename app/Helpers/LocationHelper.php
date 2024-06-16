@@ -13,8 +13,8 @@ use App\Jobs\UpdateShips;
 use App\Models\Ship;
 use App\Models\Waypoint;
 use App\Support\Pathfinding\Dijkstra;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -27,16 +27,22 @@ class LocationHelper
 
     public static function parseSystemSymbol(string $waypointSymbol): string
     {
-        return static::parseLocation($waypointSymbol)[0] . '-' . static::parseLocation($waypointSymbol)[1];
+        return static::parseLocation($waypointSymbol)[0]
+        . '-'
+        . static::parseLocation($waypointSymbol)[1];
     }
 
-    public static function waypointIsInSystem(string $waypointSymbol, string $systemSymbol): bool
-    {
+    public static function waypointIsInSystem(
+        string $waypointSymbol,
+        string $systemSymbol
+    ): bool {
         return static::parseSystemSymbol($waypointSymbol) === $systemSymbol;
     }
 
-    public static function hasLocationPrefix(string $waypointSymbol, string $prefix): bool
-    {
+    public static function hasLocationPrefix(
+        string $waypointSymbol,
+        string $prefix
+    ): bool {
         return Str::startsWith(static::parseLocation($waypointSymbol)[2], $prefix);
     }
 
