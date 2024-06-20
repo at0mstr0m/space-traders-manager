@@ -43,4 +43,11 @@ trait EnumUtils
 
         throw new \ValueError("{$name} is not a valid value for enum " . static::class);
     }
+
+    public static function randomCase(): static
+    {
+        $values = static::values();
+
+        return static::fromName($values[array_rand($values)]);
+    }
 }

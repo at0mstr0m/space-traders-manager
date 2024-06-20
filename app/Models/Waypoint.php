@@ -11,6 +11,7 @@ use App\Enums\WaypointTypes;
 use App\Helpers\LocationHelper;
 use App\Traits\FindableBySymbol;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -58,6 +59,7 @@ use Illuminate\Support\Facades\Cache;
 class Waypoint extends Model
 {
     use FindableBySymbol;
+    use HasFactory;
 
     protected $fillable = [
         'symbol',

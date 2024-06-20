@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\FactionSymbols;
 use App\Traits\FindableBySymbol;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
@@ -33,6 +34,7 @@ use Illuminate\Support\Carbon;
 class Faction extends Model
 {
     use FindableBySymbol;
+    use HasFactory;
 
     protected $fillable = [
         'symbol',
