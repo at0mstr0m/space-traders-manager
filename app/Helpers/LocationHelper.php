@@ -114,8 +114,9 @@ class LocationHelper
             ->get();
     }
 
-    public static function getWaypointUnderConstructionInSystem(string $systemSymbol): ?ConstructionSiteData
-    {
+    public static function getWaypointUnderConstructionInSystem(
+        string $systemSymbol
+    ): ?ConstructionSiteData {
         /** @var SpaceTraders $api */
         $api = app(SpaceTraders::class);
 
@@ -129,10 +130,13 @@ class LocationHelper
     }
 
     public static function getRoutePath(
-        string $origin,
-        string $destination,
+        string|Waypoint $origin,
+        string|Waypoint $destination,
         int $fuelCapacity
     ): ?array {
+        $origin = is_string($origin) ? $origin : $origin->symbol;
+        $destination = is_string($destination) ? $destination : $destination->symbol;
+
         $graph = Cache::tags(['graphs'])
             ->rememberForever($fuelCapacity, function () use ($fuelCapacity) {
                 $graph = new Dijkstra();

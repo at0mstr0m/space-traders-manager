@@ -34,4 +34,21 @@ class WaypointFactory extends Factory
             'is_under_construction' => false,
         ];
     }
+
+    /**
+     * Sets System for Waypoints
+     */
+    public function inSystem(?string $systemSymbol = null): Factory
+    {
+        return $this->set(
+            'system_symbol',
+            $systemSymbol ??= $this->faker->systemSymbol()
+        )->state(
+            fn (array $attributes) => dump([
+                'symbol' => $attributes['system_symbol']
+                    . '-'
+                    . $this->faker->unique()->waypointSuffix(),
+            ])
+        );
+    }
 }

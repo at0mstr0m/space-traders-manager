@@ -11,6 +11,7 @@ use App\Enums\TradeSymbols;
 use App\Helpers\LocationHelper;
 use App\Traits\FindableBySymbol;
 use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -44,6 +45,7 @@ use Illuminate\Support\Collection;
 class TradeOpportunity extends Model
 {
     use FindableBySymbol;
+    use HasFactory;
 
     protected $fillable = [
         'waypoint_symbol',

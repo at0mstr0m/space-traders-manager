@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WaypointTraitSymbols;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
@@ -26,6 +27,8 @@ use Illuminate\Support\Carbon;
  */
 class WaypointTrait extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'symbol',
         'name',
