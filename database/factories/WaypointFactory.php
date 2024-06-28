@@ -36,7 +36,7 @@ class WaypointFactory extends Factory
     }
 
     /**
-     * Sets System for Waypoints
+     * Sets System for Waypoints.
      */
     public function inSystem(?string $systemSymbol = null): Factory
     {
@@ -44,11 +44,11 @@ class WaypointFactory extends Factory
             'system_symbol',
             $systemSymbol ??= $this->faker->systemSymbol()
         )->state(
-            fn (array $attributes) => dump([
+            fn (array $attributes) => [
                 'symbol' => $attributes['system_symbol']
                     . '-'
                     . $this->faker->unique()->waypointSuffix(),
-            ])
+            ]
         );
     }
 }
