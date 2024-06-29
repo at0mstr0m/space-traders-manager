@@ -68,6 +68,16 @@ class System extends Model
         );
     }
 
+    public function connections(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            static::class,
+            'system_connections',
+            'system_id',
+            'connected_system_id'
+        );
+    }
+
     /**
      * Get the attributes that should be cast.
      *

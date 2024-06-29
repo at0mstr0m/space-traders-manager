@@ -34,7 +34,7 @@ class SystemData extends Data
         #[MapInputName('waypoints')]
         public Collection $waypoints,
     ) {
-        /**
+        /*
          * $factions looks like this:
          * [
          *     ["symbol" => "FACTION_SYMBOL"],
