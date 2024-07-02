@@ -55,7 +55,7 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
                 function (Collection $data) use ($waypoint): Collection {
                     $waypoint->system
                         ->connections()
-                        ->sync($data->pluck('system'));
+                        ->sync($data->pluck('system')->pluck('id'));
 
                     return $data;
                 }
