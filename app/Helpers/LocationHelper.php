@@ -14,6 +14,7 @@ use App\Models\Ship;
 use App\Models\Waypoint;
 use App\Support\Pathfinding\Dijkstra;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -137,38 +138,67 @@ class LocationHelper
         $origin = is_string($origin) ? $origin : $origin->symbol;
         $destination = is_string($destination) ? $destination : $destination->symbol;
 
+        $systemSymbols = [
+            $originSystemSymbol,
+            $destinationWaypointSymbol
+        ] = [
+            static::parseSystemSymbol($origin),
+            static::parseSystemSymbol($destination),
+        ];
+
+        $cacheKey = ((string) $fuelCapacity)
+            . ':'
+            . implode(':', Arr::sort($systemSymbols));
+
         $graph = Cache::tags(['graphs'])
-            ->rememberForever($fuelCapacity, function () use ($fuelCapacity) {
-                $graph = new Dijkstra();
-                Waypoint::onlyCanRefuel()
-                    ->get()
-                    ->pipe(fn (EloquentCollection $waypoints) => $waypoints->crossJoin($waypoints))
-                    ->reject(fn (array $waypoints) => $waypoints[0]->symbol === $waypoints[1]->symbol)
-                    ->map(fn (array $waypoints) => [
-                        'origin' => $waypoints[0]->symbol,
-                        'destination' => $waypoints[1]->symbol,
-                        'distance' => LocationHelper::distance($waypoints[0]->symbol, $waypoints[1]->symbol),
-                    ])
-                    ->values()
-                    ->each(function (array $waypoint) use (&$graph, $fuelCapacity) {
-                        if ($waypoint['distance'] > $fuelCapacity) {
-                            return;
-                        }
-
-                        $graph->addEdge(
-                            $waypoint['origin'],
-                            $waypoint['destination'],
-                            $waypoint['distance']
-                        );
-                    });
-
-                return $graph;
-            });
+            ->rememberForever(
+                $cacheKey,
+                fn () => static::buildGraph(
+                    $fuelCapacity,
+                    $originSystemSymbol,
+                    $destinationWaypointSymbol
+                )
+            );
 
         try {
             return $graph->findShortestPath($origin, $destination);
         } catch (NoPathException $th) {
             return null;
         }
+    }
+
+    private static function buildGraph(
+        int $fuelCapacity,
+        string $originSystemSymbol,
+        string $destinationWaypointSymbol
+    ): Dijkstra {
+        $graph = new Dijkstra();
+
+        if ($originSystemSymbol !== $destinationWaypointSymbol) {
+        }
+
+        Waypoint::onlyCanRefuel()
+            ->get()
+            ->pipe(fn (EloquentCollection $waypoints) => $waypoints->crossJoin($waypoints))
+            ->reject(fn (array $waypoints) => $waypoints[0]->symbol === $waypoints[1]->symbol)
+            ->map(fn (array $waypoints) => [
+                'origin' => $waypoints[0]->symbol,
+                'destination' => $waypoints[1]->symbol,
+                'distance' => LocationHelper::distance($waypoints[0]->symbol, $waypoints[1]->symbol),
+            ])
+            ->values()
+            ->each(function (array $waypoint) use (&$graph, $fuelCapacity) {
+                if ($waypoint['distance'] > $fuelCapacity) {
+                    return;
+                }
+
+                $graph->addEdge(
+                    $waypoint['origin'],
+                    $waypoint['destination'],
+                    $waypoint['distance']
+                );
+            });
+
+        return $graph;
     }
 }
