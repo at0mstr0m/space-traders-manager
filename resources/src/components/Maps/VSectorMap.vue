@@ -30,7 +30,8 @@ const data = ref({
       fill: false,
       borderColor: '#f5ce64',
       backgroundColor: '#f5ce64',
-      hoverRadius: 8,
+      radius: 7,
+      hoverRadius: 10,
       data: []
     },
   ]
@@ -73,7 +74,8 @@ function showCurrentSystemSeparately(system) {
         fill: false,
         borderColor: '#f87979',
         backgroundColor: '#f87979',
-        hoverRadius: 8,
+        radius: 7,
+        hoverRadius: 10,
         data: [system]
       });
     } else {

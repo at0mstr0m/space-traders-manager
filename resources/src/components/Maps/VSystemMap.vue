@@ -83,6 +83,8 @@ function addWaypointsToData(waypoints) {
         fill: false,
         borderColor: color,
         backgroundColor: color,
+        radius: 7,
+        hoverRadius: 10,
         data: [{
           ...waypoint,
         }]
@@ -165,6 +167,7 @@ watch(systemId, (newValue) => {
         {
           label: 'Center: ' + currentSystem.value.type,
           fill: false,
+          radius: 14,
           borderColor: color,
           backgroundColor: color,
           data: [
