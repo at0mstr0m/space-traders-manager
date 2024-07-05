@@ -13,7 +13,7 @@ git pull
 sail composer i --no-interaction --no-dev --optimize-autoloader
 sail artisan migrate --force
 sail artisan optimize:clear
-sail artisan firebase:download --purge
+sail artisan firebase:download
 sail artisan queue:restart
 
 # build frontend

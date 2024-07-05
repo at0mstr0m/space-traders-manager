@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
 {
@@ -36,10 +37,18 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        $waypoint = $this->getOrFetchWaypoint($this->waypointSymbol);
+        $currentWaypoint = $this->getOrFetchWaypoint($this->waypointSymbol);
 
-        // connections are already set
-        if ($waypoint->system->connections()->exists()) {
+        Log::debug("Fetching connections to Waypoint {$this->waypointSymbol}");
+        if (!$currentWaypoint->faction && $currentWaypoint->ships()->doesntExist()) {
+            Log::warning("Waypoint {$this->waypointSymbol} has no faction and no ships present, cannot fetch connections.");
+
+            return;
+        }
+
+        if ($currentWaypoint->system->connections()->exists()) {
+            Log::debug("System {$currentWaypoint->system->symbol} already has connections.");
+
             return;
         }
 
@@ -47,22 +56,25 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
             ->getJumpGate($this->waypointSymbol)
             ->connections
             ->map(
-                fn (string $connectedWaypointSymbol) => [
-                    'system' => $this->getOrFetchWaypoint($connectedWaypointSymbol)->system,
-                    'connectedWaypointSymbol' => $connectedWaypointSymbol,
-                ]
+                function (string $connectedWaypointSymbol) {
+                    $waypoint = $this->getOrFetchWaypoint($connectedWaypointSymbol);
+
+                    return [
+                        'waypoint' => $waypoint,
+                        'system' => $waypoint->system,
+                        'connectedWaypointSymbol' => $connectedWaypointSymbol,
+                    ];
+                }
             )->pipe(
-                function (Collection $data) use ($waypoint): Collection {
-                    $waypoint->system
+                function (Collection $data) use ($currentWaypoint): Collection {
+                    $currentWaypoint->system
                         ->connections()
                         ->sync($data->pluck('system')->pluck('id'));
 
                     return $data;
                 }
             )->filter(
-                fn (array $data) => $data['system']
-                    ->connections()
-                    ->doesntExist()
+                fn (array $data) => $data['system']->connections()->doesntExist()
             )->each(
                 fn (array $connectedWaypoint) => static::dispatch(
                     $connectedWaypoint['connectedWaypointSymbol']

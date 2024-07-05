@@ -175,6 +175,7 @@ class LocationHelper
         $graph = new Dijkstra();
 
         if ($originSystemSymbol !== $destinationWaypointSymbol) {
+            // todo: implement
         }
 
         Waypoint::onlyCanRefuel()
