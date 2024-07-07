@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\PotentialTradeRoute;
 use App\Models\Ship;
+use App\Models\System;
 use App\Models\Task;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -106,6 +107,25 @@ class Firebase
             ->set($ship?->task?->fireBaseReference?->key);
     }
 
+    public function uploadSystem(System $system): Reference
+    {
+        $fillables = $system->only($system->getFillable());
+
+        return $this->systemReference($fillables['symbol'])
+            // todo: maybe change push to set
+            ->push($fillables);
+    }
+
+    public function getSystemSymbols(): Collection
+    {
+        return collect($this->systemReference()->getChildKeys());
+    }
+
+    public function getSystem(string $systemSymbol): Collection
+    {
+        return collect($this->systemReference($systemSymbol)->getValue());
+    }
+
     public function deleteAll(): Reference
     {
         return $this->database
@@ -134,6 +154,12 @@ class Firebase
     {
         return $this->database
             ->getReference('ship_task/' . $this->userId . '/' . $path);
+    }
+
+    private function systemReference(string $systemSymbol = ''): Reference
+    {
+        return $this->database
+            ->getReference('systems/' . $systemSymbol);
     }
 
     private function signIn(): void
