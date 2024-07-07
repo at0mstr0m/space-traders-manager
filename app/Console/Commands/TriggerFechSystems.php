@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\FetchSystemsJob;
 use Illuminate\Console\Command;
 
-class TriggerTasks extends Command
+class TriggerFechSystems extends Command
 {
     /**
      * The name and signature of the console command.
