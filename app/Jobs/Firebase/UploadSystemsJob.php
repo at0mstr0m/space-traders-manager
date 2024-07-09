@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Jobs;
+declare(strict_types=1);
 
-use App\Jobs\Firebase\FirebaseJob;
+namespace App\Jobs\Firebase;
+
 use App\Models\System;
 use App\Services\Firebase;
 use Illuminate\Support\Collection;
