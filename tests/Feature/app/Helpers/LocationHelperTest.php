@@ -114,6 +114,40 @@ test('getRoutePath returns null', function (
 
         return [$waypoints->get(0), $waypoints->get(1), 100];
     },
+    function () {
+        $systems = System::factory(2)->create();
+        // systems NOT connected
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($systems->get(0))
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                ['x' => 50, 'y' => 50, 'type' => WaypointTypes::JUMP_GATE],
+            ))
+            ->create()
+            ->concat(
+                Waypoint::factory(2)
+                    ->inSystem($systems->get(1))
+                    ->canRefuel()
+                    ->state(new Sequence(
+                        ['x' => 50, 'y' => 50, 'type' => WaypointTypes::JUMP_GATE],
+                        ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                    ))
+                    ->create()
+            );
+
+        return [
+            $waypoints->get(0),
+            $waypoints->get(3),
+            100,
+            [
+                $waypoints->get(0)->symbol,
+                $waypoints->get(1)->symbol,
+                $waypoints->get(2)->symbol,
+                $waypoints->get(3)->symbol,
+            ],
+        ];
+    },
 ]);
 
 test('getRoutePath returns the path', function (
