@@ -11,6 +11,7 @@ use App\Enums\WaypointTraitSymbols;
 use App\Exceptions\NoPathException;
 use App\Jobs\UpdateShips;
 use App\Models\Ship;
+use App\Models\System;
 use App\Models\Waypoint;
 use App\Support\Pathfinding\Dijkstra;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -47,14 +48,23 @@ class LocationHelper
         return Str::startsWith(static::parseLocation($waypointSymbol)[2], $prefix);
     }
 
-    public static function observableWaypoints()
+    public static function isSystemSymbol(string $symbol): bool
+    {
+        return count(static::parseLocation($symbol)) === 2;
+    }
+
+    public static function isWaypointSymbol(string $symbol): bool
+    {
+        return count(static::parseLocation($symbol)) === 3;
+    }
+
+    public static function observableWaypoints(): Collection
     {
         UpdateShips::dispatchSync();
 
         return Ship::getQuery()
             ->whereNot('status', ShipNavStatus::IN_TRANSIT)
             ->select('waypoint_symbol')
-            ->get()
             ->pluck('waypoint_symbol')
             ->unique();
     }
@@ -75,29 +85,38 @@ class LocationHelper
      * @link https://en.wikipedia.org/wiki/Euclidean_distance
      */
     public static function distance(
-        int|string|Waypoint $x1orFirstWaypoint,
-        int|string|Waypoint $y1orSecondWaypoint,
+        int|string|System|Waypoint $x1orFirst,
+        int|string|System|Waypoint $y1orSecond,
         ?int $x2 = null,
         ?int $y2 = null
     ): int {
         return match (true) {
-            $x1orFirstWaypoint instanceof Waypoint && $y1orSecondWaypoint instanceof Waypoint => static::distance(
-                $x1orFirstWaypoint->x,
-                $x1orFirstWaypoint->y,
-                $y1orSecondWaypoint->x,
-                $y1orSecondWaypoint->y
-            ),
-            is_string($x1orFirstWaypoint) && is_string($y1orSecondWaypoint) => static::distance(
-                Waypoint::findBySymbol($x1orFirstWaypoint),
-                Waypoint::findBySymbol($y1orSecondWaypoint)
-            ),
+            ($x1orFirst instanceof Waypoint && $y1orSecond instanceof Waypoint)
+                || ($x1orFirst instanceof System && $y1orSecond instanceof System) => static::distance(
+                    $x1orFirst->x,
+                    $x1orFirst->y,
+                    $y1orSecond->x,
+                    $y1orSecond->y
+                ),
+            is_string($x1orFirst) && is_string($y1orSecond) => match (true) {
+                static::isSystemSymbol($x1orFirst)
+                    && static::isSystemSymbol($y1orSecond) => static::distance(
+                        System::findBySymbol($x1orFirst),
+                        System::findBySymbol($y1orSecond)
+                    ),
+                static::isWaypointSymbol($x1orFirst)
+                    && static::isWaypointSymbol($y1orSecond) => static::distance(
+                        Waypoint::findBySymbol($x1orFirst),
+                        Waypoint::findBySymbol($y1orSecond)
+                    ),
+            },
             // Euclidean distance is always >= 1
             default => max(
                 1,
                 (int) round(
                     sqrt(
-                        pow($x2 - $x1orFirstWaypoint, 2)
-                        + pow($y2 - $y1orSecondWaypoint, 2)
+                        pow($x2 - $x1orFirst, 2)
+                        + pow($y2 - $y1orSecond, 2)
                     )
                 )
             ),
@@ -170,15 +189,72 @@ class LocationHelper
     private static function buildGraph(
         int $fuelCapacity,
         string $originSystemSymbol,
-        string $destinationWaypointSymbol
-    ): Dijkstra {
-        $graph = new Dijkstra();
+        string $destinationSystemSymbol
+    ): bool|Dijkstra {
+        if ($originSystemSymbol === $destinationSystemSymbol) {
+            $graph = new Dijkstra();
+            static::buildSystemGraph($graph, $fuelCapacity, $originSystemSymbol);
 
-        if ($originSystemSymbol !== $destinationWaypointSymbol) {
-            // todo: implement
+            return $graph;
         }
 
-        Waypoint::onlyCanRefuel()
+        $graph = Cache::tags(['graphs'])
+            ->remember(
+                'system_connections_graph',
+                now()->addHour(),
+                function () {
+                    $graph = new Dijkstra();
+
+                    System::whereHas('connections')
+                        ->get()
+                        ->each(function (System $system) use (&$graph) {
+                            $jumpGateSymbol = $system->jumpGate->symbol;
+                            System::findManyBySymbol(
+                                $system->connections()->pluck('symbol')
+                            )->each(
+                                fn (System $connectedSystem) => $graph->addEdge(
+                                    $jumpGateSymbol,
+                                    $connectedSystem->jumpGate->symbol,
+                                    LocationHelper::distance(
+                                        $system,
+                                        $connectedSystem
+                                    ),
+                                    true
+                                )
+                            );
+                        });
+
+                    return $graph;
+                }
+            );
+
+        $systems = System::findManyBySymbol([
+            $originSystemSymbol,
+            $destinationSystemSymbol,
+        ]);
+
+        // JumpGates in origin and destination System must be connected
+        if ($systems->pluck('jumpGate')->filter()->count() !== 2) {
+            return false;
+        }
+
+        $systems->each(fn (System $system) => static::buildSystemGraph(
+            $graph,
+            $fuelCapacity,
+            $system
+        ));
+
+        return $graph;
+    }
+
+    private static function buildSystemGraph(
+        Dijkstra &$graph,
+        int $fuelCapacity,
+        string|System $system
+    ): void {
+        (is_string($system) ? System::findBySymbol($system) : $system)
+            ->waypoints()
+            ->onlyCanRefuel()
             ->get()
             ->pipe(fn (EloquentCollection $waypoints) => $waypoints->crossJoin($waypoints))
             ->reject(fn (array $waypoints) => $waypoints[0]->symbol === $waypoints[1]->symbol)
@@ -199,7 +275,5 @@ class LocationHelper
                     $waypoint['distance']
                 );
             });
-
-        return $graph;
     }
 }

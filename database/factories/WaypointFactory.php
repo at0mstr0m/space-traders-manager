@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\TradeGoodTypes;
+use App\Enums\TradeSymbols;
+use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;
 use App\Models\Faction;
+use App\Models\System;
+use App\Models\TradeOpportunity;
+use App\Models\Waypoint;
+use App\Models\WaypointTrait;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -38,17 +45,43 @@ class WaypointFactory extends Factory
     /**
      * Sets System for Waypoints.
      */
-    public function inSystem(?string $systemSymbol = null): Factory
+    public function inSystem(string|System $system = 'X1-AB12'): Factory
     {
-        return $this->set(
-            'system_symbol',
-            $systemSymbol ??= $this->faker->systemSymbol()
-        )->state(
-            fn (array $attributes) => [
+        $system = $system instanceof System
+            ? $system
+            : (System::findBySymbol($system)
+                ?? System::factory()->createOne(['symbol' => $system]));
+
+        return $this->for($system)
+            ->set('system_symbol', $system->symbol)
+            ->state(fn (array $attributes) => [
                 'symbol' => $attributes['system_symbol']
                     . '-'
                     . $this->faker->unique()->waypointSuffix(),
-            ]
-        );
+            ]);
+    }
+
+    public function isMarketplace(): Factory
+    {
+        $trait = WaypointTrait::firstWhere('symbol', WaypointTraitSymbols::MARKETPLACE)
+            ?? WaypointTrait::factory()->marketplace()->createOne();
+
+        return $this->hasAttached($trait, relationship: 'traits');
+    }
+
+    public function canRefuel(): Factory
+    {
+        return $this->isMarketplace()
+            ->afterCreating(
+                fn (Waypoint $waypoint) => $waypoint
+                    ->tradeOpportunities()
+                    ->save(
+                        TradeOpportunity::factory()->createOne([
+                            'waypoint_symbol' => $waypoint->symbol,
+                            'symbol' => TradeSymbols::FUEL,
+                            'type' => TradeGoodTypes::EXPORT,
+                        ])
+                    )
+            );
     }
 }

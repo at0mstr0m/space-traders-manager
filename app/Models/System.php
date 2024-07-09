@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\SystemTypes;
+use App\Enums\WaypointTypes;
 use App\Traits\FindableBySymbol;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -37,6 +40,7 @@ use Illuminate\Support\Carbon;
 class System extends Model
 {
     use FindableBySymbol;
+    use HasFactory;
 
     protected $fillable = [
         'symbol',
@@ -49,6 +53,12 @@ class System extends Model
     public function waypoints(): HasMany
     {
         return $this->hasMany(Waypoint::class, 'system_symbol', 'symbol');
+    }
+
+    public function jumpGate(): HasOne
+    {
+        return $this->hasOne(Waypoint::class, 'system_symbol', 'symbol')
+            ->where('type', WaypointTypes::JUMP_GATE);
     }
 
     public function factions(): BelongsToMany
