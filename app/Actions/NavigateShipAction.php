@@ -17,6 +17,8 @@ class NavigateShipAction
 
     private SpaceTraders $api;
 
+    private ?Ship $ship = null;
+
     public function __construct()
     {
         $this->api = app(SpaceTraders::class);
@@ -26,158 +28,140 @@ class NavigateShipAction
         Ship $ship,
         string $destinationWaypointSymbol,
     ): Ship {
-        $ship
+        $this->ship = $ship;
+        $this->ship
             ->moveIntoOrbit()
             ->setFlightMode(FlightModes::CRUISE)
             ->update(['destination' => $destinationWaypointSymbol]);
 
-        if (!$ship->fuel_capacity) {
-            // todo: adjust to travel across systems
-            $this->api
-                ->navigateShip($ship->symbol, $destinationWaypointSymbol)
-                ->updateShip($ship)
-                ->save();
+        $isInSameSystem = LocationHelper::waypointIsInSystem(
+            $this->ship->waypoint_symbol,
+            LocationHelper::parseSystemSymbol($destinationWaypointSymbol)
+        );
 
-            return $ship;
+        if (!$this->ship->fuel_capacity && $isInSameSystem) {
+            $this->navigateShip($destinationWaypointSymbol);
+
+            return $this->ship;
         }
 
         $destinationWaypoint = Waypoint::findBySymbol($destinationWaypointSymbol);
-        $distanceToDestinationWaypoint = $ship->distanceTo($destinationWaypoint);
-        $canReachDestinationWithoutRefueling = $distanceToDestinationWaypoint <= $ship->fuel_current;
-        $canRefuelAtCurrenLocation = $ship->can_refuel_at_current_location;
+        $distanceToDestinationWaypoint = $this->ship->distanceTo($destinationWaypoint);
+        $canReachDestinationWithoutRefueling = $distanceToDestinationWaypoint <= $this->ship->fuel_current;
+        $canRefuelAtCurrenLocation = $this->ship->can_refuel_at_current_location;
 
-        if ($ship->distanceTo($destinationWaypoint) <= $ship->fuel_capacity) {
+        if ($this->ship->distanceTo($destinationWaypoint) <= $this->ship->fuel_capacity) {
             if ($canReachDestinationWithoutRefueling) {
                 if ($canRefuelAtCurrenLocation && !$destinationWaypoint->can_refuel) {
                     // refuel at current position to avoid getting stranded at destination
-                    $ship->refuel();
+                    $this->ship->refuel();
                 }
-                $this->api
-                    ->navigateShip($ship->symbol, $destinationWaypointSymbol)
-                    ->updateShip($ship)
-                    ->save();
+                $this->navigateShip($destinationWaypointSymbol);
 
-                return $ship;
+                return $this->ship;
             }
 
             if ($canRefuelAtCurrenLocation) {
-                $ship->refuel();
-                $this->api
-                    ->navigateShip($ship->symbol, $destinationWaypointSymbol)
-                    ->updateShip($ship)
-                    ->save();
+                $this->ship->refuel();
+                $this->navigateShip($destinationWaypointSymbol);
 
-                return $ship;
+                return $this->ship;
             }
 
             /*
              * cannot reach destination without refueling
              * and cannot refuel at current location
              */
-            if ($distanceToDestinationWaypoint > $ship->fuel_current) {
+            if ($distanceToDestinationWaypoint > $this->ship->fuel_current) {
                 foreach ([
                     $destinationWaypoint->closestRefuelingWaypoint(),
-                    $ship->waypoint->closestRefuelingWaypoint(),
+                    $this->ship->waypoint->closestRefuelingWaypoint(),
                 ] as $closestRefuelingWaypoint) {
                     if (
-                        $ship->fuel_current >= $ship->distanceTo($closestRefuelingWaypoint)
-                        && $distanceToDestinationWaypoint > $ship->distanceTo($closestRefuelingWaypoint)
+                        $this->ship->fuel_current >= $this->ship->distanceTo($closestRefuelingWaypoint)
+                        && $distanceToDestinationWaypoint > $this->ship->distanceTo($closestRefuelingWaypoint)
                     ) {
-                        $this->api
-                            ->navigateShip($ship->symbol, $closestRefuelingWaypoint->symbol)
-                            ->updateShip($ship)
-                            ->save();
+                        $this->navigateShip($closestRefuelingWaypoint->symbol);
 
-                        return $ship;
+                        return $this->ship;
                     }
                 }
 
                 // no other chance than to drift to the destination
-                $ship->setFlightMode(FlightModes::DRIFT);
-                $this->api
-                    ->navigateShip($ship->symbol, $destinationWaypointSymbol)
-                    ->updateShip($ship)
-                    ->save();
+                $this->ship->setFlightMode(FlightModes::DRIFT);
+                $this->navigateShip($destinationWaypointSymbol);
             }
 
             // when will this code ever be reached?
-            throw new \Exception("{$ship->symbol} cannot reach destination {$destinationWaypointSymbol} from {$ship->waypoint_symbol}", 1);
-            // $this->api
-            //     ->navigateShip($ship->symbol, $destinationWaypointSymbol)
-            //     ->updateShip($ship)
-            //     ->save();
-
-            // return $ship;
+            throw new \Exception("{$this->ship->symbol} cannot reach destination {$destinationWaypointSymbol} from {$this->ship->waypoint_symbol}", 1);
+            // $this->navigateShip($destinationWaypointSymbol);
+            // return $this->ship;
         }
 
         $routePath = LocationHelper::getRoutePath(
-            $ship->waypoint_symbol,
+            $this->ship->waypoint_symbol,
             $destinationWaypointSymbol,
-            $ship->fuel_capacity
+            $this->ship->fuel_capacity
         );
 
         if ($routePath) {
             if ($canRefuelAtCurrenLocation) {
-                $ship->refuel();
+                $this->ship->refuel();
             }
-            $this->api
-                ->navigateShip($ship->symbol, $routePath[1])
-                ->updateShip($ship)
-                ->save();
+            $this->navigateShip($routePath[1]);
 
-            return $ship;
+            return $this->ship;
         }
 
-        $closestRefuelingWaypoint = $ship->waypoint->closestRefuelingWaypoint();
+        $closestRefuelingWaypoint = $this->ship->waypoint->closestRefuelingWaypoint();
 
         if (
-            ($canRefuelAtCurrenLocation || $ship->fuel_current >= $ship->distanceTo($closestRefuelingWaypoint))
-            && $distanceToDestinationWaypoint > $ship->distanceTo($closestRefuelingWaypoint)
+            ($canRefuelAtCurrenLocation || $this->ship->fuel_current >= $this->ship->distanceTo($closestRefuelingWaypoint))
+            && $distanceToDestinationWaypoint > $this->ship->distanceTo($closestRefuelingWaypoint)
             // $closestRefuelingWaypoint must be closer to $destinationWaypoint
             && $distanceToDestinationWaypoint > LocationHelper::distance($closestRefuelingWaypoint, $destinationWaypoint)
         ) {
             if ($canRefuelAtCurrenLocation) {
-                $ship->refuel();
+                $this->ship->refuel();
             }
-            $this->api
-                ->navigateShip($ship->symbol, $closestRefuelingWaypoint->symbol)
-                ->updateShip($ship)
-                ->save();
+            $this->navigateShip($closestRefuelingWaypoint->symbol);
 
-            return $ship;
+            return $this->ship;
         }
 
         if (!$destinationWaypoint->can_refuel) {
             $closestRefuelingStationToDestination = $destinationWaypoint->closestRefuelingWaypoint();
             $routePathToClosestRefuelingStationToDestination = LocationHelper::getRoutePath(
-                $ship->waypoint_symbol,
+                $this->ship->waypoint_symbol,
                 $closestRefuelingStationToDestination->symbol,
-                $ship->fuel_capacity
+                $this->ship->fuel_capacity
             );
 
             if ($routePathToClosestRefuelingStationToDestination) {
-                $ship->refuel();
-                $this->api
-                    ->navigateShip($ship->symbol, $routePathToClosestRefuelingStationToDestination[1])
-                    ->updateShip($ship)
-                    ->save();
+                $this->ship->refuel();
+                $this->navigateShip($routePathToClosestRefuelingStationToDestination[1]);
 
-                return $ship;
+                return $this->ship;
             }
         }
 
         // no route found, no other chance than to drift to the destination
-        $ship->setFlightMode(FlightModes::DRIFT);
+        $this->ship->setFlightMode(FlightModes::DRIFT);
 
         if ($canRefuelAtCurrenLocation) {
-            $ship->refuel();
+            $this->ship->refuel();
         }
 
-        $this->api
-            ->navigateShip($ship->symbol, $destinationWaypointSymbol)
-            ->updateShip($ship)
-            ->save();
+        $this->navigateShip($destinationWaypointSymbol);
 
-        return $ship;
+        return $this->ship;
+    }
+
+    protected function navigateShip(string $destinationWaypointSymbol): void
+    {
+        $this->api
+            ->navigateShip($this->ship->symbol, $destinationWaypointSymbol)
+            ->updateShip($this->ship)
+            ->save();
     }
 }

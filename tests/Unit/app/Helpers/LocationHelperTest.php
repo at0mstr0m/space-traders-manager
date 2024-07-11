@@ -42,3 +42,18 @@ it('recognizes Waypoint symbols', function (string $input, bool $result) {
     ['X1', false],
     ['X2', false],
 ]);
+
+it('evaluates if waypoint is in system', function (
+    string $waypoint,
+    string $system,
+    bool $result
+) {
+    expect(LocationHelper::waypointIsInSystem($waypoint, $system))->toBe($result);
+})->with([
+    ['X1-A0-A1', 'X1-A0', true],
+    ['X1-B1-B2', 'X1-B1', true],
+    ['X1-C2-C3', 'X1-C2', true],
+    ['X1-A0-A1', 'X1-B1', false],
+    ['X1-B1-B2', 'X1-C2', false],
+    ['X1-C2-C3', 'X1-A0', false],
+]);

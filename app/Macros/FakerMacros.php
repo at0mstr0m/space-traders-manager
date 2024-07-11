@@ -55,4 +55,13 @@ class FakerMacros extends Base
 
         return $result;
     }
+
+    public function shipSymbol(): string
+    {
+        return Str::of('FAKE-SHIP-')
+            ->append($this->randomLetter())
+            ->append($this->numberBetween(1, 99))
+            ->upper()
+            ->toString();
+    }
 }
