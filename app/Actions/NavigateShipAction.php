@@ -98,19 +98,7 @@ class NavigateShipAction
         );
 
         if ($routePath) {
-            $nextStep = $routePath[1];
-            if (
-                $this->ship->waypoint->type === WaypointTypes::JUMP_GATE
-                && $this->ship->waypoint->system_symbol !== LocationHelper::parseSystemSymbol($nextStep)
-                && Waypoint::findBySymbol($nextStep)->type === WaypointTypes::JUMP_GATE
-            ) {
-                $this->navigateShip($nextStep, true);
-
-                return $this->ship;
-            }
-            $this->navigateShip($nextStep);
-
-            return $this->ship;
+            return $this->handlePath($routePath);
         }
 
         $closestRefuelingWaypoint = $this->ship->waypoint->closestRefuelingWaypoint();
@@ -135,9 +123,9 @@ class NavigateShipAction
             );
 
             if ($routePathToClosestRefuelingStationToDestination) {
-                $this->navigateShip($routePathToClosestRefuelingStationToDestination[1]);
-
-                return $this->ship;
+                return $this->handlePath(
+                    $routePathToClosestRefuelingStationToDestination
+                );
             }
         }
 
@@ -145,6 +133,23 @@ class NavigateShipAction
         $this->ship->setFlightMode(FlightModes::DRIFT);
 
         $this->navigateShip($destinationWaypointSymbol);
+
+        return $this->ship;
+    }
+
+    protected function handlePath(array $path): Ship
+    {
+        $nextStep = $path[1];
+        if (
+            $this->ship->waypoint->type === WaypointTypes::JUMP_GATE
+            && $this->ship->waypoint->system_symbol !== LocationHelper::parseSystemSymbol($nextStep)
+            && Waypoint::findBySymbol($nextStep)->type === WaypointTypes::JUMP_GATE
+        ) {
+            $this->navigateShip($nextStep, true);
+
+            return $this->ship;
+        }
+        $this->navigateShip($nextStep);
 
         return $this->ship;
     }
