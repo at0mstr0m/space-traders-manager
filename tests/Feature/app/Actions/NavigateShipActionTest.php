@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\App\Actions;
 
 use App\Actions\NavigateShipAction;
+use App\Enums\WaypointTypes;
 use App\Helpers\SpaceTraders;
 use App\Models\Ship;
 use App\Models\System;
@@ -121,14 +122,214 @@ it('navigates to destination', function (
                 ['x' => 100, 'y' => 100],
             ))
             ->create();
+        $currentWaypoint = Waypoint::factory()
+            ->inSystem($system)
+            ->createOne(['x' => -50, 'y' => -50]);
 
         return [
             'fuelCapacity' => 200,
-            'currentWaypoint' => Waypoint::factory()
-                ->inSystem($system)
-                ->createOne(['x' => -50, 'y' => -50]),
+            'currentWaypoint' => $currentWaypoint,
             'destination' => $waypoints->get(1)->symbol,
             'nextNavigationStep' => $waypoints->get(0)->symbol,
+        ];
+    },
+    // same system
+    // next refueling station reachable without refueling
+    // cannot refuel at current location and destination
+    function () {
+        $system = System::factory()->create();
+        $waypointsToRefuel = Waypoint::factory(2)
+            ->inSystem($system)
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1],
+                ['x' => 100, 'y' => 100],
+            ))
+            ->create();
+        $waypointsThatCannotRefuel = Waypoint::factory(2)
+            ->inSystem($system)
+            ->state(new Sequence(
+                ['x' => -100, 'y' => -100],
+                ['x' => 200, 'y' => 200],
+            ))
+            ->create();
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $waypointsThatCannotRefuel->get(0),
+            'destination' => $waypointsThatCannotRefuel->get(1)->symbol,
+            'nextNavigationStep' => $waypointsToRefuel->get(0)->symbol,
+        ];
+    },
+    // same system
+    // all can refuel
+    // destination not reachable without refueling in the middle
+    function () {
+        $system = System::factory()->create();
+        $waypoints = Waypoint::factory(3)
+            ->inSystem($system)
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1],
+                ['x' => 100, 'y' => 100],
+                ['x' => 200, 'y' => 200],
+            ))
+            ->create();
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $waypoints->get(0),
+            'destination' => $waypoints->get(2)->symbol,
+            'nextNavigationStep' => $waypoints->get(1)->symbol,
+        ];
+    },
+    // same system
+    // destination cannot refuel
+    // destination not reachable without refueling in the middle
+    function () {
+        $system = System::factory()->create();
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($system)
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1],
+                ['x' => 100, 'y' => 100],
+            ))
+            ->create();
+        $destination = Waypoint::factory()
+            ->inSystem($system)
+            ->createOne(['x' => 200, 'y' => 200])
+            ->symbol;
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $waypoints->get(0),
+            'destination' => $destination,
+            'nextNavigationStep' => $waypoints->get(1)->symbol,
+        ];
+    },
+    // same system
+    // destination can refuel but current location cannot
+    // destination not reachable without refueling in the middle
+    function () {
+        $system = System::factory()->create();
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($system)
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 100, 'y' => 100],
+                ['x' => 200, 'y' => 200],
+            ))
+            ->create();
+        $currentWaypoint = Waypoint::factory()
+            ->inSystem($system)
+            ->createOne(['x' => 1, 'y' => 1]);
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $currentWaypoint,
+            'destination' => $waypoints->get(1)->symbol,
+            'nextNavigationStep' => $waypoints->get(0)->symbol,
+        ];
+    },
+    // different but connected systems
+    // all can refuel
+    // destination not reachable without using a jump gate
+    function () {
+        $systems = System::factory(2)->create();
+        $systems->get(0)->connections()->attach($systems->get(1));
+        $systems->get(1)->connections()->attach($systems->get(0));
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($systems->get(0))
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+            ))
+            ->create()
+            ->concat(
+                Waypoint::factory(2)
+                    ->inSystem($systems->get(1))
+                    ->canRefuel()
+                    ->state(new Sequence(
+                        ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+                        ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                    ))
+                    ->create()
+            );
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $waypoints->get(0),
+            'destination' => $waypoints->get(3)->symbol,
+            'nextNavigationStep' => $waypoints->get(1)->symbol,
+        ];
+    },
+]);
+
+it('navigates using Jump Gate', function (
+    int $fuelCapacity,
+    Waypoint $currentWaypoint,
+    string $destination,
+    ?string $nextNavigationStep = null,
+    ?\Closure $manipulateMock = null,
+) {
+    $ship = \Mockery::mock(
+        Ship::factory()
+            ->fullyFueled($fuelCapacity)
+            ->atWaypoint($currentWaypoint)
+            ->makeOne()
+    );
+    $ship->shouldReceive('moveIntoOrbit', 'setFlightMode')
+        ->andReturnSelf();
+    $ship->shouldReceive('update')
+        ->with(['destination' => $destination])
+        ->andReturnTrue();
+
+    if ($manipulateMock) {
+        $manipulateMock($ship);
+    }
+
+    /** @var LegacyMockInterface|NavigateShipAction */
+    $action = NavigateShipAction::partialMock()
+        ->shouldAllowMockingProtectedMethods();
+    $action->shouldReceive('navigateShip')
+        ->with($nextNavigationStep ?? $destination, true)
+        ->once();
+    expect($action->handle($ship, $destination))->toBe($ship);
+})->with([
+    // different but connected systems
+    // all can refuel
+    // destination not reachable without using a jump gate
+    // currently at Jump Gate
+    function () {
+        $systems = System::factory(2)->create();
+        $systems->get(0)->connections()->attach($systems->get(1));
+        $systems->get(1)->connections()->attach($systems->get(0));
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($systems->get(0))
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+            ))
+            ->create()
+            ->concat(
+                Waypoint::factory(2)
+                    ->inSystem($systems->get(1))
+                    ->canRefuel()
+                    ->state(new Sequence(
+                        ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+                        ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                    ))
+                    ->create()
+            );
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $waypoints->get(1),
+            'destination' => $waypoints->get(3)->symbol,
+            'nextNavigationStep' => $waypoints->get(2)->symbol,
         ];
     },
 ]);

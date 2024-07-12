@@ -356,6 +356,10 @@ class Ship extends Model
 
     public function refuel(): static
     {
+        // no need to refuel if fuel is already full
+        if ($this->fuel_consumed === 0) {
+            return $this;
+        }
         $wasInOrbitBeforeRefueling = $this->is_in_orbit;
 
         $this->dock()

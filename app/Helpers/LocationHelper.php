@@ -90,15 +90,31 @@ class LocationHelper
         ?int $x2 = null,
         ?int $y2 = null
     ): int {
+        $bothAreWaypoints = $x1orFirst instanceof Waypoint && $y1orSecond instanceof Waypoint;
+        $bothAreStrings = is_string($x1orFirst) && is_string($y1orSecond);
+        // check if both waypoints are in same system. if not return 0
+        if ($bothAreWaypoints || $bothAreStrings) {
+            $firstSystem = $bothAreStrings 
+                ? static::parseSystemSymbol($x1orFirst)
+                : $x1orFirst->system_symbol;
+            $secondSystem = $bothAreStrings
+                ? static::parseSystemSymbol($y1orSecond)
+                : $y1orSecond->system_symbol;
+
+            if ($firstSystem !== $secondSystem) {
+                return 0;
+            }
+        }
+
         return match (true) {
-            ($x1orFirst instanceof Waypoint && $y1orSecond instanceof Waypoint)
+            $bothAreWaypoints
                 || ($x1orFirst instanceof System && $y1orSecond instanceof System) => static::distance(
                     $x1orFirst->x,
                     $x1orFirst->y,
                     $y1orSecond->x,
                     $y1orSecond->y
                 ),
-            is_string($x1orFirst) && is_string($y1orSecond) => match (true) {
+            $bothAreStrings => match (true) {
                 static::isSystemSymbol($x1orFirst)
                     && static::isSystemSymbol($y1orSecond) => static::distance(
                         System::findBySymbol($x1orFirst),

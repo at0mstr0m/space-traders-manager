@@ -11,16 +11,16 @@ use App\Models\Waypoint;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 
 test('distance is 1 if waypoints have same coordinates', function (
-    int|string|Waypoint $waypoint1,
-    int|string|Waypoint $waypoint2
+    string|Waypoint $waypoint1,
+    string|Waypoint $waypoint2
 ) {
     expect(LocationHelper::distance($waypoint1, $waypoint2))
         ->toBe(1);
 })->with([
-    fn () => [
-        Waypoint::factory()->create(['x' => 1, 'y' => 1]),
-        Waypoint::factory()->create(['x' => 1, 'y' => 1]),
-    ],
+    fn () => Waypoint::factory(2)
+        ->inSystem()
+        ->create(['x' => 1, 'y' => 1])
+        ->all(),
     function () {
         $waypoint = Waypoint::factory()->create(['x' => 1, 'y' => 1]);
 
@@ -29,10 +29,27 @@ test('distance is 1 if waypoints have same coordinates', function (
             $waypoint,
         ];
     },
-    fn () => [
-        Waypoint::factory()->create(['x' => 1, 'y' => 1])->symbol,
-        Waypoint::factory()->create(['x' => 1, 'y' => 1])->symbol,
-    ],
+    fn () => Waypoint::factory(2)
+        ->inSystem()
+        ->create(['x' => 1, 'y' => 1])
+        ->pluck('symbol')
+        ->all(),
+]);
+
+test('distance is 0 if waypoints ara not in the same system', function (
+    string|Waypoint $waypoint1,
+    string|Waypoint $waypoint2
+) {
+    expect(LocationHelper::distance($waypoint1, $waypoint2))
+        ->toBe(0);
+})->with([
+    fn () => Waypoint::factory(2)
+        ->create(['x' => 1, 'y' => 1])
+        ->all(),
+    fn () => Waypoint::factory(2)
+        ->create(['x' => 1, 'y' => 1])
+        ->pluck('symbol')
+        ->all(),
 ]);
 
 test('getRoutePath returns null', function (

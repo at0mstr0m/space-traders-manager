@@ -160,7 +160,8 @@ class Waypoint extends Model
 
     public function closestRefuelingWaypoint(bool $excludeSelf = true): ?static
     {
-        $waypoints = Waypoint::onlyCanRefuel()
+        $waypoints = Waypoint::where('system_symbol', $this->system_symbol)
+            ->onlyCanRefuel()
             ->when(
                 $excludeSelf,
                 fn (Builder $query) => $query->where([
