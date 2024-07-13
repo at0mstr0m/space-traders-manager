@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\App\Actions;
 
 use App\Actions\NavigateShipAction;
+use App\Enums\FlightModes;
 use App\Enums\WaypointTypes;
 use App\Helpers\SpaceTraders;
 use App\Models\Ship;
@@ -369,6 +370,67 @@ it('navigates using Jump Gate', function (
             'currentWaypoint' => $waypoints->get(1),
             'destination' => $destination,
             'nextNavigationStep' => $waypoints->get(2)->symbol,
+        ];
+    },
+]);
+
+it('drifts to a refuelling station in the middle to destination', function (
+    array $shipAttributes,
+    Waypoint $currentWaypoint,
+    string $destination,
+    ?string $nextNavigationStep = null,
+    ?\Closure $manipulateMock = null,
+) {
+    $ship = \Mockery::mock(
+        Ship::factory()
+            ->atWaypoint($currentWaypoint)
+            ->makeOne($shipAttributes)
+    );
+    $ship->shouldReceive('moveIntoOrbit', 'setFlightMode')
+        ->andReturnSelf();
+    $ship->shouldReceive('update')
+        ->with(['destination' => $destination])
+        ->andReturnTrue();
+    $ship->shouldReceive('setFlightMode')
+        ->with(FlightModes::DRIFT)
+        ->andReturnTrue();
+
+    if ($manipulateMock) {
+        $manipulateMock($ship);
+    }
+
+    expectNavigationTo($ship, $destination, $nextNavigationStep);
+})->with([
+    // same system
+    // current waypoint and destination cannot refuel
+    // refuelling station in the middle
+    function () {
+        $system = System::factory()->create();
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($system)
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1],
+                ['x' => 200, 'y' => 200],
+            ))
+            ->create();
+        $refuellintInTheMiddle = Waypoint::factory()
+            ->inSystem($system)
+            ->canRefuel()
+            ->createOne(['x' => 100, 'y' => 100]);
+
+        dump($waypoints->get(0)->symbol);
+        dump($waypoints->get(1)->symbol);
+        dump($refuellintInTheMiddle->symbol);
+
+        return [
+            'shipAttributes' => [
+                'fuel_capacity' => 200, // not enough to reach destination
+                'fuel_consumed' => 200,
+                'fuel_current' => 0,    // empty tank
+            ],
+            'currentWaypoint' => $waypoints->get(0),
+            'destination' => $waypoints->get(1)->symbol,
+            'nextNavigationStep' => $refuellintInTheMiddle->symbol,
         ];
     },
 ]);
