@@ -267,6 +267,81 @@ it('navigates to destination', function (
             'nextNavigationStep' => $waypoints->get(1)->symbol,
         ];
     },
+    // different but connected systems
+    // destination not reachable without using a jump gate
+    // destination in another system cannot refuel
+    function () {
+        $systems = System::factory(2)->create();
+        $systems->get(0)->connections()->attach($systems->get(1));
+        $systems->get(1)->connections()->attach($systems->get(0));
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($systems->get(0))
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+            ))
+            ->create()
+            ->concat(
+                Waypoint::factory(2)
+                    ->inSystem($systems->get(1))
+                    ->canRefuel()
+                    ->state(new Sequence(
+                        ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+                        ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                    ))
+                    ->create()
+            );
+        $destination = Waypoint::factory()
+            ->inSystem($systems->get(1))
+            ->createOne(['x' => -100, 'y' => -100, 'type' => WaypointTypes::ASTEROID])
+            ->symbol;
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $waypoints->get(0),
+            'destination' => $destination,
+            'nextNavigationStep' => $waypoints->get(1)->symbol,
+        ];
+    },
+    // different but connected systems
+    // destination not reachable without using a jump gate
+    // destination in another system cannot refuel
+    // can only reach destination by drifting the last step
+    function () {
+        $systems = System::factory(2)->create();
+        $systems->get(0)->connections()->attach($systems->get(1));
+        $systems->get(1)->connections()->attach($systems->get(0));
+        $waypoints = Waypoint::factory(2)
+            ->inSystem($systems->get(0))
+            ->canRefuel()
+            ->state(new Sequence(
+                ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+            ))
+            ->create()
+            ->concat(
+                Waypoint::factory(2)
+                    ->inSystem($systems->get(1))
+                    ->canRefuel()
+                    ->state(new Sequence(
+                        ['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE],
+                        ['x' => 1, 'y' => 1, 'type' => WaypointTypes::PLANET],
+                    ))
+                    ->create()
+            );
+        $destination = Waypoint::factory()
+            ->inSystem($systems->get(1))
+            ->createOne(['x' => -500, 'y' => -500, 'type' => WaypointTypes::ASTEROID])
+            ->symbol;
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $waypoints->get(0),
+            'destination' => $destination,
+            'nextNavigationStep' => $waypoints->get(1)->symbol,
+        ];
+    },
 ]);
 
 it('navigates using Jump Gate', function (
