@@ -254,7 +254,17 @@ class LocationHelper
         ]);
 
         // JumpGates in origin and destination System must be connected
-        if ($systems->pluck('jumpGate')->filter()->count() !== 2) {
+        $jumpGates = $systems->pluck('jumpGate');
+        if ($jumpGates->filter()->count() !== 2) {
+            return false;
+        }
+
+        try {
+            $graph->findShortestPath(
+                $jumpGates->get(0)->symbol,
+                $jumpGates->get(1)->symbol,
+            );
+        } catch (NoPathException $th) {
             return false;
         }
 
