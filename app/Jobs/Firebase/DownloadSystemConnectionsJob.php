@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Jobs\Firebase;
 
 use App\Models\System;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-class DownloadSystemsJob extends FirebaseJob
+class DownloadSystemConnectionsJob extends FirebaseJob
 {
     /**
      * Create a new job instance.
@@ -33,15 +32,19 @@ class DownloadSystemsJob extends FirebaseJob
 
         $this->symbols
             ->map(fn (string $symbol) => $this->firebase->getSystem($symbol)->all())
-            ->each(fn (array $systemData) => System::updateOrCreate(
-                ['symbol' => $systemData['symbol']],
-                Arr::except($systemData, ['symbol', 'connections'])
-            ));
+            ->each(function (array $systemData) {
+                // if the system has no connections, it can be skipped
+                if (!isset($systemData['connections'])) {
+                    return;
+                }
 
-        // all systems have been downloaded
-        // now download the systems' connections
-        if (System::count() === $this->firebase->getSystemSymbols()->count()) {
-            DownloadSystemConnectionsJob::dispatch();
-        }
+                $connectedSystems = System::getquery()
+                    ->select('id')
+                    ->whereIn('symbol', $systemData['connections'])
+                    ->pluck('id');
+                System::findBySymbol($systemData['symbol'])
+                    ->connections()
+                    ->sync($connectedSystems);
+            });
     }
 }

@@ -10,10 +10,12 @@ use App\Enums\ShipRoles;
 use App\Enums\WaypointTraitSymbols;
 use App\Exceptions\NoPathException;
 use App\Jobs\UpdateShips;
+use App\Models\Agent;
 use App\Models\Ship;
 use App\Models\System;
 use App\Models\Waypoint;
 use App\Support\Pathfinding\Dijkstra;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -139,13 +141,21 @@ class LocationHelper
         };
     }
 
-    public static function marketplacesWithoutSatellite(): EloquentCollection
-    {
+    public static function marketplacesWithoutSatellite(
+        bool $onlyHeadquarter = true
+    ): EloquentCollection {
         $satelliteLocations = Ship::where('role', ShipRoles::SATELLITE)
             ->pluck('waypoint_symbol');
 
         return Waypoint::whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
             ->whereNotIn('symbol', $satelliteLocations)
+            ->when(
+                $onlyHeadquarter,
+                fn (Builder $query) => $query->where(
+                    'system_symbol',
+                    Agent::first()->starting_system->symbol
+                )
+            )
             ->orderBy('symbol')
             ->get();
     }
