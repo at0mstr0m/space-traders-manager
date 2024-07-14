@@ -448,6 +448,30 @@ it('navigates using Jump Gate', function (
             'nextNavigationStep' => $waypoints->get(2)->symbol,
         ];
     },
+    // different but connected systems
+    // destination not reachable without using a jump gate
+    // destination is jump gate in other system
+    function () {
+        $systems = System::factory(2)->create();
+        $systems->get(0)->connections()->attach($systems->get(1));
+        $systems->get(1)->connections()->attach($systems->get(0));
+        $currentWaypoint = Waypoint::factory()
+            ->inSystem($systems->get(0))
+            ->canRefuel()
+            ->createOne(['x' => 100, 'y' => 100, 'type' => WaypointTypes::JUMP_GATE]);
+        $destination = Waypoint::factory()
+            ->inSystem($systems->get(1))
+            ->canRefuel()
+            ->createOne(['x' => -100, 'y' => -100, 'type' => WaypointTypes::JUMP_GATE])
+            ->symbol;
+
+        return [
+            'fuelCapacity' => 200,
+            'currentWaypoint' => $currentWaypoint,
+            'destination' => $destination,
+            'nextNavigationStep' => $destination,
+        ];
+    },
 ]);
 
 it('drifts to a refuelling station in the middle to destination', function (

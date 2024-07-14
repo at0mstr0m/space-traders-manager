@@ -46,6 +46,8 @@ class FetchSystemsJob implements ShouldQueue
 
         if ($hasOneMorePage) {
             static::dispatch($this->page + 1);
+        } else {
+            FetchSystemConnectionsJob::dispatch();
         }
     }
 }
