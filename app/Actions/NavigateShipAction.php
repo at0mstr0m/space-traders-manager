@@ -111,8 +111,8 @@ class NavigateShipAction
             $destinationWaypoint
         );
 
-        if (dump($distanceToDestinationWaypoint > $distanceBetweenClosestRefuelingWaypointAndDestination)) {
-            if (dump($this->ship->distanceTo($closestRefuelingWaypoint) >= $this->ship->fuel_current)) {
+        if ($distanceToDestinationWaypoint > $distanceBetweenClosestRefuelingWaypointAndDestination) {
+            if ($this->ship->distanceTo($closestRefuelingWaypoint) >= $this->ship->fuel_current) {
                 // no other chance than to drift to the closest refueling waypoint
                 $this->ship->setFlightMode(FlightModes::DRIFT);
             }
@@ -122,34 +122,25 @@ class NavigateShipAction
             return $this->ship;
         }
 
-        dump(now()->toDateTimeString());
-
-        if (dump(!$destinationWaypoint->can_refuel)) {
+        if (!$destinationWaypoint->can_refuel) {
             $closestRefuelingStationToDestination = $destinationWaypoint->closestRefuelingWaypoint();
-            dump(now()->toDateTimeString());
             $routePathToClosestRefuelingStationToDestination = LocationHelper::getRoutePath(
                 $this->ship->waypoint_symbol,
                 $closestRefuelingStationToDestination->symbol,
                 $this->ship->fuel_capacity
             );
-            dump(now()->toDateTimeString());
 
             if ($routePathToClosestRefuelingStationToDestination) {
-                dump(now()->toDateTimeString());
-
                 return $this->handlePath(
                     $routePathToClosestRefuelingStationToDestination
                 );
             }
         }
 
-        dump('no route found, no other chance than to drift to the destination');
         // no route found, no other chance than to drift to the destination
         $this->ship->setFlightMode(FlightModes::DRIFT);
-        dump('navigateShip');
 
         $this->navigateShip($destinationWaypointSymbol);
-        dump('return');
 
         return $this->ship;
     }
@@ -175,11 +166,9 @@ class NavigateShipAction
         string $destinationWaypointSymbol,
         bool $jump = false
     ): void {
-        dump($destinationWaypointSymbol);
         if ($this->ship->can_refuel_at_current_location) {
             $this->ship->refuel();
         }
-        dump('apicall');
 
         $this->api
             ->{$jump ? 'jumpShip' : 'navigateShip'}(
