@@ -6,20 +6,25 @@ namespace App\Jobs;
 
 use App\Actions\UpdateWaypointAction;
 use App\Helpers\SpaceTraders;
+use App\Jobs\Firebase\UploadSystemsJob;
+use App\Models\System;
 use App\Models\Waypoint;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
+class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
+
+    private const CACHE_KEY = 'fetching_connections';
 
     protected ?SpaceTraders $api = null;
 
@@ -27,9 +32,11 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
      * Create a new job instance.
      */
     public function __construct(
-        private string $waypointSymbol
+        private ?string $waypointSymbol = null
     ) {
         $this->api ??= app(SpaceTraders::class);
+        Cache::increment(static::CACHE_KEY);
+        dump(Cache::get(static::CACHE_KEY));
     }
 
     /**
@@ -37,17 +44,23 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
+        $this->waypointSymbol ??= System::first()->jumpGate->symbol;
+
         $currentWaypoint = $this->getOrFetchWaypoint($this->waypointSymbol);
 
         Log::debug("Fetching connections to Waypoint {$this->waypointSymbol}");
         if (!$currentWaypoint->faction && $currentWaypoint->ships()->doesntExist()) {
             Log::warning("Waypoint {$this->waypointSymbol} has no faction and no ships present, cannot fetch connections.");
 
+            $this->count();
+
             return;
         }
 
         if ($currentWaypoint->system->connections()->exists()) {
             Log::debug("System {$currentWaypoint->system->symbol} already has connections.");
+
+            $this->count();
 
             return;
         }
@@ -80,6 +93,8 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
                     $connectedWaypoint['connectedWaypointSymbol']
                 )
             );
+
+        $this->count();
     }
 
     /**
@@ -96,5 +111,15 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUnique
             ?? UpdateWaypointAction::run(
                 $this->api->getWaypoint($waypointSymbol)
             );
+    }
+
+    private function count(): void
+    {
+        Cache::decrement(static::CACHE_KEY);
+        dump(Cache::get(static::CACHE_KEY));
+
+        if ((int) Cache::get(static::CACHE_KEY) === 0) {
+            UploadSystemsJob::dispatch();
+        }
     }
 }

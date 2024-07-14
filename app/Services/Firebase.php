@@ -10,6 +10,7 @@ use App\Models\System;
 use App\Models\Task;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Kreait\Firebase\Auth;
 use Kreait\Firebase\Auth\SignInResult;
 use Kreait\Firebase\Database;
@@ -17,6 +18,10 @@ use Kreait\Firebase\Database\Reference;
 
 class Firebase
 {
+    private const EXPIRES_AT_KEY = 'firebase:expires_at';
+
+    private const USER_ID_KEY = 'firebase:user_id';
+
     private Auth $auth;
 
     private Carbon $expiresAt;
@@ -28,8 +33,12 @@ class Firebase
     public function __construct()
     {
         $this->auth = app('firebase.auth');
-        // todo: use from cache or sign in
-        $this->signIn();
+        $this->expiresAt = Cache::get(static::EXPIRES_AT_KEY, now()->subSecond());
+        if ($this->expiresAt->isBefore(now())) {
+            $this->signIn();
+        } else {
+            $this->userId = Cache::get(static::USER_ID_KEY);
+        }
         $this->database = app('firebase.database');
     }
 
@@ -109,11 +118,11 @@ class Firebase
 
     public function uploadSystem(System $system): Reference
     {
-        $fillables = $system->only($system->getFillable());
+        $data = $system->only($system->getFillable());
+        $data['connections'] = $system->connections->pluck('symbol')->all();
 
-        return $this->systemReference($fillables['symbol'])
-            // todo: maybe change push to set
-            ->push($fillables);
+        return $this->systemReference($data['symbol'])
+            ->set($data);
     }
 
     public function getSystemSymbols(): Collection
@@ -170,7 +179,16 @@ class Firebase
             env('FIREBASE_USER_PASSWORD')
         );
 
-        $this->userId = $signInResult->firebaseUserId();
         $this->expiresAt = now()->addSeconds($signInResult->ttl());
+        Cache::put(
+            static::EXPIRES_AT_KEY,
+            $this->expiresAt,
+            $this->expiresAt,
+        );
+        $this->userId = Cache::remember(
+            static::USER_ID_KEY,
+            $this->expiresAt,
+            fn () => $signInResult->firebaseUserId(),
+        );
     }
 }
