@@ -65,6 +65,7 @@
                 v-for="waypoint in currentWaypoints"
                 :key="'waypoint_' + waypoint.id"
                 :waypoint="waypoint"
+                @connected-jump-gate-clicked="handleWaypointClicked"
               />
             </v-tabs-window-item>
           </v-tabs-window>

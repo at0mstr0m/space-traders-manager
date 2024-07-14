@@ -2,11 +2,16 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\WaypointTypes;
+use App\Models\System;
+use App\Models\Waypoint;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WaypointResource extends JsonResource
 {
+    public bool $includeConnectedWaypoints = true;
+
     /**
      * Transform the resource into an array.
      *
@@ -27,6 +32,21 @@ class WaypointResource extends JsonResource
             'is_under_construction' => $this->is_under_construction,
             'traits' => WaypointTraitResource::collection($this->traits),
             'ship_count' => $this->whenCounted('ships'),
+            'connected_waypoints' => $this->when(
+                $this->includeConnectedWaypoints
+                && $this->type === WaypointTypes::JUMP_GATE,
+                $this->system->connections->map(
+                    fn (System $system) => static::withoutConnectedWaypoints($system->jumpGate)
+                )
+            ),
         ];
+    }
+
+    public static function withoutConnectedWaypoints(Waypoint $waypoint): self
+    {
+        $resource = new static($waypoint);
+        $resource->includeConnectedWaypoints = false;
+
+        return $resource;
     }
 }

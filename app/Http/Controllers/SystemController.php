@@ -39,7 +39,8 @@ class SystemController extends Controller
      */
     public function waypoints(System $system): AnonymousResourceCollection
     {
-        if ($system->waypoints()->doesntExist()) {
+        // jumpGate could already be loaded, which is not enough
+        if ($system->waypoints()->count() <= 1) {  
             UpdateWaypointsAction::run($system->symbol);
         }
 

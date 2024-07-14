@@ -4,11 +4,12 @@
       <v-chip
         v-bind="hoverProps"
         class="ml-2"
+        small
         :variant="isHovering ? 'flat' : 'outlined'"
         color="red"
         @click="handleClick"
       >
-        Navigate Here {{ currentShip.symbol }}
+        {{ props.jumpgate ? 'Use Jump Gate' : 'Navigate Here ' + currentShip.symbol }}
       </v-chip>
     </template>
   </v-hover>
@@ -27,7 +28,11 @@ const props = defineProps({
   waypoint: {
     type: Object,
     required: true,
-  }
+  },
+  jumpgate: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 async function handleClick() {

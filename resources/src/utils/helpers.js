@@ -12,3 +12,8 @@ export function useRerenderingHelper () {
 
   return [rerenderingKey, forceRerendering];
 }
+
+export function dump(value) {
+  console.log(value);
+  return value;
+}

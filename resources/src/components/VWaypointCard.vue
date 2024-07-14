@@ -67,6 +67,15 @@
           @update:row="navigationStore.fetchShips(props.waypoint)"
         />
       </div>
+     
+      <div v-if="props.waypoint.type === waypointTypes.JUMP_GATE">
+        <v-divider class="mb-2" />
+        <v-waypoint-connections-table
+          :waypoint="props.waypoint"
+          :connected-waypoints="props.waypoint.connected_waypoints"
+          @connected-jump-gate-clicked="emit('connected-jump-gate-clicked', $event)"
+        />
+      </div>
     </template>
   </v-card>
 </template>
@@ -75,17 +84,13 @@
 import VNavigateHereChip from '@/components/VNavigateHereChip.vue';
 import VWaypointMarketTable from '@/components/VWaypointMarketTable.vue';
 import VWaypointShipsTable from '@/components/VWaypointShipsTable.vue';
+import VWaypointConnectionsTable from '@/components/VWaypointConnectionsTable.vue';
 import waypointTypes, { getWaypointColor } from '@enums/waypointTypes';
 import { onMounted } from 'vue';
 import useNavigationStore from "@/store/navigation";
 import { storeToRefs } from 'pinia';
 
-const navigationStore = useNavigationStore();
-const { 
-  tradeOpportunities,
-  ships,
-  currentShip
-} = storeToRefs(navigationStore);
+const emit = defineEmits(['connected-jump-gate-clicked']);
 
 const props = defineProps({
   waypoint: {
@@ -93,6 +98,13 @@ const props = defineProps({
     required: true,
   },
 });
+
+const navigationStore = useNavigationStore();
+const { 
+  tradeOpportunities,
+  ships,
+  currentShip
+} = storeToRefs(navigationStore);
 
 function refresh() {
   navigationStore.load(props.waypoint);
