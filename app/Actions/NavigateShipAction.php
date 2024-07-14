@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Enums\FlightModes;
 use App\Enums\WaypointTypes;
+use App\Exceptions\DestinationUnreachableException;
 use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Models\Ship;
@@ -100,6 +101,9 @@ class NavigateShipAction
         if ($routePath) {
             return $this->handlePath($routePath);
         }
+        if ($routePath === false) {
+            throw new DestinationUnreachableException($this->ship, $destinationWaypointSymbol);
+        }
 
         $closestRefuelingWaypoint = $this->ship->waypoint->closestRefuelingWaypoint();
         $distanceBetweenClosestRefuelingWaypointAndDestination = LocationHelper::distance(
@@ -107,13 +111,7 @@ class NavigateShipAction
             $destinationWaypoint
         );
 
-        if (
-            dump($distanceToDestinationWaypoint > $this->ship->distanceTo($closestRefuelingWaypoint))
-            // $closestRefuelingWaypoint must bring the ship closer to $destinationWaypoint
-            && dump($distanceToDestinationWaypoint > $distanceBetweenClosestRefuelingWaypointAndDestination)
-            // // must be able to reach the destination from the closest refueling waypoint
-            // && dump($distanceBetweenClosestRefuelingWaypointAndDestination <= $this->ship->fuel_capacity)
-        ) {
+        if (dump($distanceToDestinationWaypoint > $distanceBetweenClosestRefuelingWaypointAndDestination)) {
             if (dump($this->ship->distanceTo($closestRefuelingWaypoint) >= $this->ship->fuel_current)) {
                 // no other chance than to drift to the closest refueling waypoint
                 $this->ship->setFlightMode(FlightModes::DRIFT);
@@ -124,15 +122,21 @@ class NavigateShipAction
             return $this->ship;
         }
 
+        dump(now()->toDateTimeString());
+
         if (dump(!$destinationWaypoint->can_refuel)) {
             $closestRefuelingStationToDestination = $destinationWaypoint->closestRefuelingWaypoint();
+            dump(now()->toDateTimeString());
             $routePathToClosestRefuelingStationToDestination = LocationHelper::getRoutePath(
                 $this->ship->waypoint_symbol,
                 $closestRefuelingStationToDestination->symbol,
                 $this->ship->fuel_capacity
             );
+            dump(now()->toDateTimeString());
 
             if ($routePathToClosestRefuelingStationToDestination) {
+                dump(now()->toDateTimeString());
+
                 return $this->handlePath(
                     $routePathToClosestRefuelingStationToDestination
                 );

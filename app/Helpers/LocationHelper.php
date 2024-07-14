@@ -94,7 +94,7 @@ class LocationHelper
         $bothAreStrings = is_string($x1orFirst) && is_string($y1orSecond);
         // check if both waypoints are in same system. if not return 0
         if ($bothAreWaypoints || $bothAreStrings) {
-            $firstSystem = $bothAreStrings 
+            $firstSystem = $bothAreStrings
                 ? static::parseSystemSymbol($x1orFirst)
                 : $x1orFirst->system_symbol;
             $secondSystem = $bothAreStrings
@@ -169,7 +169,7 @@ class LocationHelper
         string|Waypoint $origin,
         string|Waypoint $destination,
         int $fuelCapacity
-    ): ?array {
+    ): null|array|bool {
         $origin = is_string($origin) ? $origin : $origin->symbol;
         $destination = is_string($destination) ? $destination : $destination->symbol;
 
@@ -194,6 +194,10 @@ class LocationHelper
                     $destinationWaypointSymbol
                 )
             );
+
+        if ($graph === false) {
+            return false;
+        }
 
         try {
             return $graph->findShortestPath($origin, $destination);
