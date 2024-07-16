@@ -7,6 +7,8 @@ namespace App\Console\Commands;
 use App\Actions\Firebase\DownloadRelationsPotentialTradeRoutesToShipsAction;
 use App\Actions\Firebase\DownloadTasksAction;
 use App\Actions\Firebase\DownloadTaskShipRelationsAction;
+use App\Actions\PurgeSystemsAction;
+use App\Jobs\Firebase\DownloadSystemsJob;
 use Illuminate\Console\Command;
 
 class FirebaseDownload extends Command
@@ -16,7 +18,7 @@ class FirebaseDownload extends Command
      *
      * @var string
      */
-    protected $signature = 'firebase:download {--purge}';
+    protected $signature = 'firebase:download {--purge} {--systems}';
 
     /**
      * The console command description.
@@ -32,6 +34,7 @@ class FirebaseDownload extends Command
     {
         /** @var bool */
         $purge = $this->option('purge');
+        $loadSystems = $this->option('systems');
 
         $this->components->info('Downloading Tasks from Firebase...');
         DownloadTasksAction::run($purge);
@@ -46,5 +49,11 @@ class FirebaseDownload extends Command
         $this->components->info('Relations of PotentialTradeRoutes to Ships downloaded from Firebase.');
 
         $this->components->info('Done downloading data from Firebase.');
+
+        if ($loadSystems) {
+            PurgeSystemsAction::runIf($purge);
+            $this->components->info('Triggering Systems Download from Firebase...');
+            DownloadSystemsJob::dispatch();
+        }
     }
 }
