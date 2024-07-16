@@ -236,22 +236,25 @@ class LocationHelper
                     $graph = new Dijkstra();
 
                     System::whereHas('connections')
+                        ->whereHas('jumpGate')
                         ->get()
                         ->each(function (System $system) use (&$graph) {
                             $jumpGateSymbol = $system->jumpGate->symbol;
-                            System::findManyBySymbol(
-                                $system->connections()->pluck('symbol')
-                            )->each(
-                                fn (System $connectedSystem) => $graph->addEdge(
-                                    $jumpGateSymbol,
-                                    $connectedSystem->jumpGate->symbol,
-                                    LocationHelper::distance(
-                                        $system,
-                                        $connectedSystem
-                                    ),
-                                    true
+                            System::whereHas('jumpGate')
+                                ->whereIn(
+                                    'symbol',
+                                    $system->connections()->pluck('symbol')
                                 )
-                            );
+                                ->each(fn (System $connectedSystem) => $graph
+                                    ->addEdge(
+                                        $jumpGateSymbol,
+                                        $connectedSystem->jumpGate->symbol,
+                                        LocationHelper::distance(
+                                            $system,
+                                            $connectedSystem
+                                        ),
+                                        true
+                                    ));
                         });
 
                     return $graph;
