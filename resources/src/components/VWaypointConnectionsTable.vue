@@ -1,6 +1,5 @@
 <template>
   <v-data-table
-    v-model:sort-by="sortBy"
     :items="props.connectedWaypoints"
     :headers="headers"
     density="compact"
