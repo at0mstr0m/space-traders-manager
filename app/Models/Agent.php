@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\FindableBySymbol;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -71,7 +72,13 @@ class Agent extends Model
 
     public function getStartingSystemAttribute(): System
     {
-        return Waypoint::firstWhere('symbol', $this->headquarters)->system;
+        return $this->headquarter->system;
+    }
+
+    public function headquarter(): HasOne
+    {
+        return $this->hasOne(Waypoint::class, 'symbol', 'headquarters')
+            ->where('symbol', $this->headquarters);
     }
 
     /**
