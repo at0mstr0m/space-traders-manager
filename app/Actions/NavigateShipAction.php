@@ -42,9 +42,28 @@ class NavigateShipAction
         );
 
         if (!$this->ship->fuel_capacity && $isInSameSystem) {
-            $this->navigateShip($destinationWaypointSymbol);
+            // directly fly there
+            if ($isInSameSystem) {
+                $this->navigateShip($destinationWaypointSymbol);
 
-            return $this->ship;
+                return $this->ship;
+            }
+
+            // first fly to jump gate in current system
+            if ($this->ship->waypoint->type !== WaypointTypes::JUMP_GATE) {
+
+                $this->navigateShip($this->ship->system->jumpGate->symbol);
+
+                return $this->ship;
+            }
+            
+            $routePath = LocationHelper::getRoutePath(
+                $this->ship->waypoint_symbol,
+                $destinationWaypointSymbol,
+                $this->ship->fuel_capacity
+            );
+
+            $this->handlePath($routePath);
         }
 
         $destinationWaypoint = Waypoint::findBySymbol($destinationWaypointSymbol);
