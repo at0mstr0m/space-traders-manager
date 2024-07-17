@@ -7,8 +7,12 @@ import _uniqBy from "lodash/uniqBy";
 const useNavigationStore = defineStore("navigation", () => {
   const repo = useRepository("waypoints");
 
-  const allSystems = ref([]);
-  const currentTab = ref('ships');
+  const allSystems = ref(
+    localStorage.getItem("allSystems")
+      ? JSON.parse(localStorage.getItem("allSystems"))
+      : []
+  );
+  const currentTab = ref("ships");
   const currentSystem = ref(null);
   const currentShip = ref(null);
   const tradeOpportunities = ref({});
@@ -16,7 +20,10 @@ const useNavigationStore = defineStore("navigation", () => {
   const currentWaypoints = ref([]);
 
   async function fetchTradeOpportunities(waypoint) {
-    currentWaypoints.value = _uniqBy([...currentWaypoints.value, waypoint], "id");
+    currentWaypoints.value = _uniqBy(
+      [...currentWaypoints.value, waypoint],
+      "id"
+    );
     const isMarketplace = waypoint.traits.some(
       (trait) => trait.symbol === waypointTraitSymbols.MARKETPLACE
     );
@@ -26,7 +33,10 @@ const useNavigationStore = defineStore("navigation", () => {
   }
 
   async function fetchShips(waypoint) {
-    currentWaypoints.value = _uniqBy([...currentWaypoints.value, waypoint], "id");
+    currentWaypoints.value = _uniqBy(
+      [...currentWaypoints.value, waypoint],
+      "id"
+    );
     if (!waypoint.id) return;
     const response = await repo.ships(waypoint.id);
     ships.value[waypoint.id] = response.data.data;
@@ -51,11 +61,15 @@ const useNavigationStore = defineStore("navigation", () => {
   }
 
   function addToAllSystems(systems) {
-    allSystems.value = _uniqBy([...allSystems.value, ...systems], 'id');
+    allSystems.value = _uniqBy([...allSystems.value, ...systems], "id");
+    localStorage.setItem("allSystems", JSON.stringify(allSystems.value));
   }
 
   function getSystemFromWaypointSymbol(waypointSymbol) {
-    const systemSymbol = waypointSymbol.substring(0, waypointSymbol.lastIndexOf('-'));
+    const systemSymbol = waypointSymbol.substring(
+      0,
+      waypointSymbol.lastIndexOf("-")
+    );
     return allSystems.value.find((system) => system.symbol === systemSymbol);
   }
 
@@ -72,7 +86,7 @@ const useNavigationStore = defineStore("navigation", () => {
     refresh,
     reset,
     addToAllSystems,
-    getSystemFromWaypointSymbol
+    getSystemFromWaypointSymbol,
   };
 });
 

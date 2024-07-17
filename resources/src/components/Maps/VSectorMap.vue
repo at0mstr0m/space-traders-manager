@@ -17,6 +17,7 @@ import { useRepository } from "@/repos/repoGenerator.js";
 import _cloneDeep from "lodash/cloneDeep";
 import { storeToRefs } from 'pinia';
 import useNavigationStore from "@/store/navigation";
+import { dump } from '@/utils/helpers';
 
 const repo = useRepository('systems');
 const navigationStore = useNavigationStore();
@@ -95,7 +96,13 @@ function showCurrentSystemSeparately(system) {
   data.value = currentData;
 }
 
-onMounted(fetchSystems);
+onMounted(() => {
+  if (!navigationStore.allSystems.length) {
+    fetchSystems();
+  } else {
+    addSystemsToData(navigationStore.allSystems);
+  }
+});
 
 watch(currentSystem, showCurrentSystemSeparately);
 </script>
