@@ -597,7 +597,8 @@ class Ship extends Model
     public function createChart(): static
     {
         $this->useApi()
-            ->createChart($this->symbol);
+            ->createChart($this->symbol)
+            ->updateWaypoint();
 
         return $this;
     }
