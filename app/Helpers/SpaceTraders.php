@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
+use App\Actions\UpdateWaypointAction;
 use App\Data\AcceptOrFulfillContractData;
 use App\Data\AgentData;
 use App\Data\ConstructionSiteData;
@@ -617,11 +618,17 @@ class SpaceTraders
                 $systemSymbol,
                 waypointTrait: WaypointTraitSymbols::MARKETPLACE,
                 all: true
-            )->map(function (WaypointData $waypoint) {
+            )->map(function (WaypointData $waypointData) {
                 // avoid making a request if there is no ship present
-                $waypointSymbol = $waypoint->symbol;
+                $waypointSymbol = $waypointData->symbol;
 
-                return Waypoint::findBySymbol($waypointSymbol)->ships()->exists()
+                // could happen that the waypoint is not in the database
+                $waypoint = Waypoint::findBySymbol($waypointSymbol)
+                    ?? UpdateWaypointAction::run(
+                        $this->getWaypoint($waypointSymbol)
+                    );
+
+                return $waypoint->ships()->exists()
                     ? $this->getMarket($waypointSymbol)
                     : null;
             })->filter()
