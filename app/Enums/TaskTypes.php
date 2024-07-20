@@ -43,4 +43,13 @@ enum TaskTypes: string
             self::FULFILL_PROCUREMENT => FulfillProcurement::class,
         };
     }
+
+    public static function interactingWithPotentialTradeRoutes(): array
+    {
+        return [
+            self::SERVE_TRADE_ROUTE,
+            self::SERVE_BEST_TRADE_ROUTE,
+            self::SERVE_HIGHEST_PROFIT_TRADE_ROUTE,
+        ];
+    }
 }

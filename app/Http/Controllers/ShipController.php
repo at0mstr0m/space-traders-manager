@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\UpdateShipAction;
 use App\Enums\ShipTypes;
+use App\Enums\TaskTypes;
 use App\Enums\TradeSymbols;
 use App\Helpers\SpaceTraders;
 use App\Http\Requests\BuyShipRequest;
@@ -15,11 +16,13 @@ use App\Http\Requests\UpdateFlightModeRequest;
 use App\Http\Requests\UpdateShipTaskRequest;
 use App\Http\Resources\ShipResource;
 use App\Jobs\UpdateShips;
+use App\Models\PotentialTradeRoute;
 use App\Models\Ship;
 use App\Models\Task;
 use App\Models\Waypoint;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 class ShipController extends Controller
 {
@@ -103,7 +106,16 @@ class ShipController extends Controller
     {
         $taskId = $request->integer('taskId');
 
-        $ship->task()->associate(Task::find($taskId))->save();
+        DB::transaction(function () use ($ship, $taskId) {
+            $taskType = $ship?->task?->type;
+            if ($taskType && in_array(
+                $taskType,
+                TaskTypes::interactingWithPotentialTradeRoutes()
+            )) {
+                PotentialTradeRoute::where('ship_id', $ship->id)->update(['ship_id' => null]);
+            }
+            $ship->task()->associate(Task::find($taskId))->save();
+        });
 
         return $this->show($ship);
     }
