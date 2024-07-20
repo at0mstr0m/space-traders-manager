@@ -85,9 +85,9 @@ class Waypoint extends Model
             fn () => $this->traits()
                 ->where('symbol', WaypointTraitSymbols::MARKETPLACE)
                 ->exists()
-                && $this->tradeOpportunities()
-                    ->where('symbol', TradeSymbols::FUEL)
-                    ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+                && $this->marketGoods()
+                    ->where('trade_symbol', TradeSymbols::FUEL)
+                    ->whereNot('type', TradeGoodTypes::IMPORT)
                     ->exists()
         );
     }
@@ -141,9 +141,11 @@ class Waypoint extends Model
     {
         return $query->whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
             ->whereRelation(
-                'tradeOpportunities',
-                fn (Builder $query) => $query->where('symbol', TradeSymbols::FUEL)
-                    ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+                'marketGoods',
+                fn (Builder $query) => $query->where([
+                    ['trade_symbol', '=', TradeSymbols::FUEL],
+                    ['type', '<>', TradeGoodTypes::IMPORT],
+                ])
             );
     }
 

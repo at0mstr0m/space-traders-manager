@@ -6,10 +6,13 @@ namespace App\Models;
 
 use App\Enums\TradeGoodTypes;
 use App\Enums\TradeSymbols;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class MarketGood extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'type',
         'trade_symbol',

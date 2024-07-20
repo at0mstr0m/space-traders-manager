@@ -46,7 +46,7 @@ class FulfillProcurement extends ShipJob
 
         if ($this->ship->cargo_is_empty) {
             $tradeOpportunity = TradeOpportunity::bySymbol($currentDelivery->trade_symbol)
-                ->whereIn('type', [TradeGoodTypes::EXPORT, TradeGoodTypes::EXCHANGE])
+                ->whereNot('type', TradeGoodTypes::IMPORT)
                 ->orderBy('purchase_price')
                 ->first();
 

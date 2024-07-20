@@ -10,7 +10,6 @@ use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;
 use App\Models\Faction;
 use App\Models\System;
-use App\Models\TradeOpportunity;
 use App\Models\Waypoint;
 use App\Models\WaypointTrait;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -74,14 +73,11 @@ class WaypointFactory extends Factory
         return $this->isMarketplace()
             ->afterCreating(
                 fn (Waypoint $waypoint) => $waypoint
-                    ->tradeOpportunities()
-                    ->save(
-                        TradeOpportunity::factory()->createOne([
-                            'waypoint_symbol' => $waypoint->symbol,
-                            'symbol' => TradeSymbols::FUEL,
-                            'type' => TradeGoodTypes::EXPORT,
-                        ])
-                    )
+                    ->marketGoods()
+                    ->create([
+                        'trade_symbol' => TradeSymbols::FUEL,
+                        'type' => TradeGoodTypes::EXPORT,
+                    ])
             );
     }
 }
