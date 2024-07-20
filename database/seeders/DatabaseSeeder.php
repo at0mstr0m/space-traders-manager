@@ -6,7 +6,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Actions\RelateAgentToUser;
-use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
+use App\Actions\UpdateMarketsAction;
 use App\Actions\UpdateSystemsAction;
 use App\Actions\UpdateWaypointsAction;
 use App\Jobs\UpdateContracts;
@@ -31,6 +31,6 @@ class DatabaseSeeder extends Seeder
         UpdateShips::dispatchSync();
         UpdateSystemsAction::run();
         UpdateWaypointsAction::run();
-        UpdateOrRemoveTradeOpportunitiesAction::run();
+        UpdateMarketsAction::run();
     }
 }

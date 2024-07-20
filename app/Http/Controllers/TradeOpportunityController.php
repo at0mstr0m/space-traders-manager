@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
+use App\Actions\UpdateMarketsAction;
 use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\TradeOpportunityResource;
 use App\Models\TradeOpportunity;
@@ -45,7 +45,7 @@ class TradeOpportunityController extends Controller
      */
     public function refetch(PaginationRequest $request): AnonymousResourceCollection
     {
-        UpdateOrRemoveTradeOpportunitiesAction::dispatchSync();
+        UpdateMarketsAction::dispatchSync();
 
         return $this->index($request);
     }

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\UpdateWaypointAction;
 use App\Enums\TradeGoodTypes;
 use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
 use App\Enums\WaypointTypes;
 use App\Helpers\LocationHelper;
+use App\Helpers\SpaceTraders;
 use App\Traits\FindableBySymbol;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -130,6 +132,11 @@ class Waypoint extends Model
         return $this->belongsTo(System::class, 'system_symbol', 'symbol');
     }
 
+    public function marketGoods(): HasMany
+    {
+        return $this->hasMany(MarketGood::class, 'waypoint_symbol', 'symbol');
+    }
+
     public function scopeOnlyCanRefuel(Builder $query): Builder
     {
         return $query->whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)
@@ -187,6 +194,14 @@ class Waypoint extends Model
         return $waypointSymbol
             ? $waypoints->firstWhere('symbol', $waypointSymbol)
             : null;
+    }
+
+    public function refetch(): static
+    {
+        /** @var SpaceTraders */
+        $api = app(SpaceTraders::class);
+
+        return UpdateWaypointAction::run($api->getWaypoint($this->symbol));
     }
 
     /**

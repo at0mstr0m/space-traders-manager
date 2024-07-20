@@ -8,6 +8,7 @@ use App\Data\CargoData;
 use App\Data\ModuleData;
 use App\Data\MountData;
 use App\Data\ShipData;
+use App\Helpers\SpaceTraders;
 use App\Models\Agent;
 use App\Models\Cargo;
 use App\Models\Engine;
@@ -123,7 +124,16 @@ class UpdateShipAction
 
         $ship->save();
 
-        return $ship->refresh();
+        $ship->refresh();
+
+        if (!$ship->is_in_transit && !$ship->waypoint->faction_id) {
+            // make sure it is really uncharted and data is not outdated
+            if (!$ship->waypoint->refetch()->faction_id) {
+                $ship->createChart();
+            }
+        }
+
+        return $ship;
     }
 
     private function resolveFrame(ShipData $shipData): Frame

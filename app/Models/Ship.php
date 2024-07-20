@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Actions\NavigateShipAction;
 use App\Actions\UpdateContractAction;
+use App\Actions\UpdateMarketAction;
 use App\Actions\UpdateShipAction;
 use App\Actions\UpdateSurveyAction;
 use App\Data\SurveyData;
@@ -15,6 +16,7 @@ use App\Enums\MountSymbols;
 use App\Enums\ShipNavStatus;
 use App\Enums\ShipRoles;
 use App\Enums\TradeSymbols;
+use App\Enums\WaypointTraitSymbols;
 use App\Helpers\LocationHelper;
 use App\Helpers\SpaceTraders;
 use App\Traits\FindableBySymbol;
@@ -596,9 +598,14 @@ class Ship extends Model
 
     public function createChart(): static
     {
-        $this->useApi()
+        $waypoint = $this->useApi()
             ->createChart($this->symbol)
             ->updateWaypoint();
+
+        // todo: update marketplace
+        if ($waypoint->traits()->where('symbol', WaypointTraitSymbols::MARKETPLACE)->exists()) {
+            UpdateMarketAction::run($this->useApi()->getMarket($waypoint->symbol));
+        }
 
         return $this;
     }

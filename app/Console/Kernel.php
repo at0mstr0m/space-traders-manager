@@ -3,7 +3,7 @@
 namespace App\Console;
 
 use App\Actions\TriggerTasks;
-use App\Actions\UpdateOrRemoveTradeOpportunitiesAction;
+use App\Actions\UpdateMarketsAction;
 use App\Jobs\UpdateContracts;
 use App\Jobs\UpdateExistingFactions;
 use Illuminate\Console\Scheduling\Schedule;
@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->job(new UpdateExistingFactions())->daily();
         $schedule->job(new UpdateContracts())->everyTenMinutes();
-        $schedule->job(UpdateOrRemoveTradeOpportunitiesAction::makeUniqueJob())->everyTwoMinutes();
+        $schedule->job(UpdateMarketsAction::makeUniqueJob())->everyTwoMinutes();
         $schedule->job(TriggerTasks::makeUniqueJob())->hourly();
         $schedule->command('model:prune')->everyMinute();
         $schedule->command('horizon:snapshot')->everyFiveMinutes();

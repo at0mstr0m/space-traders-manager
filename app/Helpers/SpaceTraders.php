@@ -769,6 +769,8 @@ class SpaceTraders
     }
 
     /**
+     * @deprecated
+     *
      * @return Collection<string, Collection<TradeGoodsData>>
      */
     public function listTradeGoodsInSystem(string $waypointSymbol): Collection
