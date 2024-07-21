@@ -11,13 +11,13 @@
           class="pa-2 ma-1"
           :height="width * 6 / 7"
         >
-          <v-sector-map 
+          <v-sector-map
             @select="handleSystemSelected"
           />
         </v-card>
       </v-col>
       <v-col>
-        <v-card 
+        <v-card
           class="pa-2 ma-1"
           :height="width * 6 / 7"
         >
@@ -30,37 +30,50 @@
       </v-col>
 
       <v-responsive width="100%" />
-      
-      <v-card 
+
+      <v-card
         width="100%"
         class="ma-1"
       >
         <v-tabs v-model="currentTab">
           <v-tab value="ships">
-            <v-icon 
+            <v-icon
               icon="mdi-rocket-launch-outline"
               class="mr-2"
             />
             Ships
           </v-tab>
           <v-tab value="waypoints">
-            <v-icon 
+            <v-icon
               icon="mdi-earth"
               class="mr-2"
             />
             Waypoints
+          </v-tab>
+          <v-tab value="waypoint-details">
+            <v-icon
+              icon="mdi-earth"
+              class="mr-2"
+            />
+            Waypoint Details
           </v-tab>
         </v-tabs>
 
         <v-card-text>
           <v-tabs-window v-model="currentTab">
             <v-tabs-window-item value="ships">
-              <v-navitgation-ships-table
+              <v-navigation-ships-table
                 @waypoint-clicked="handleWaypointClicked"
               />
             </v-tabs-window-item>
 
             <v-tabs-window-item value="waypoints">
+              <v-system-waypoints-table
+                @waypoint-clicked="handleWaypointClicked"
+              />
+            </v-tabs-window-item>
+
+            <v-tabs-window-item value="waypoint-details">
               <v-waypoint-card
                 v-for="waypoint in currentWaypoints"
                 :key="'waypoint_' + waypoint.id"
@@ -79,7 +92,8 @@
 import VSectorMap from '@/components/Maps/VSectorMap.vue';
 import VSystemMap from '@/components/Maps/VSystemMap.vue';
 import VWaypointCard from '@/components/VWaypointCard.vue';
-import VNavitgationShipsTable from '@/components/VNavitgationShipsTable.vue';
+import VSystemWaypointsTable from '@/components/VSystemWaypointsTable.vue';
+import VNavigationShipsTable from '@/components/VNavigationShipsTable.vue';
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia';
@@ -105,7 +119,7 @@ function handleSystemSelected(systems) {
 
 function handleWaypointsSelected(waypoints) {
   currentWaypoints.value = waypoints;
-  currentTab.value = waypoints ? 'waypoints' : 'ships';
+  currentTab.value = waypoints ? 'waypoint-details' : 'ships';
 }
 
 function handleWaypointClicked(data) {

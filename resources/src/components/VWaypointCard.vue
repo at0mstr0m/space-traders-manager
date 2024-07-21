@@ -6,7 +6,7 @@
         variant="flat"
         class="mr-2"
       >
-        <v-icon 
+        <v-icon
           icon="mdi-refresh"
           @click="refresh"
         />
@@ -19,7 +19,7 @@
       >
         {{ props.waypoint.type }}
       </v-chip>
-      
+
       <v-chip
         v-if="props.waypoint.type === waypointTypes.JUMP_GATE"
         :color="waypoint.is_under_construction ? 'red' : 'green'"
@@ -28,29 +28,19 @@
       >
         {{ waypoint.is_under_construction ? 'Under Construction' : 'Operational' }}
       </v-chip>
-      
-      <v-navigate-here-chip 
+
+      <v-navigate-here-chip
         v-if="currentShip && currentShip.waypoint_symbol !== props.waypoint.symbol"
         :waypoint="props.waypoint"
       />
     </template>
 
     <template #subtitle>
-      <v-chip
+      <v-trait-chip
         v-for="trait in props.waypoint.traits"
         :key="props.waypoint.id + '_' + trait.id"
-        variant="tonal"
-        class="mr-1 mt-2"
-      >
-        <v-tooltip
-          activator="parent"
-          location="top"
-          max-width="300"
-        >
-          {{ trait.description }}
-        </v-tooltip>
-        {{ trait.name }}
-      </v-chip>
+        :trait="trait"
+      />
     </template>
 
     <template #text>
@@ -67,7 +57,7 @@
           @update:row="navigationStore.fetchShips(props.waypoint)"
         />
       </div>
-     
+
       <div v-if="props.waypoint.type === waypointTypes.JUMP_GATE">
         <v-divider class="mb-2" />
         <v-waypoint-connections-table
@@ -82,6 +72,7 @@
 
 <script setup>
 import VNavigateHereChip from '@/components/VNavigateHereChip.vue';
+import VTraitChip from '@/components/VTraitChip.vue';
 import VWaypointMarketTable from '@/components/VWaypointMarketTable.vue';
 import VWaypointShipsTable from '@/components/VWaypointShipsTable.vue';
 import VWaypointConnectionsTable from '@/components/VWaypointConnectionsTable.vue';
@@ -100,7 +91,7 @@ const props = defineProps({
 });
 
 const navigationStore = useNavigationStore();
-const { 
+const {
   tradeOpportunities,
   ships,
   currentShip

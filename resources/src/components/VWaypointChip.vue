@@ -7,7 +7,7 @@
         color="white"
         @click.stop.prevent="handleClick"
       >
-        {{ props.ship.waypoint_symbol }}
+        {{ waypointSymbol }}
       </v-chip>
     </template>
   </v-hover>
@@ -15,6 +15,7 @@
 
 <script setup>
 import useNavigationStore from "@/store/navigation";
+import { computed } from "vue";
 
 const emit = defineEmits(['waypoint-clicked']);
 const { getSystemFromWaypointSymbol } = useNavigationStore();
@@ -22,14 +23,20 @@ const { getSystemFromWaypointSymbol } = useNavigationStore();
 const props = defineProps({
   ship: {
     type: Object,
-    required: true,
-  }
+    default: null,
+  },
+  waypoint: {
+    type: Object,
+    default: null,
+  },
 });
+
+const waypointSymbol = computed(() => props.ship?.waypoint_symbol || props.waypoint.symbol);
 
 function handleClick() {
   emit('waypoint-clicked', {
-    system: getSystemFromWaypointSymbol(props.ship.waypoint_symbol),
-    waypoint_symbol: props.ship.waypoint_symbol,
+    system: getSystemFromWaypointSymbol(waypointSymbol.value),
+    waypoint_symbol: waypointSymbol.value,
   });
 }
 </script>

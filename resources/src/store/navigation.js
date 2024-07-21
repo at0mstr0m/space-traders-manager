@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRepository } from "@/repos/repoGenerator.js";
 import waypointTraitSymbols from "@enums/waypointTraitSymbols";
 import _uniqBy from "lodash/uniqBy";
@@ -18,6 +18,7 @@ const useNavigationStore = defineStore("navigation", () => {
   const tradeOpportunities = ref({});
   const ships = ref({});
   const currentWaypoints = ref([]);
+  const currentSystemWaypoints = ref([]);
 
   async function fetchTradeOpportunities(waypoint) {
     currentWaypoints.value = _uniqBy(
@@ -73,6 +74,14 @@ const useNavigationStore = defineStore("navigation", () => {
     return allSystems.value.find((system) => system.symbol === systemSymbol);
   }
 
+  function pushToCurrentSystemWaypoints(...waypoints) {
+    currentSystemWaypoints.value.push(...waypoints);
+  }
+
+  watch(currentSystem, () => {
+    currentSystemWaypoints.value = [];
+  });
+
   return {
     allSystems,
     currentTab,
@@ -80,6 +89,7 @@ const useNavigationStore = defineStore("navigation", () => {
     currentShip,
     tradeOpportunities,
     ships,
+    currentSystemWaypoints,
     fetchTradeOpportunities,
     fetchShips,
     load,
@@ -87,6 +97,7 @@ const useNavigationStore = defineStore("navigation", () => {
     reset,
     addToAllSystems,
     getSystemFromWaypointSymbol,
+    pushToCurrentSystemWaypoints,
   };
 });
 

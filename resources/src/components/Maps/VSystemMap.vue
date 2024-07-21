@@ -74,6 +74,7 @@ function handleWaypointsSelected(waypoints) {
 
 function addWaypointsToData(waypoints) {
   const currentData = _cloneDeep(data.value);
+  navigationStore.pushToCurrentSystemWaypoints(...waypoints);
   waypoints.forEach((waypoint) => {
     const index = currentData.datasets.findIndex((dataset) => dataset.label === waypoint.type);
     if (index === -1) {
