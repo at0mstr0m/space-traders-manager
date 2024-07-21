@@ -37,6 +37,12 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
 
         $this->constructionSite = LocationHelper::getWaypointUnderConstructionInSystem($systemSymbol);
 
+        if (!$this->constructionSite) {
+            $this->log("No construction site found in system {$this->ship->waypoint->system_symbol}.");
+
+            return;
+        }
+
         if ($this->ship->waypoint_symbol === $this->constructionSite?->waypointSymbol && !$this->ship->cargo_is_empty) {
             $this->log("supplying cargo to construction site");
             $this->ship->supplyCargoToConstructionSite();
