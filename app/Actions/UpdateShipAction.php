@@ -126,6 +126,13 @@ class UpdateShipAction
 
         $ship->refresh();
 
+        if (!$ship->waypoint) {
+            /** @var SpaceTraders */
+            $api = app(SpaceTraders::class);
+            UpdateWaypointAction::run($api->getWaypoint($ship->waypoint_symbol));
+            $ship->refresh();
+        }
+
         if (!$ship->is_in_transit && !$ship->waypoint->faction_id) {
             // make sure it is really uncharted and data is not outdated
             if (!$ship->waypoint->refetch()->faction_id) {
