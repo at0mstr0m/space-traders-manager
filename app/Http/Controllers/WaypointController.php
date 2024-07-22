@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\LocationHelper;
+use App\Http\Resources\MarketGoodResource;
 use App\Http\Resources\ShipResource;
 use App\Http\Resources\TradeOpportunityResource;
 use App\Http\Resources\WaypointResource;
@@ -55,10 +56,20 @@ class WaypointController extends Controller
     /**
      * Trade opportunities at this waypoint.
      */
-    public function market(Waypoint $waypoint): AnonymousResourceCollection
+    public function tradeOpportunities(Waypoint $waypoint): AnonymousResourceCollection
     {
         return TradeOpportunityResource::collection(
             $waypoint->tradeOpportunities
+        );
+    }
+
+    /**
+     * Market goods at this waypoint.
+     */
+    public function marketGoods(Waypoint $waypoint): AnonymousResourceCollection
+    {
+        return MarketGoodResource::collection(
+            $waypoint->marketGoods
         );
     }
 

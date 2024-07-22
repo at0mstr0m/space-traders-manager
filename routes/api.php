@@ -121,7 +121,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->as('waypoints.')
         ->controller(WaypointController::class)
         ->group(function () {
-            Route::get('market', 'market')->name('market');
+            Route::get('trade-opportunities', 'tradeOpportunities')->name('tradeOpportunities');
+            Route::get('market-goods', 'marketGoods')->name('marketGoods');
             Route::get('ships', 'ships')->name('ships');
         });
 });

@@ -16,6 +16,7 @@ const useNavigationStore = defineStore("navigation", () => {
   const currentSystem = ref(null);
   const currentShip = ref(null);
   const tradeOpportunities = ref({});
+  const marketGoods = ref({});
   const ships = ref({});
   const currentWaypoints = ref([]);
   const currentSystemWaypoints = ref([]);
@@ -29,8 +30,21 @@ const useNavigationStore = defineStore("navigation", () => {
       (trait) => trait.symbol === waypointTraitSymbols.MARKETPLACE
     );
     if (!isMarketplace) return;
-    const response = await repo.market(waypoint.id);
+    const response = await repo.tradeOpportunities(waypoint.id);
     tradeOpportunities.value[waypoint.id] = response.data.data;
+  }
+
+  async function fetchMarketGoods(waypoint) {
+    currentWaypoints.value = _uniqBy(
+      [...currentWaypoints.value, waypoint],
+      "id"
+    );
+    const isMarketplace = waypoint.traits.some(
+      (trait) => trait.symbol === waypointTraitSymbols.MARKETPLACE
+    );
+    if (!isMarketplace) return;
+    const response = await repo.marketGoods(waypoint.id);
+    marketGoods.value[waypoint.id] = response.data.data;
   }
 
   async function fetchShips(waypoint) {
@@ -45,6 +59,7 @@ const useNavigationStore = defineStore("navigation", () => {
 
   function load(waypoint) {
     fetchTradeOpportunities(waypoint);
+    fetchMarketGoods(waypoint);
     fetchShips(waypoint);
   }
 
@@ -56,6 +71,7 @@ const useNavigationStore = defineStore("navigation", () => {
 
   function reset() {
     tradeOpportunities.value = {};
+    marketGoods.value = {};
     ships.value = {};
     currentShip.value = null;
     currentWaypoints.value = [];
@@ -88,9 +104,11 @@ const useNavigationStore = defineStore("navigation", () => {
     currentSystem,
     currentShip,
     tradeOpportunities,
+    marketGoods,
     ships,
     currentSystemWaypoints,
     fetchTradeOpportunities,
+    fetchMarketGoods,
     fetchShips,
     load,
     refresh,

@@ -50,6 +50,11 @@
         :trade-opportunities="tradeOpportunities[props.waypoint.id]"
       />
 
+      <v-waypoint-market-goods-table
+        v-else-if="marketGoods[props.waypoint.id]?.length"
+        :market-goods="marketGoods[props.waypoint.id]"
+      />
+
       <div v-if="ships[props.waypoint.id]?.length">
         <v-divider class="mb-2" />
         <v-waypoint-ships-table
@@ -74,6 +79,7 @@
 import VNavigateHereChip from '@/components/VNavigateHereChip.vue';
 import VTraitChip from '@/components/VTraitChip.vue';
 import VWaypointMarketTable from '@/components/VWaypointMarketTable.vue';
+import VWaypointMarketGoodsTable from '@/components/VWaypointMarketGoodsTable.vue';
 import VWaypointShipsTable from '@/components/VWaypointShipsTable.vue';
 import VWaypointConnectionsTable from '@/components/VWaypointConnectionsTable.vue';
 import waypointTypes, { getWaypointColor } from '@enums/waypointTypes';
@@ -93,6 +99,7 @@ const props = defineProps({
 const navigationStore = useNavigationStore();
 const {
   tradeOpportunities,
+  marketGoods,
   ships,
   currentShip
 } = storeToRefs(navigationStore);

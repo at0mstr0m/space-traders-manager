@@ -4,8 +4,11 @@ class WaypointRepository extends ModelRepository {
   withoutSatellite() {
     return this._get(this.resource + "/without-satellite");
   }
-  market(waypointId) {
-    return this._get(this.resource + "/" + waypointId + "/market");
+  tradeOpportunities(waypointId) {
+    return this._get(this.resource + "/" + waypointId + "/trade-opportunities");
+  }
+  marketGoods(waypointId) {
+    return this._get(this.resource + "/" + waypointId + "/market-goods");
   }
   ships(waypointId) {
     return this._get(this.resource + "/" + waypointId + "/ships");
