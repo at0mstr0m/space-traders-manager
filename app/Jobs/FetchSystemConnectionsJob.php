@@ -49,7 +49,7 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUniqueUntilProce
         $currentWaypoint = $this->getOrFetchWaypoint($this->waypointSymbol);
 
         Log::debug("Fetching connections to Waypoint {$this->waypointSymbol}");
-        if (!$currentWaypoint->faction && $currentWaypoint->ships()->doesntExist()) {
+        if (!$currentWaypoint->faction_id && $currentWaypoint->ships()->doesntExist()) {
             Log::warning("Waypoint {$this->waypointSymbol} has no faction and no ships present, cannot fetch connections.");
 
             $this->count();

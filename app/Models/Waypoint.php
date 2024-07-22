@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Actions\UpdateWaypointAction;
+use App\Enums\ShipNavStatus;
 use App\Enums\TradeGoodTypes;
 use App\Enums\TradeSymbols;
 use App\Enums\WaypointTraitSymbols;
@@ -165,6 +166,11 @@ class Waypoint extends Model
     public function scopeBySystem(Builder $query, string $systemSymbol): Builder
     {
         return $query->where('symbol', 'like', $systemSymbol . '-%');
+    }
+
+    public function scopeOnlyHavingShipPresent(Builder $query): Builder
+    {
+        return $query->whereRelation('ships', 'status', '<>', ShipNavStatus::IN_TRANSIT);
     }
 
     public function closestRefuelingWaypoint(bool $excludeSelf = true): ?static

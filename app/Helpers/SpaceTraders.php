@@ -566,6 +566,8 @@ class SpaceTraders
     }
 
     /**
+     * @deprecated
+     *
      * @return Collection<int, ShipyardShipData>
      */
     public function listPurchasableShipsInSystem(string $systemSymbol): Collection

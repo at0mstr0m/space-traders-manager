@@ -24,7 +24,7 @@ class UpdateMarketAction implements ShouldQueue, ShouldBeUnique
         bool $updateTradeRoutes = false
     ): Collection {
         $waypointSymbol = $marketData->symbol;
-        $changedIds = $marketData->tradeGoods->map(
+        $changedIds = $marketData->tradeGoods?->map(
             fn (TradeGoodsData $goodData): int => TradeOpportunity::updateOrCreate(
                 [
                     'waypoint_symbol' => $waypointSymbol,
@@ -39,9 +39,9 @@ class UpdateMarketAction implements ShouldQueue, ShouldBeUnique
                     'activity' => $goodData->activityLevel,
                 ]
             )->id
-        );
+        ) ?? collect();
 
-        if ($updateTradeRoutes) {
+        if ($updateTradeRoutes && $changedIds->isNotEmpty()) {
             UpdateOrRemovePotentialTradeRoutesAction::dispatchSync();
         }
 
