@@ -604,7 +604,10 @@ class Ship extends Model
 
         // todo: update marketplace
         if ($waypoint->whereRelation('traits', 'symbol', WaypointTraitSymbols::MARKETPLACE)->exists()) {
-            UpdateMarketAction::run($this->useApi()->getMarket($waypoint->symbol));
+            UpdateMarketAction::run(
+                $this->useApi()->getMarket($waypoint->symbol),
+                true
+            );
         }
 
         return $this;

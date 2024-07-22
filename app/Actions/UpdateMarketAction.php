@@ -19,8 +19,10 @@ class UpdateMarketAction implements ShouldQueue, ShouldBeUnique
 {
     use AsAction;
 
-    public function handle(MarketData $marketData): Collection
-    {
+    public function handle(
+        MarketData $marketData,
+        bool $updateTradeRoutes = false
+    ): Collection {
         $waypointSymbol = $marketData->symbol;
         $changedIds = $marketData->tradeGoods->map(
             fn (TradeGoodsData $goodData): int => TradeOpportunity::updateOrCreate(
@@ -39,12 +41,17 @@ class UpdateMarketAction implements ShouldQueue, ShouldBeUnique
             )->id
         );
 
+        if ($updateTradeRoutes) {
+            UpdateOrRemovePotentialTradeRoutesAction::dispatchSync();
+        }
+
         $waypoint = Waypoint::findBySymbol($waypointSymbol);
 
         // market goods traded at waypoint never change
         if ($waypoint->marketGoods()->exists()) {
             return $changedIds;
         }
+
         foreach ([
             'exports' => TradeGoodTypes::EXPORT,
             'imports' => TradeGoodTypes::IMPORT,
@@ -56,11 +63,6 @@ class UpdateMarketAction implements ShouldQueue, ShouldBeUnique
                     'trade_symbol' => $goodData->symbol,
                 ])
             );
-        }
-
-        if ($changedIds->isNotEmpty()) {
-            // relies solely on the data just changed
-            UpdateOrRemovePotentialTradeRoutesAction::dispatchSync();
         }
 
         return $changedIds;
