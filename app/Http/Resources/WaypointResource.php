@@ -44,23 +44,22 @@ class WaypointResource extends JsonResource
             'ship_count' => $this->whenCounted('ships'),
             'connected_waypoints' => $this->includeConnectedWaypoints && $this->type === WaypointTypes::JUMP_GATE
                 ? $this->system->connections->map(function (System $system) {
-                    if ($system->jumpGate) {
+                    if ($system->refresh()->jumpGate) {
                         return static::withoutConnectedWaypoints($system->jumpGate);
                     }
-                    $connectedJumpGateSymbols ??= $this->api
+
+                    $this->api
                         ->getJumpGate($this->symbol)
                         ->connections
                         ->each(function (string $symbol) {
                             if (Waypoint::where('symbol', $symbol)->doesntExist()) {
-                                $jumpGate = UpdateWaypointAction::run(
+                                UpdateWaypointAction::run(
                                     $this->api->getWaypoint($symbol)
                                 );
                             }
                         });
 
-                    // $jumpGate = UpdateWaypointAction::run(
-                    //     $this->api->getWaypoint($this->symbol)
-                    // );
+                    return static::withoutConnectedWaypoints($system->refresh()->jumpGate);
                 })
                 : null,
         ];
