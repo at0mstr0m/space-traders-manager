@@ -48,6 +48,10 @@ const columns = [
     title: "Faction",
   },
   {
+    key: "ship_count",
+    title: "Ships",
+  },
+  {
     key: "traits",
     title: "Traits",
   },
