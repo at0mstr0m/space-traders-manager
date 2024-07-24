@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Enums\TradeGoodTypes;
-use App\Enums\TradeSymbols;
 use App\Models\PotentialTradeRoute;
 use App\Models\TradeOpportunity;
 use App\Models\Waypoint;

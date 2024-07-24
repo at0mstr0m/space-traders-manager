@@ -51,12 +51,11 @@ class NavigateShipAction
 
             // first fly to jump gate in current system
             if ($this->ship->waypoint->type !== WaypointTypes::JUMP_GATE) {
-
                 $this->navigateShip($this->ship->system->jumpGate->symbol);
 
                 return $this->ship;
             }
-            
+
             $routePath = LocationHelper::getRoutePath(
                 $this->ship->waypoint_symbol,
                 $destinationWaypointSymbol,

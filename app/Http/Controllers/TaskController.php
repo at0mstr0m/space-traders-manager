@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
 use App\Actions\TriggerTasks;
-use Illuminate\Http\Response;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
-use Illuminate\Support\Facades\Cache;
+use App\Models\Task;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class TaskController extends Controller
 {

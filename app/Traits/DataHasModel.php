@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Models\Model;
-use Illuminate\Support\Str;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Str;
 
 trait DataHasModel
 {
@@ -23,7 +23,7 @@ trait DataHasModel
         throw new FileNotFoundException("Model class for {$classBaseName} not found");
     }
 
-    public function makeModel(Arrayable|array $attributes): Model
+    public function makeModel(array|Arrayable $attributes): Model
     {
         return static::getModelClass()::new($attributes);
     }

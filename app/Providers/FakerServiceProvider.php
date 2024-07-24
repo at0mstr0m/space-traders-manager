@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
+use App\Macros\FakerMacros;
 use Faker\Factory;
 use Faker\Generator;
-use App\Macros\FakerMacros;
 use Illuminate\Support\ServiceProvider;
 
 class FakerServiceProvider extends ServiceProvider

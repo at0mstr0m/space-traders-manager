@@ -28,7 +28,7 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
     protected function handleShip(): void
     {
         if ($this->ship->agent->credits < 1_300_000) {
-            $this->log("Agent has less than 1.300.000 credits, aborting.");
+            $this->log('Agent has less than 1.300.000 credits, aborting.');
 
             return;
         }
@@ -44,14 +44,14 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
         }
 
         if ($this->ship->waypoint_symbol === $this->constructionSite?->waypointSymbol && !$this->ship->cargo_is_empty) {
-            $this->log("supplying cargo to construction site");
+            $this->log('supplying cargo to construction site');
             $this->ship->supplyCargoToConstructionSite();
         }
 
         $this->initSupplyTradeOpportunity();
 
         if (!$this->supplyTradeOpportunity) {
-            $this->log("no Supply Route available.");
+            $this->log('no Supply Route available.');
 
             return;
         }
@@ -68,7 +68,7 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
                         )
                     );
                 }
-                $this->log("is fully loaded, flying to construction site");
+                $this->log('is fully loaded, flying to construction site');
                 $this->flyToLocation($this->constructionSite->waypointSymbol);
 
                 return;
@@ -79,20 +79,20 @@ class SupplyConstructionSite extends ShipJob implements ShouldBeUniqueUntilProce
         }
 
         if ($this->ship->waypoint_symbol === $this->constructionSite->waypointSymbol) {
-            $this->log("is empty, flying to supply route");
+            $this->log('is empty, flying to supply route');
             $this->flyToLocation($this->supplyTradeOpportunity->waypoint_symbol);
 
             return;
         }
 
         if ($this->ship->waypoint_symbol !== $this->constructionSite->waypointSymbol) {
-            $this->log("is loaded, flying to construction site");
+            $this->log('is loaded, flying to construction site');
             $this->flyToLocation($this->constructionSite->waypointSymbol);
 
             return;
         }
 
-        $this->log("did nothing.");
+        $this->log('did nothing.');
     }
 
     private function initSupplyTradeOpportunity(): void
