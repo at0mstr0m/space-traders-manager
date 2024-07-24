@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|Faction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Faction query()
  * @method static \Illuminate\Database\Eloquent\Builder|Faction searchBySymbol(string $search = '')
+ * @method static \Database\Factories\FactionFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */

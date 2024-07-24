@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|WaypointTrait query()
+ * @method static \Database\Factories\WaypointTraitFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */

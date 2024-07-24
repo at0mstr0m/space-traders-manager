@@ -36,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @property float|null $profit
  * @property int|null $profit_per_flight
  * @property int|null $ship_id
+ * @property-read FireBaseReference|null $fireBaseReference
  * @property-read Ship|null $ship
  *
  * @method static \Illuminate\Database\Eloquent\Builder|PotentialTradeRoute newModelQuery()

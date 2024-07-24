@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property-read System $starting_system
  * @property-read int|null $surveys_count
  * @property-read User $user
+ * @property-read Waypoint|null $headquarter
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newQuery()

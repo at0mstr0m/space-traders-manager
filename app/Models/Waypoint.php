@@ -47,6 +47,8 @@ use Illuminate\Support\Facades\Cache;
  * @property-read int|null $trade_opportunities_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointTrait> $traits
  * @property-read int|null $traits_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MarketGood> $marketGoods
+ * @property-read int|null $market_goods_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyCanRefuel()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newModelQuery()
@@ -55,6 +57,8 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyCanBeMined()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyCanBeSiphoned()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint searchBySymbol(string $search = '')
+ * @method static \Database\Factories\WaypointFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyHavingShipPresent()
  *
  * @mixin \Eloquent
  */

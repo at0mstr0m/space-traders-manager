@@ -96,6 +96,7 @@ use Illuminate\Support\Collection;
  * @method static Builder|Ship onlySiphoners()
  * @method static Builder|Ship query()
  * @method static Builder|Ship searchBySymbol(string $search = '')
+ * @method static \Database\Factories\ShipFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */

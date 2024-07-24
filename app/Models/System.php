@@ -29,11 +29,15 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $ships_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Waypoint> $waypoints
  * @property-read int|null $waypoints_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, System> $connections
+ * @property-read int|null $connections_count
+ * @property-read Waypoint|null $jumpGate
  *
  * @method static \Illuminate\Database\Eloquent\Builder|System newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|System newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|System query()
  * @method static \Illuminate\Database\Eloquent\Builder|System searchBySymbol(string $search = '')
+ * @method static \Database\Factories\SystemFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */
