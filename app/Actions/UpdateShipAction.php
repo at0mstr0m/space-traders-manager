@@ -83,7 +83,7 @@ class UpdateShipAction
                     fn (array $module) => [
                         $module['id'] => [
                             'quantity' => $shipData->modules
-                                ->where('symbol', $module['symbol']->value)
+                                ->where('symbol', $module['symbol'])
                                 ->count(),
                         ],
                     ]
@@ -109,7 +109,7 @@ class UpdateShipAction
                     fn (array $mount) => [
                         $mount['id'] => [
                             'quantity' => $shipData->mounts
-                                ->where('symbol', $mount['symbol']->value)
+                                ->where('symbol', $mount['symbol'])
                                 ->count(),
                         ],
                     ]
