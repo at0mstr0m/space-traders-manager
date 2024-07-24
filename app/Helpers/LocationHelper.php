@@ -166,7 +166,7 @@ class LocationHelper
         /** @var SpaceTraders $api */
         $api = app(SpaceTraders::class);
 
-        $waypointSymbol = Waypoint::bySystem($systemSymbol)
+        $waypointSymbol = Waypoint::where('system_symbol', $systemSymbol)
             ->firstWhere('is_under_construction', true)
             ?->symbol;
 

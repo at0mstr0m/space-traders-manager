@@ -48,7 +48,6 @@ use Illuminate\Support\Facades\Cache;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WaypointTrait> $traits
  * @property-read int|null $traits_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Waypoint bySystem(string $systemSymbol)
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint onlyCanRefuel()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Waypoint newQuery()
@@ -161,11 +160,6 @@ class Waypoint extends Model
     public function scopeOnlyCanBeSiphoned(Builder $query): Builder
     {
         return $query->where('type', WaypointTypes::GAS_GIANT);
-    }
-
-    public function scopeBySystem(Builder $query, string $systemSymbol): Builder
-    {
-        return $query->where('symbol', 'like', $systemSymbol . '-%');
     }
 
     public function scopeOnlyHavingShipPresent(Builder $query): Builder
