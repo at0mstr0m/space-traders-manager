@@ -260,6 +260,11 @@ class Ship extends Model
         );
     }
 
+    public function conditionEvents(): HasMany
+    {
+        return $this->hasMany(ShipConditionEvent::class);
+    }
+
     public function refetch(): static
     {
         return UpdateShipAction::run(

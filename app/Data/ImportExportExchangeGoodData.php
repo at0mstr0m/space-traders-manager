@@ -24,7 +24,7 @@ class ImportExportExchangeGoodData extends Data
         public ?string $waypointSymbol = null,
     ) {}
 
-    public function setWaypointSymbol(string $waypointSymbol): self
+    public function setWaypointSymbol(string $waypointSymbol): static
     {
         $this->waypointSymbol = $waypointSymbol;
 

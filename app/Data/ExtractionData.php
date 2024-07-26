@@ -7,7 +7,6 @@ namespace App\Data;
 use App\Data\Casts\CarbonCast;
 use App\Enums\TradeSymbols;
 use App\Interfaces\UpdatesShip;
-use App\Models\Cargo;
 use App\Models\Ship;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -20,6 +19,7 @@ class ExtractionData extends Data implements UpdatesShip
 {
     /**
      * @param Collection<int, CargoData> $inventory
+     * @param Collection<int, ShipConditionEventData> $events
      */
     public function __construct(
         #[MapInputName('extraction.shipSymbol')]
@@ -40,15 +40,23 @@ class ExtractionData extends Data implements UpdatesShip
         public int $cargoUnits,
         #[MapInputName('cargo.inventory')]
         public Collection $inventory,
-    ) {}
+        #[MapInputName('events')]
+        public Collection $events,
+    ) {
+        $this->events->each(
+            fn (ShipConditionEventData $eventData) => $eventData
+                ->setShipSymbol($this->shipSymbol)
+                ->save()
+        );
+    }
 
     public function updateShip(Ship $ship): Ship
     {
         $ship->cargos()->delete();
-        $this->inventory
-            ->each(
-                fn (CargoData $cargoData) => Cargo::new($cargoData)->ship()->associate($ship)->save()
-            );
+
+        $this->inventory->each(
+            fn (CargoData $cargoData) => $ship->cargos()->create($cargoData->toArray())
+        );
 
         return $ship->fill([
             'cooldown' => $this->remainingSeconds,

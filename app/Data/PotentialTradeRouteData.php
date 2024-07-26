@@ -37,7 +37,7 @@ class PotentialTradeRouteData extends Data
         };
     }
 
-    public static function fromAggregatedData(array $data): self
+    public static function fromAggregatedData(array $data): static
     {
         $tradeSymbol = $data['symbol'];
         $exportingMarket = $data['exportingMarket'];

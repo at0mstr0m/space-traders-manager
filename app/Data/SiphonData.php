@@ -20,6 +20,7 @@ class SiphonData extends Data implements UpdatesShip
 {
     /**
      * @param Collection<int, CargoData> $inventory
+     * @param Collection<int, ShipConditionEventData> $events
      */
     public function __construct(
         #[MapInputName('siphon.shipSymbol')]
@@ -40,7 +41,15 @@ class SiphonData extends Data implements UpdatesShip
         public int $cargoUnits,
         #[MapInputName('cargo.inventory')]
         public Collection $inventory,
-    ) {}
+        #[MapInputName('events')]
+        public Collection $events,
+    ) {
+        $this->events->each(
+            fn (ShipConditionEventData $eventData) => $eventData
+                ->setShipSymbol($this->shipSymbol)
+                ->save()
+        );
+    }
 
     public function updateShip(Ship $ship): Ship
     {
