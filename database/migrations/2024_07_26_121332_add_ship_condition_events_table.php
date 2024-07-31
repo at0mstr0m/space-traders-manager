@@ -21,7 +21,7 @@ return new class() extends Migration {
             $table->enum('symbol', ShipConditionEvents::values());
             $table->enum('component', ShipConditionEventComponents::values());
             $table->string('name');
-            $table->string('description');
+            $table->text('description');
         });
     }
 
