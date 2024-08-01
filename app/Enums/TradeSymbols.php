@@ -154,7 +154,7 @@ enum TradeSymbols: string
     case SHIP_REFINING_FREIGHTER = 'SHIP_REFINING_FREIGHTER';
     case SHIP_SURVEYOR = 'SHIP_SURVEYOR';
 
-    public static function ores(): array
+    public static function extractable(): array
     {
         return [
             self::IRON_ORE,
@@ -165,6 +165,19 @@ enum TradeSymbols: string
             self::PLATINUM_ORE,
             self::URANITE_ORE,
             self::MERITIUM_ORE,
+            self::PRECIOUS_STONES,
+            self::QUARTZ_SAND,
+            self::SILICON_CRYSTALS,
+            self::AMMONIA_ICE,
+            self::LIQUID_HYDROGEN,
+            self::LIQUID_NITROGEN,
+            self::ICE_WATER,
+            self::EXOTIC_MATTER,
         ];
+    }
+
+    public static function isExtractable(self|string $tradeSymbol): bool
+    {
+        return in_array(self::fromName($tradeSymbol), self::extractable());
     }
 }
