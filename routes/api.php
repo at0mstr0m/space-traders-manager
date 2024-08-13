@@ -84,6 +84,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->controller(SystemController::class)
         ->group(function () {
             Route::get('waypoints', 'waypoints')->name('waypoints');
+            Route::get('refetch-waypoints', 'refetchWaypoints')->name('refetch-waypoints');
         });
 
     Route::prefix('trade-opportunities')

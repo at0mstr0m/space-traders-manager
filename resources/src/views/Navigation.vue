@@ -49,6 +49,11 @@
               class="mr-2"
             />
             Waypoints
+            <v-icon 
+              icon="mdi-refresh"
+              class="ml-2"
+              @click.stop.prevent="refetchWaypoints"
+            />
           </v-tab>
           <v-tab value="waypoint-details">
             <v-icon
@@ -124,6 +129,10 @@ function handleWaypointsSelected(waypoints) {
 
 function handleWaypointClicked(data) {
   systemMap.value.setWaypoint(data);
+}
+
+function refetchWaypoints() {
+  systemMap.value.refetchWaypoints();
 }
 
 onBeforeMount(navigationStore.hardReset);

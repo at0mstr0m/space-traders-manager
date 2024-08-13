@@ -19,6 +19,15 @@ class SystemRepository extends ModelRepository {
       },
     });
   }
+  refetchWaypoints(waypointId, page = 1, perPage = 10, params = {}) {
+    return this._get(this.resource + "/" + waypointId + "/refetch-waypoints", {
+      params: {
+        page: page,
+        perPage: perPage,
+        ...params,
+      },
+    });
+  }
 }
 
 export default new SystemRepository("systems");

@@ -19,7 +19,7 @@ class UpdateMarketsAction implements ShouldQueue, ShouldBeUnique
 {
     use AsAction;
 
-    public function handle(): void
+    public function handle(?string $systemSymbol = null): void
     {
         /** @var SpaceTraders $api */
         $api = app(SpaceTraders::class);
@@ -29,12 +29,16 @@ class UpdateMarketsAction implements ShouldQueue, ShouldBeUnique
             ->where(
                 fn (Builder $query) => $query->whereDoesntHave('marketGoods')
                     // only fetch markets again that have ships present
-                    // otherwise all jump gates all are fetched again
+                    // otherwise all jump gates are fetched again
                     ->orWhere(
                         fn (Builder $query) => $query
                             ->whereHas('marketGoods')
                             ->onlyHavingShipPresent()
                     )
+            )
+            ->when(
+                $systemSymbol,
+                fn (Builder $query) => $query->where('system_symbol', $systemSymbol)
             )
             ->pluck('symbol')
             ->map(fn (string $waypointSymbol) => $api->getMarket($waypointSymbol))
@@ -44,7 +48,9 @@ class UpdateMarketsAction implements ShouldQueue, ShouldBeUnique
                 collect()
             );
 
-        TradeOpportunity::whereNotIn('id', $changedIds)->delete();
+        if (!$systemSymbol) {
+            TradeOpportunity::whereNotIn('id', $changedIds)->delete();
+        }
 
         // relies solely on the data just fetched
         UpdateOrRemovePotentialTradeRoutesAction::dispatchSync();

@@ -156,6 +156,17 @@ function setWaypoint(data) {
   handleShipWaypointSelection(data.waypoint_symbol);
 }
 
+async function refetchWaypoints() {
+  loading.value = true;
+  data.value = { datasets: [] };
+  page.value = 1;
+  navigationStore.reset();
+  const response = await repo.refetchWaypoints(systemId.value);
+  lastPage.value = response.data.meta.last_page;
+  addWaypointsToData(response.data.data);
+  fetchWaypoints();
+}
+
 watch(systemId, (newValue) => {
   emit('select', null);
   data.value = { datasets: [] };
@@ -186,6 +197,7 @@ watch(systemId, (newValue) => {
 
 defineExpose({
   setSystem,
-  setWaypoint
+  setWaypoint,
+  refetchWaypoints,
 });
 </script>

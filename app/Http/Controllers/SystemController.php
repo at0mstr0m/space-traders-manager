@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\UpdateMarketsAction;
 use App\Actions\UpdateWaypointsAction;
 use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\SystemResource;
@@ -37,7 +38,7 @@ class SystemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function waypoints(System $system): AnonymousResourceCollection
+    public function waypoints(PaginationRequest $request, System $system): AnonymousResourceCollection
     {
         // jumpGate could already be loaded, which is not enough
         if ($system->waypoints()->count() <= 1) {
@@ -49,7 +50,16 @@ class SystemController extends Controller
                 ->waypoints()
                 ->withCount('ships')
                 ->orderBy('symbol')
-                ->paginate()
+                ->paginate(perPage: $request->perPage())
         );
+    }
+
+    public function refetchWaypoints(PaginationRequest $request, System $system): AnonymousResourceCollection
+    {
+        UpdateWaypointsAction::run($system->symbol);
+
+        UpdateMarketsAction::run($system->symbol);
+
+        return $this->waypoints($request, $system);
     }
 }
