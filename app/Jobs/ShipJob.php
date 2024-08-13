@@ -69,7 +69,7 @@ abstract class ShipJob implements ShouldQueue
     {
         Log::channel('ship_jobs')
             ->error(
-                $this->ship->symbol
+                ($this->ship?->symbol ?? $this->shipSymbol)
                 . ' '
                 . static::class
                 . ' FAILED: '
