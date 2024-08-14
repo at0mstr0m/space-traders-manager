@@ -20,8 +20,11 @@ class ServeHighestProfitTradeRoute extends ServeTradeRoute
      */
     protected function buildPossibleNewRoutesQuery(EloquentBuilder $query): EloquentBuilder
     {
-        return $query->where('profit', '>', 0)
-            ->whereIn('supply_at_origin', [SupplyLevels::ABUNDANT, SupplyLevels::HIGH])
-            ->whereIn('supply_at_destination', [SupplyLevels::SCARCE, SupplyLevels::LIMITED]);
+        return $query->where([
+            ['profit', '>', 0],
+            ['profit_per_flight', '>', 2000],
+        ])
+            ->whereNotIn('supply_at_destination', [SupplyLevels::ABUNDANT, SupplyLevels::HIGH])
+            ->whereNotIn('supply_at_origin', [SupplyLevels::SCARCE, SupplyLevels::LIMITED]);
     }
 }
