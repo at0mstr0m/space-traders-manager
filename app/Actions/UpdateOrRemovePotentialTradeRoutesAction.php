@@ -76,6 +76,10 @@ class UpdateOrRemovePotentialTradeRoutesAction
                 )->id;
             });
 
-        PotentialTradeRoute::whereNotIn('id', $changedIds)->delete();
+        PotentialTradeRoute::whereNotIn('id', $changedIds)
+            // delete with events
+            ->get()
+            ->each
+            ->delete();
     }
 }

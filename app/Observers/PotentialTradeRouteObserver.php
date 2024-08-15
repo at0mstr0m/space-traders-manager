@@ -20,9 +20,9 @@ class PotentialTradeRouteObserver
     }
 
     /**
-     * Handle the PotentialTradeRoute "deleted" event.
+     * Handle the PotentialTradeRoute "deleting" event.
      */
-    public function deleted(PotentialTradeRoute $potentialTradeRoute): void
+    public function deleting(PotentialTradeRoute $potentialTradeRoute): void
     {
         $key = $potentialTradeRoute->fireBaseReference?->key;
 

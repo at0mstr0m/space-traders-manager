@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\PotentialTradeRoute;
 use App\Models\Ship;
 use App\Models\Task;
+use App\Observers\PotentialTradeRouteObserver;
 use App\Observers\ShipObserver;
 use App\Observers\TaskObserver;
 use Illuminate\Auth\Events\Registered;
@@ -29,6 +31,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        PotentialTradeRoute::observe(PotentialTradeRouteObserver::class);
         Ship::observe(ShipObserver::class);
         Task::observe(TaskObserver::class);
     }
