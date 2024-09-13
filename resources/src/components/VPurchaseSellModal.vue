@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { defineModel, ref } from 'vue';
+import { ref } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 
 const repo = useRepository("ships");
