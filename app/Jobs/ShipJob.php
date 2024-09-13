@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -34,6 +35,20 @@ abstract class ShipJob implements ShouldQueue
     public function __construct(protected string $shipSymbol)
     {
         $this->constructorArguments = func_get_args();
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [
+            (new WithoutOverlapping($this->shipSymbol))
+                ->withPrefix(self::class)
+                ->shared(),
+        ];
     }
 
     /**

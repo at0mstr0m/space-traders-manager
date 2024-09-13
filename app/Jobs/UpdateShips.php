@@ -11,9 +11,11 @@ use App\Models\Agent;
 use App\Models\Faction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
 class UpdateShips implements ShouldQueue
 {
@@ -29,8 +31,14 @@ class UpdateShips implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private ?Agent $agent = null)
-    {
+    public function __construct(
+        private ?Agent $agent = null,
+        private null|array|Arrayable|Collection $pages = null,
+    ) {
+        if ($pages) {
+            $this->pages = collect($pages);
+        }
+
         $this->agent ??= Agent::first();
         $this->api = app(SpaceTraders::class);
         $this->agentFaction = Faction::findBySymbol($this->agent->starting_faction);
@@ -41,13 +49,19 @@ class UpdateShips implements ShouldQueue
      */
     public function handle(): void
     {
-        // update ships
-        $this->api->listShips(all: true)->each(function (ShipData $shipData) {
-            $shipFaction = Faction::find($shipData->factionId);
+        /** @var Collection */
+        $shipData = $this->pages
+            ? $this->pages
+                ->map(fn (int $page) => $this->api->listShips(page: $page, all: true))
+                ->flatten(1)
+            : $this->api->listShips(all: true);
+
+        $shipData->each(function (ShipData $data) {
+            $shipFaction = Faction::find($data->factionId);
             if ($this->agentFaction->isNot($shipFaction)) {
                 throw new \Exception('Ship faction does not match agent faction');
             }
-            UpdateShipAction::run($shipData, $this->agent);
+            UpdateShipAction::run($data, $this->agent);
         });
     }
 }

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\System;
+use App\Enums\WaypointTypes;
 use App\Actions\UpdateMarketsAction;
 use App\Actions\UpdateWaypointsAction;
-use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\SystemResource;
+use App\Http\Requests\PaginationRequest;
 use App\Http\Resources\WaypointResource;
-use App\Models\System;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SystemController extends Controller
@@ -44,6 +45,12 @@ class SystemController extends Controller
         if ($system->waypoints()->count() <= 1) {
             UpdateWaypointsAction::run($system->symbol);
         }
+
+        // todo:  move logic from WaypointResource here
+
+        // if ($system->waypoints()->where('type', WaypointTypes::JUMP_GATE)->exists()) {
+
+        // }
 
         return WaypointResource::collection(
             $system->refresh()

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
@@ -40,11 +41,22 @@ abstract class MultipleShipsJob implements ShouldQueue
     }
 
     /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->taskId, 60, 60)];
+    }
+
+    /**
      * Execute the job.
      */
     public function handle(): void
     {
         $this->log('START');
+        $this->release();
         $this->task = Task::find($this->taskId);
         UpdateShips::dispatchSync();
         $this->ships = $this->initTasksShips($this->task);
@@ -86,8 +98,23 @@ abstract class MultipleShipsJob implements ShouldQueue
 
     protected function initTasksShips(int|Task $task): EloquentCollection
     {
-        return (is_int($task) ? Task::find($task) : $task)
-            ->ships
+        /** @var Task */
+        $task = is_int($task) ? Task::find($task) : $task;
+
+        $pages = $task->ships()
+            ->getBaseQuery()
+            ->select(['page'])
+            ->distinct()
+            ->pluck('page');
+
+        // some ship's page is not available yet, must refetch all
+        if ($pages->contains(0)) {
+            UpdateShips::dispatchSync();
+        } else {  // only refetch certain pages when this is more efficient
+            UpdateShips::dispatchSync($pages);
+        }
+
+        return $task->ships
             ->reject(function (Ship $ship) {
                 $result = $ship->is_in_transit || $ship->cooldown;
                 if ($result) {

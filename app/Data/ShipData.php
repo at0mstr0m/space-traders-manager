@@ -108,6 +108,7 @@ class ShipData extends Data
         public Collection $mounts,
         #[MapInputName('cargo.inventory')]
         public Collection $inventory,
+        public int $page = 0,
     ) {
         $this->factionId = Faction::findBySymbol($factionSymbol->value)?->id;
         $this->frameId = Frame::findBySymbol($frame->symbol->value)?->id;
@@ -121,5 +122,12 @@ class ShipData extends Data
                 ? $now->diffInSeconds($arrival)
                 : 0
         ));
+    }
+
+    public function setPage(int $page): static
+    {
+        $this->page = $page;
+
+        return $this;
     }
 }

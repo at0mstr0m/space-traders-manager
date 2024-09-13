@@ -64,9 +64,12 @@ use Illuminate\Support\Collection;
  * @property int $cargo_units
  * @property int|null $task_id
  * @property string|null $destination
+ * @property int $page
  * @property-read Agent $agent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Cargo> $cargos
  * @property-read int|null $cargos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ShipConditionEvent> $conditionEvents
+ * @property-read int|null $condition_events_count
  * @property-read Engine $engine
  * @property-read Faction $faction
  * @property-read Frame $frame
@@ -89,6 +92,7 @@ use Illuminate\Support\Collection;
  * @property-read Waypoint|null $waypoint
  *
  * @method static Builder|Ship canSurvey()
+ * @method static \Database\Factories\ShipFactory factory($count = null, $state = [])
  * @method static Builder|Ship newModelQuery()
  * @method static Builder|Ship newQuery()
  * @method static Builder|Ship onlyHaulers()
@@ -96,7 +100,6 @@ use Illuminate\Support\Collection;
  * @method static Builder|Ship onlySiphoners()
  * @method static Builder|Ship query()
  * @method static Builder|Ship searchBySymbol(string $search = '')
- * @method static \Database\Factories\ShipFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */
@@ -138,6 +141,7 @@ class Ship extends Model
         'reactor_id',   // consider removal
         'engine_id',    // consider removal
         'destination',
+        'page',
     ];
 
     public function getIsDockedAttribute(): bool
@@ -653,6 +657,7 @@ class Ship extends Model
             'cargo_capacity' => 'integer',
             'cargo_units' => 'integer',
             'destination' => 'string',
+            'page' => 'integer',
         ];
     }
 

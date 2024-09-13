@@ -187,7 +187,9 @@ class SpaceTraders
         );
 
         /** @var Collection */
-        $data = ShipData::collect($response->json('data'), Collection::class);
+        $data = ShipData::collect($response->json('data'), Collection::class)
+            ->each
+            ->setPage($page);
 
         return $all
             ? $this->getAllPagesData($data, $response, __FUNCTION__, $page)

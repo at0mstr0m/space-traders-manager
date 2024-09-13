@@ -23,8 +23,10 @@ class UpdateShipAction
 {
     use AsAction;
 
-    public function handle(ShipData $shipData, Agent $agent): Ship
+    public function handle(ShipData $shipData, ?Agent $agent = null): Ship
     {
+        $agent ??= Agent::first();
+
         /** @var Ship */
         $ship = $agent->ships()->updateOrCreate(
             ['symbol' => $shipData->symbol],
@@ -58,8 +60,19 @@ class UpdateShipAction
             ]
         );
 
+        // update page if available
+        if ($shipData->page) {
+            $ship->fill(['page' => $shipData->page]);
+        }
+
+        // clear destination if reached
         if ($ship->has_reached_destination) {
-            $ship->update(['destination' => null]);
+            $ship->fill(['destination' => null]);
+        }
+
+        // save if page or destination changed
+        if ($ship->isDirty(['page', 'destination'])) {
+            $ship->save();
         }
 
         // update modules
