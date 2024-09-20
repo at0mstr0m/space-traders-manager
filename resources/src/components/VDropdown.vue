@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, defineModel, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 import _uniqBy from "lodash/uniqBy";
 import _debounce from "lodash/debounce";

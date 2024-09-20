@@ -56,7 +56,7 @@
 
 <script setup>
 import VDropdown from '@/components/VDropdown.vue';
-import { defineModel, onBeforeMount, watch } from 'vue';
+import { onBeforeMount, watch } from 'vue';
 import { useRepository } from "@/repos/repoGenerator.js";
 import { taskTypes, taskTypesSelectItems } from "@/enums/taskTypes.js";
 
