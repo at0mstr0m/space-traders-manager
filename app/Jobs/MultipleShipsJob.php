@@ -56,7 +56,6 @@ abstract class MultipleShipsJob implements ShouldQueue
     public function handle(): void
     {
         $this->log('START');
-        $this->release();
         $this->task = Task::find($this->taskId);
         UpdateShips::dispatchSync();
         $this->ships = $this->initTasksShips($this->task);
