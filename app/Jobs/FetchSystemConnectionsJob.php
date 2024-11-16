@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +37,16 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUniqueUntilProce
     ) {
         $this->api ??= app(SpaceTraders::class);
         Cache::increment(static::CACHE_KEY);
-        dump(Cache::get(static::CACHE_KEY));
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->waypointSymbol ?? '')];
     }
 
     /**
@@ -116,7 +126,6 @@ class FetchSystemConnectionsJob implements ShouldQueue, ShouldBeUniqueUntilProce
     private function count(): void
     {
         Cache::decrement(static::CACHE_KEY);
-        dump(Cache::get(static::CACHE_KEY));
 
         if ((int) Cache::get(static::CACHE_KEY) === 0) {
             UploadSystemsJob::dispatch();

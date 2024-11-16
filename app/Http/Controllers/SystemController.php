@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\System;
-use App\Enums\WaypointTypes;
 use App\Actions\UpdateMarketsAction;
 use App\Actions\UpdateWaypointsAction;
-use App\Http\Resources\SystemResource;
+use App\Enums\WaypointTypes;
 use App\Http\Requests\PaginationRequest;
+use App\Http\Resources\SystemResource;
 use App\Http\Resources\WaypointResource;
+use App\Models\System;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SystemController extends Controller
